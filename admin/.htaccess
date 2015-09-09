@@ -1,0 +1,8 @@
+AuthName "Restricted Area"
+AuthType Basic
+AuthUserFile "/etc/phpkipasswd"
+require valid-user
+#SSLRequireSSL
+Order Allow,Deny
+Allow from 172.22.16.0/24 127.0.0.1
+

@@ -1,0 +1,6 @@
+AuthName "Restricted Area"
+AuthType Basic
+AuthUserFile "/etc/phpkipasswd"
+require valid-user
+#SSLRequireSSL
+

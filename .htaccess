@@ -1,0 +1,5 @@
+#AuthType Basic
+#AuthUserFile "/etc/phpkipasswd"
+#Require valid-user
+#Order allow,deny
+
