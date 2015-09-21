@@ -9,10 +9,11 @@ printHeader(false);
 
 ?>
 <p>
-<center>
+<div style="text-align:center">
 <table class=menu>
-<th class=menu style="font-size: 24px;">PHPki HELP FILE<br>TABLE OF CONTENTS</th>
-<tr><td class=menu style="padding: 1em;">
+
+<tr><th class="menu" style="font-size: 24px;">PHPki HELP FILE<br>TABLE OF CONTENTS</th>
+<td class=menu style="padding: 1em;">
 <a href=#WHY>Why PHPki</a><br>
 <a href=#OVERVIEW>Overview</a><br>
 <a href=#MAIN-MENU>Main Menu</a><br>
@@ -27,7 +28,7 @@ printHeader(false);
 <a href=#GETTING-HELP>Getting Additional Help</a><br>
 </td></tr>
 </table>
-</center>
+</div>
 
 <br><br><br><br><br><br>
 
@@ -141,7 +142,7 @@ Internet.
 <h2><a name=MAIN-MENU>THE MAIN MENU</a></h2>
 <p>
 <blockquote>
-<center><img src=../images/main-menu.png width=700 ></center>
+<div style="text-align:center"><img src=../images/main-menu.png width=700 ></div>
 <p>
 All of the PHPki primary functions can be accessed from the Main Menu.  
 It is possible to navigate back to the Main Menu from any screen by clicking the
@@ -156,7 +157,7 @@ the general public may search for certificates and download the
 When you select "Request a New Certificate" from the Main Menu, you will be
 presented with the Certificate Request Form.<br>
 <p>
-<center><img src=../images/cert-request-form.png width=700 ></center>
+<div style="text-align:center"><img src=../images/cert-request-form.png width=700 ></div>
 <p>
 This form is used to collect the minimum necessary information required to
 issued a new digital certificate. All fields must be completed.
@@ -223,7 +224,7 @@ When you have complete filling in the form, click the "Submit Request" button.
 The information you submitted will be checked for errors, and a confirmation
 screen will be displayed.
 <p>
-<center><img src=../images/request-confirm-form.png width=700></center>
+<div style="text-align:center"><img src=../images/request-confirm-form.png width=700></div>
 <p>
 Clicking the "Yes! Create and Download" button will cause a file download
 window to open in your browser, allowing you to save the certificate on your
@@ -250,7 +251,7 @@ form input will be saved as your default values for the future sessions<br>
 PHPki provides one convenient place to manage your certificates.  
 It is called the <cite>Certificate Management Control Panel</cite>.
 <p>
-<center><img src=../images/ctrl-panel-before.png width=700></center>
+<div style="text-align:center"><img src="../images/ctrl-panel-before.png" width="700"></div>
 <p>
 With the <cite>Control Panel</cite> you can display, download, revoke, and 
 renew your certificates by simply clicking on the appropriate button to the 
@@ -266,7 +267,7 @@ descending sort order. You may find these sort features particularly useful if
 you are careful to plan and utilize the <cite>Department/Unit</cite> and 
 <cite>Locality</cite> fields to categorize your certificates according to 
 your particular organizational needs.
-</blockquote
+</blockquote>
 
 <p>
 <h2><a name="REVOKE">REVOKING A CERTIFICATE</a></h2>
@@ -277,7 +278,7 @@ private key has been lost or compromised.
 <p>
 To revoke a certificate, click on the <img src=../images/revoke.png align=top>&nbsp icon next to the certificate entry in the <cite>Control Panel</cite>.
 <p>
-<center><img src=../images/revoke-confirm.png width=700></center>
+<div style="text-align:center"><img src=../images/revoke-confirm.png width=700></div>
 <p>
 You will then be asked to confirm or cancel the revocation.  Be absolutely
 sure of what you wish to do before clicking the "Yes" button.  Once a
@@ -286,7 +287,7 @@ true, as a revoked certificate can be renewed.  Renewing a revoked certificate
 results in a <strong>new</strong> certificate being issued.  Certificate
 renewal is covererd later.
 <p>
-<center><img src=../images/ctrl-panel-after-revoke.png width=700></center>
+<div style="text-align:center"><img src=../images/ctrl-panel-after-revoke.png width=700></div>
 <p>
 If you click the "Yes" button, the certificate is revoked with no further
 interaction.  The certificate's status in the <cite>Control Panel</cite> 
@@ -301,7 +302,7 @@ Certificates may be displayed in full detail by clicking the
 entry in the <cite>Control Panel</cite>.  Although some users may find this
 feature useful, many will not find anything of interest in it.
 <p>
-<center><img src=../images/display-revoked.png width=700></center>
+<div style="text-align:center"><img src=../images/display-revoked.png width=700></div>
 </blockquote>
 
 <p>
@@ -316,7 +317,7 @@ the <img src=../images/renew.png align=top>&nbsp icon next to the
 certifcate's <cite>Control Panel</cite> entry.  You will then be presented
 with a certificate renewal form.
 <p>
-<center><img src=../images/renewal-form.png width=700></center>
+<div style="text-align:center"><img src=../images/renewal-form.png width=700></div>
 <p>
 The certificate renewal form takes the values for <cite>Common Name, 
 E-mail Address, Organization, etc.</cite> from the original certificate.
@@ -328,7 +329,7 @@ you will not be able to renew the certificate.  You may cancel this operation
 by clicking the "Back" button, which will take you back to the 
 <cite>Control Panel</cite>.
 <p>
-<center><img src=../images/ctrl-panel-after-renew.png width=700></center>
+<div style="text-align:center"><img src=../images/ctrl-panel-after-renew.png width=700></div>
 <p>
 If you click the "Submit Request" button to renew the certificate, it is
 renewed with no further interaction, and you will be returned to the
@@ -350,7 +351,7 @@ be reminded that the certificate is a
 SHOULD NEVER BE DISTRIBUTED TO THE PUBLIC</font></strong>. 
 You may choose to download <a href=../help/glossary.html#PKCS12 target=glossary>PKCS #12</a> or <a href=../help/glossary.html#PEM target=glossary>PEM</a> formatted bundles.
 <p>
-<center><img src=../images/confirm-download.png width=700></center>
+<div style="text-align:center"><img src=../images/confirm-download.png width=700></div>
 </blockquote>
 
 <p>
@@ -364,10 +365,10 @@ PHPki glossary of terms.
 <p>
 <h2><a name="GETTING-HELP">GETTING ADDITIONAL HELP</a></h2>
 <blockquote>
-<?=$config[getting_help]?>
+<?php print $config[getting_help]?>
 </blockquote>
 <br>
 
-<?
+<?php
 printFooter();
 ?>

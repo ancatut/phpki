@@ -2,18 +2,19 @@
 
 umask(0007);
 
-if ($_SERVER['PHP_AUTH_USER'])
+if (isset($_SERVER['PHP_AUTH_USER'])) {
 	$PHPki_user = md5($_SERVER['PHP_AUTH_USER']);
-else
+}
+else {
 	$PHPki_user = md5('default');
+}
 
 $PHP_SELF = $_SERVER['PHP_SELF'];
 
 
 function printHeader($withmenu="default") {
 	global $config;
-	$title = ($config['header_title']?$config['header_title']:'PHPki Certificate Authority');
-
+	$title = (isset($config['header_title']) ? $config['header_title'] : 'PHPki Certificate Authority');
 	switch ($withmenu) {
 	case 'public':
 	case 'about':
@@ -29,18 +30,18 @@ function printHeader($withmenu="default") {
 
 	header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 	header("Expires: -1");
-        header("Cache-Control: no-store, no-cache, must-revalidate");
-        header("Cache-Control: post-check=0, pre-check=0", false);
-        header("Pragma: no-cache");
+    header("Cache-Control: no-store, no-cache, must-revalidate");
+    header("Cache-Control: post-check=0, pre-check=0", false);
+    header("Pragma: no-cache");
 
-	?>
+?>
 	<html>
 	<head>
-	<title>PHPki: <?=$title?> </title>
-	<link rel="stylesheet" type="text/css" href="<?=$style_css?>">
+	<title>PHPki: <?php echo $title ?> </title>
+	<link rel="stylesheet" type="text/css" href="<?php echo $style_css ?>">
 	</head>
 	<body>
-	<?
+	<?php
 
 	if (isKonq()) { 
 		$logoclass  = 'logo-konq';
@@ -54,77 +55,78 @@ function printHeader($withmenu="default") {
 	}
 
 	?>
-	<div class=<?=$logoclass?>>PHPki</div>
-	<div class=<?=$titleclass?>><?=$title?></div>
-	<?
+	<div class="<?php echo $logoclass ?>">PHPki</div>
+	<div class="<?php echo $titleclass ?>"><?php echo $title ?></div>
+	<?php
 
 	switch ($withmenu) {
 	case false:
 	case 'about':
 		break;
 	case 'setup':
-		?>
-		<div class=<?=$menuclass?>>
-		<a class=<?=$menuclass?> href=readme.php>ReadMe</a>
-		<a class=<?=$menuclass?> href=setup.php>Setup</a>
-		<a class=<?=$menuclass?> href=about.php target=_about>About</a>
+	?>
+		<div class="<?php echo $menuclass?>">
+			<a class="<?php echo $menuclass ?>" href="readme.php">ReadMe</a>
+			<a class="<?php echo $menuclass ?>" href="setup.php">Setup</a>
+			<a class="<?php echo $menuclass ?>" href="about.php" target="_about">About</a>
 		</div>
-		<?
+		<?php
 		break;
 	case 'public':
-		print "<div class=$menuclass>";
+		print "<div class='$menuclass'>";
 
 		if (DEMO)  {
-			print "<a class=$menuclass href=index.php>Public</a>";
-			print "<a class=$menuclass href=ca/ >Manage</a>";
+			print "<a class='$menuclass' href='index.php'>Public</a>";
+			print "<a class='$menuclass' href='ca/'>Manage</a>";
 		}
 		else {
-			print "<a class=$menuclass href=index.php>Menu</a>";
+			print "<a class='$menuclass' href='index.php'>Menu</a>";
 		}
 
 		if (file_exists('policy.html')) {
-			print '<a class='.$menuclass.' style="color: red" href=policy.html target=help>Policy</a>';
+			print "<a class='$menuclass' style='color: red' href='policy.html' target='help'>Policy</a>";
 		}
 		?>
-		<a class=<?=$menuclass?> href=help.php target=_help>Help</a>
-		<a class=<?=$menuclass?> href=about.php target=_about>About</a>
+		<a class="<?php print $menuclass?>" href="help.php" target="_help">Help</a>
+		<a class="<?php print $menuclass?>" href="about.php" target="_about">About</a>
 		</div>
-		<?
+		<?php
 		break;
 	case 'ca':
 	default:
-		print "<div class=$menuclass>";
+		print "<div class='$menuclass'>";
 
 		if (DEMO)  {
-			print "<a class=$menuclass href=../index.php>Public</a>";
-			print "<a class=$menuclass href=../ca/index.php>Manage</a>";
+			print "<a class='$menuclass' href='../index.php'>Public</a>";
+			print "<a class='$menuclass' href='../ca/index.php'>Manage</a>";
 		}
 		else {
-			print "<a class=$menuclass href=index.php>Menu</a>";
+			print "<a class='$menuclass' href=index.php>Menu</a>";
 		}
 
 		if (file_exists('../policy.html')) {
-			print '<a class='.$menuclass.' style="color: red" href=../policy.html target=help>Policy</a>';
+			print "<a class='$menuclass' style='color: red' href='../policy.html' target='help'>Policy</a>";
 		}
 		?>
-		<a class=<?=$menuclass?> href=../help.php target=_help>Help</a>
-		<a class=<?=$menuclass?> href=../about.php target=_about>About</a>
+		<a class="<?php print $menuclass?>" href='../help.php' target='_help'>Help</a>
+		<a class="<?php print $menuclass?>" href='../about.php' target='_about'>About</a>
 		</div>
-		<?
+		<?php
 	}
-
-	?><hr width=99% align=left color=#99caff><?
+		?>
+	<hr width="99%" align="left" color="#99caff">
+	<?php
 }
 
 
 function printFooter() {
 	?>
 	<br>
-	<hr width=99% align=left color=#99caff>
-	<center style='margin-top: -5px; font-size: 8pt'>PHPki v<?=PHPKI_VERSION?> - Copyright 2003 - William E. Roadcap</center><br>
+	<hr width="99%" align="left" color="#99caff">
+	<div style="text-align: center; margin-top: -5px; font-size: 8pt">PHPki v<?php echo PHPKI_VERSION ?> - Copyright 2003 - William E. Roadcap</div><br>
 	</body>
 	</html>
-	<?
+	<?php
 }
 
 ?>

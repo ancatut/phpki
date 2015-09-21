@@ -20,16 +20,16 @@ if ($stage == "search" && ! $search) $stage = "";
 # Force filter to (V)alid certs if no search status is selected.
 if ( !($show_valid.$show_revoked.$show_expired) ) $show_valid = 'V';
 
-switch ($stage) {
+switch ($stage):
 case display:
 	printHeader('about');
 
 	print '
-	<center><h2>Certificate Details</h2></center>
-	<center><font color=#0000AA><h3>(#'.htvar($serial).')<br>'.htvar(CA_cert_cname($serial).' <'.CA_cert_email($serial).'>').'</h3></font></center>';
+	<div style="text-align:center"><h2>Certificate Details</h2></div>
+	<div style="text-align:center"><font color=#0000AA><h3>(#'.htvar($serial).')<br>'.htvar(CA_cert_cname($serial).' <'.CA_cert_email($serial).'>').'</h3></font></div>';
 
 	if ($revoke_date = CAdb_is_revoked($serial))
-	print '<center><font color=red><h2>REVOKED '.htvar($revoke_date).'</h2></font></center>';
+	print '<div style="text-align:center"><font color="red"><h2>REVOKED '.htvar($revoke_date).'</h2></font></div>';
 
 	print '<pre>'.htvar(CA_cert_text($serial)).'</pre>';
 	break;
@@ -47,24 +47,26 @@ case search:
 	print '<body onLoad="self.focus();document.form.submit.focus()">';
 	if (sizeof($db) == 0) {
 		?>
-		<center>
+		<div style="text-align:center">
 		<h2>Nothing Found</h2>
-		<form action=<?=$PHP_SELF?> method=post name=form>
-		<input type=hidden name=search value="<?=htvar($search)?>">
-		<input type=hidden name=show_valid value="<?=htvar($show_valid)?>">
-		<input type=hidden name=show_revoked value="<?=htvar($show_revoked)?>">
-		<input type=hidden name=show_expired value="<?=htvar($show_expired)?>">
+		<form action=<?php print $PHP_SELF?> method=post name=form>
+		<input type=hidden name=search value="<?php print htvar($search)?>">
+		<input type=hidden name=show_valid value="<?php print htvar($show_valid)?>">
+		<input type=hidden name=show_revoked value="<?php print htvar($show_revoked)?>">
+		<input type=hidden name=show_expired value="<?php print htvar($show_expired)?>">
 		<input type=submit name=submit value="Go Back">
 		</form>
-		</center>
-		<?
+		</div>
+		<?php
 		printFooter();
 		break;
 	}
+		?>
+	
 
-	print '<table>';
-	print '<th colspan=9><big>CERTIFICATE SEARCH RESULTS</big></th>';
-
+	<table>
+	<th colspan=9><h2>CERTIFICATE SEARCH RESULTS</h2></th>
+<?php
         $headings = array(
                 status=>"Status", issued=>"Issued", expires=>"Expires",
                 common_name=>"User's Name", email=>"E-mail",
@@ -79,25 +81,29 @@ case search:
         print '</tr>';
 
 	foreach($db as $rec) {
-		$stcolor = array(Valid=>'green',Revoked=>'red',Expired=>'orange');
+		$stcolor = array(Valid=>'green', Revoked=>'red', Expired=>'orange');
 
 		?>
 		<tr style="font-size: 11px;">
-		<td style="color: <?=$stcolor[$rec['status']]?>; font-weight: bold"><?=htvar($rec['status'])?></td>
-		<td style="white-space: nowrap"><?=htvar($rec['issued'])?></td>
-		<td style="white-space: nowrap"><?=htvar($rec['expires'])?></td>
-		<td><?=htvar($rec[common_name])?></td>
-		<td style="white-space: nowrap"><a href="mailto:<?=htvar($rec['common_name']).' <'.htvar($rec['email']).'>"'?>><?=htvar($rec['email'])?></a></td>
-		<td><?=htvar($rec['organization'])?></td>
-		<td><?=htvar($rec['unit'])?></td>
-		<td><?=htvar($rec['locality'])?></td>
-		<td><?=htvar($rec['province'])?></td>
-		<td><a href=<?=$PHP_SELF?>?stage=display&serial=<?=htvar($rec['serial'])?> target=_certdisp><img src=images/display.png alt="Display" title="Display the certificate in excruciating detail"></a>
-		<?
+		<td style="color: <?php print $stcolor[$rec['status']]?>; font-weight: bold"><?php print htvar($rec['status'])?></td>
+		<td style="white-space: nowrap"><?php print htvar($rec['issued'])?></td>
+		<td style="white-space: nowrap"><?php print htvar($rec['expires'])?></td>
+		<td><?php print htvar($rec[common_name])?></td>
+		<td style="white-space: nowrap">
+			<a href="mailto:<?php print htvar($rec['common_name']).' <'.htvar($rec['email']).'>' ?>">
+			<?php print htvar($rec['email']) ?>
+			</a>
+		</td>
+		<td><?php print htvar($rec['organization'])?></td>
+		<td><?php print htvar($rec['unit'])?></td>
+		<td><?php print htvar($rec['locality'])?></td>
+		<td><?php print htvar($rec['province'])?></td>
+		<td><a href="<?php print $PHP_SELF?>?stage=display&serial=<?php print htvar($rec['serial'])?>" target="_certdisp"><img src="images/display.png" alt="Display" title="Display the certificate in excruciating detail"></a>
+		<?php
 		if ($rec['status'] != 'Revoked') {
 			?>
-			<a href=<?=$PHP_SELF?>?stage=download&serial=<?=htvar($rec['serial'])?>><img src=images/download.png alt="Download" title="Download the certificate so that you may send encrypted e-mail"></a>
-			<?
+			<a href="<?php print $PHP_SELF ?>?stage=download&serial=<?php print htvar($rec['serial'])?>"><img src="images/download.png" alt="Download" title="Download the certificate so that you may send encrypted e-mail"></a>
+			<?php
 		}
 		print '</td></tr>';
 	}
@@ -105,14 +111,14 @@ case search:
 	?>
 	</table>
 
-	<form action=<?=$PHP_SELF?> method=post name=form>
-	<input type=submit name=submit value="Another Search">
-	<input type=hidden name=search value="<?=htvar($search)?>">
-	<input type=hidden name=show_valid value="<?=htvar($show_valid)?>">
-	<input type=hidden name=show_revoked value="<?=htvar($show_revoked)?>">
-	<input type=hidden name=show_expired value="<?=htvar($show_expired)?>">
+	<form action=<?php print $PHP_SELF ?> method=post name=form>
+	<input type="submit" name="submit" value="Another Search">
+	<input type="hidden" name="search" value="<?php print htvar($search) ?>">
+	<input type="hidden" name="show_valid" value="<?php print htvar($show_valid) ?>">
+	<input type="hidden" name="show_revoked" value="<?php print htvar($show_revoked) ?>">
+	<input type="hidden" name="show_expired" value="<?php print htvar($show_expired) ?>">
 	</form>
-	<?
+	<?php
 
 	printFooter();
 	break;
@@ -122,19 +128,18 @@ default:
 
 	?>
 	<body onLoad="self.focus();document.search.search.focus()">
-	<center><h2>Certificate Search</h2>
-	<form action=<?=$PHP_SELF?> method=post name=search>
-	<input type=text name=search value="<?=htvar($search)?>" maxlength=60 size=40>
-	<input type=submit name=submit value="Find It!"><br>
-	<input type=checkbox name=show_valid value="V" <?=($show_valid?'checked':'')?>>Valid
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=checkbox name=show_revoked value="R" <?=($show_revoked?'checked':'')?>>Revoked
-	&nbsp;&nbsp;&nbsp;&nbsp;<input type=checkbox name=show_expired value="E" <?=($show_expired?'checked':'')?>>Expired
-	<input type=hidden name=stage value=search>
-	</form></center>
+	<div style="text-align:center"><h2>Certificate Search</h2>
+	<form action="<?php print $PHP_SELF?>" method="post" name="search">
+	<input type="text" name=search value="<?php print htvar($search)?>" maxlength=60 size=40>
+	<input type="submit" name="submit" value="Find It!"><br>
+	<input type="checkbox" name="show_valid" value="V" <?php print ($show_valid?'checked':'')?>>Valid
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="show_revoked" value="R" <?php print ($show_revoked?'checked':'')?>>Revoked
+	&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="show_expired" value="E" <?php print ($show_expired?'checked':'')?>>Expired
+	<input type="hidden" name="stage" value="search">
+	</form></div>
 
 	<br><br>
-	<?
+	<?php
 	printFooter();
-}
-
+endswitch;
 ?>

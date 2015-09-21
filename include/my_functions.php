@@ -35,7 +35,7 @@ function upload($source, $destination, $content_type="application/octet-stream")
 
 	if (is_array($source)) {
 		$fsize = 0;
-		foreach($source as $f) $fsize += filesize($f);
+		foreach ($source as $f) $fsize += filesize($f);
 	}
 	else {
 		$fsize = filesize($source);
@@ -46,7 +46,7 @@ function upload($source, $destination, $content_type="application/octet-stream")
         header("Content-Disposition: filename=\"" . $destination ."\"");
 
 	if (is_array($source))
-		foreach($source as $f) $ret = readfile($f);
+		foreach ($source as $f) $ret = readfile($f);
 	else 
         	$ret=readfile($source);
 
@@ -64,20 +64,21 @@ function upload($source, $destination, $content_type="application/octet-stream")
 function gpvar($v) {
 	global $_GET, $_POST;
     $x = "";
-	if ($_GET[$v])  $x = $_GET[$v];
-	if ($_POST[$v]) $x = $_POST[$v];
+	if (isset($_GET[$v]))  $x = $_GET[$v];
+	if (isset($_POST[$v])) $x = $_POST[$v];	
 	if (get_magic_quotes_gpc()) $x = stripslashes($x);
+	#$x = htmlspecialchars($x);
 	return $x;
 }
 
 
 #
-# Sort a two multidimensional array by one of it's columns
+# Sort a two multidimensional array by one of its columns
 #
 function csort($array, $column, $ascdec=SORT_ASC){    
 	if (sizeof($array) == 0) return $array;
 
-	foreach($array as $x) $sortarr[]=$x[$column];
+	foreach ($array as $x) $sortarr[]=$x[$column];
 	array_multisort($sortarr, $ascdec, $array);  
 
 	return $array;
@@ -127,7 +128,7 @@ function escshellcmd($v, $strip=false) {
 #
 function stripslashes_array(&$a) {
 	if (is_array($a)) {
-		foreach($a as $k => $v) {
+		foreach ($a as $k => $v) {
 			my_stripslashes($a[$k]);
 		}
 	}
@@ -144,12 +145,12 @@ function undo_magic_quotes(&$a) {
 	if(get_magic_quotes_gpc()) {
 		global $HTTP_POST_VARS, $HTTP_GET_VARS;
 
-		foreach($HTTP_POST_VARS as $k => $v) {
+		foreach ($HTTP_POST_VARS as $k => $v) {
 			stripslashes_array($HTTP_POST_VARS[$k]);
 			global $$k;
 			stripslashes_array($$k);
 		}
-		foreach($HTTP_GET_VARS as $k => $v) {
+		foreach ($HTTP_GET_VARS as $k => $v) {
 			stripslashes_array($HTTP_GET_VARS[$k]);
 			global $$k;
 			stripslashes_array($$k);
@@ -162,20 +163,25 @@ function undo_magic_quotes(&$a) {
 #
 function is_alpha($v) {
 	return (eregi('[^A-Z]',$v) ? false : true) ;
+##	return (preg_match('[^A-Z]'.'/i',$v) ? false : true) ; # Replaced eregi() with preg_match()
 }
 
 #
 # Returns TRUE if argument contains only numeric characters.
 #
+
 function is_num($v) {
 	return (eregi('[^0-9]',$v) ? false : true) ;
+##	return (preg_match('[^0-9]'.'/i',$v) ? false : true) ; # Replaced eregi() with preg_match()
 }
 
 #
 # Returns TRUE if argument contains only alphanumeric characters.
 #
+
 function is_alnum($v) {
 	return (eregi('[^A-Z0-9]',$v) ? false : true) ;
+##	return (preg_match('[^A-Z0-9]'.'/i',$v) ? false : true) ; # Replaced eregi() with preg_match()
 }
 
 #
@@ -183,18 +189,22 @@ function is_alnum($v) {
 #
 function is_email($v) {
 	return (eregi('^[^@ ]+\@[^@ ]+\.[A-Z]{2,4}$',$v) ? true : false);
+##	return (preg_match('^[^@ ]+\@[^@ ]+\.[A-Z]{2,4}$'.'/i',$v) ? true : false); # Replaced eregi() with preg_match()
 }
 
 #
 # Checks regexp in every element of an array, returns TRUE as soon
 # as a match is found.
 #
-function eregi_array($regexp, $a) {
 
-foreach($a as $e) {
-	if (eregi($regexp,$e)) return true;
-}
-return false;
+function eregi_array($regexp, $arr) {
+
+	foreach ($arr as $elem) {
+		if (eregi($regexp,$elem))
+##		if (preg_match($regexp.'/i',$elem)) # Replaced eregi() with preg_match()
+			return true;
+	}
+	return false;
 }
 
 #

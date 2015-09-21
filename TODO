@@ -14,3 +14,16 @@ if it turns out that the built in OpenSSL CA doesn't perform well.
 More documentation and help files.
 
 Support multi-homed server certificates
+
+
+ANCA'S TODO:
+
+Figure out why gpvar() doesn't initialize variables as it should (at least with empty string).
+
+Replace regex search function eregi() by preg_match() and adjust regex patterns accordingly.
+
+Remove repopulation of password field after error for security.
+
+Reintroduce SSL mode for accessing the page. 
+
+Implement a better password storage solution (check apache's current method).
