@@ -127,3 +127,7 @@ v0.83 (bugfix)
 - Added support for 4 character TLD in email address
 - Added support for short term certificates (1,3,6 months)
 
+v0.84 (cosmetic changes, removal of deprecated elements and typos)
+- Got rid of deprecated HTML tags like <big>, <center> etc.
+- Got rid of typos in constant names (index, STORE_DIR, etc.)
+-

@@ -1,8 +1,9 @@
 AuthName "Restricted Area"
 AuthType Basic
 AuthUserFile "/etc/phpkipasswd"
-require valid-user
+Require valid-user
 #SSLRequireSSL
-Order Allow,Deny
-Allow from 172.22.16.0/24 127.0.0.1
+#Order Allow,Deny
+#Allow from 172.22.16.0/24 127.0.0.1
 
+php_flag magic_quotes_gpc Off

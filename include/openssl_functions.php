@@ -5,7 +5,7 @@
 // File name is placed in ./tmp with a random name. It lingers unless
 // removed manually.
 //
-function CA_create_cnf($country='',$province='',$locality='',$organization='',$unit='',$common_name='',$email='',$keysize=1024) {
+function CA_create_cnf($country='',$province='',$locality='',$organization='',$unit='',$common_name='',$email='',$keysize=2048) {
 	global $config, $PHPki_user;
 
 	$issuer = $PHPki_user;
@@ -260,7 +260,7 @@ function CAdb_get_entry($serial) {
 function CAdb_in($email="", $name="") {
 	global $config;
 	$regexp = "^[V].*CN=$name/(Email|emailAddress)=$email";
-        $x =exec('egrep '.escshellarg($regexp).' '.$config[index]);
+        $x =exec('egrep '.escshellarg($regexp).' '.$config['index']);
 
         if ($x) {
 		list($j,$j,$j,$serial,$j,$j) = explode("\t", $x);
@@ -466,7 +466,7 @@ function CA_revoke_cert($serial) {
 //
 // Returns an array containing the output of failed openssl commands.
 //
-function CA_create_cert($cert_type='email',$country,$province,$locality,$organization,$unit,$common_name,$email,$expiry,$passwd,$keysize=1024) {
+function CA_create_cert($cert_type='email',$country,$province,$locality,$organization,$unit,$common_name,$email,$expiry,$passwd,$keysize=2048) {
 	global $config;
 
 	# Wait here if another user has the database locked.

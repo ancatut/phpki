@@ -1,3 +1,4 @@
--e <?php
-header("Location: ./../index.php");
+<?php
+include("main.php");
+#header("Location: ./../index.php");
 ?>
