@@ -21,7 +21,7 @@ if ($stage == "search" && ! $search) $stage = "";
 if ( !($show_valid.$show_revoked.$show_expired) ) $show_valid = 'V';
 
 switch ($stage):
-case display:
+case 'display':
 	printHeader('about');
 
 	print '
@@ -39,7 +39,7 @@ case 'download':
 	upload("$config[cert_dir]/$serial.der", "$rec[common_name] ($rec[email]).cer", 'application/pkix-cert');
         break;
 
-case search:
+case 'search':
 	printHeader('public');
 
 	$db = CAdb_to_array("^[${show_valid}${show_revoked}${show_expired}].*$search");
@@ -49,12 +49,12 @@ case search:
 		?>
 		<div style="text-align:center">
 		<h2>Nothing Found</h2>
-		<form action=<?php print $PHP_SELF?> method=post name=form>
-		<input type=hidden name=search value="<?php print htvar($search)?>">
-		<input type=hidden name=show_valid value="<?php print htvar($show_valid)?>">
-		<input type=hidden name=show_revoked value="<?php print htvar($show_revoked)?>">
-		<input type=hidden name=show_expired value="<?php print htvar($show_expired)?>">
-		<input type=submit name=submit value="Go Back">
+		<form action="<?php print $PHP_SELF?>" method="post" name="form">
+		<input type="hidden" name="search" value="<?php print htvar($search)?>">
+		<input type="hidden" name="show_valid" value="<?php print htvar($show_valid)?>">
+		<input type="hidden" name="show_revoked" value="<?php print htvar($show_revoked)?>">
+		<input type="hidden" name="show_expired" value="<?php print htvar($show_expired)?>">
+		<input type="submit" name="submit" value="Go Back">
 		</form>
 		</div>
 		<?php
@@ -65,13 +65,14 @@ case search:
 	
 
 	<table>
-	<th colspan=9><h2>CERTIFICATE SEARCH RESULTS</h2></th>
+	<tr><th colspan=9><h2>CERTIFICATE SEARCH RESULTS</h2></th></tr>
+	<tr>
 <?php
         $headings = array(
-                status=>"Status", issued=>"Issued", expires=>"Expires",
-                common_name=>"User's Name", email=>"E-mail",
-                organization=>"Organization", unit=>"Department",
-                locality=>"Locality", province=>"State"
+                'status'=>"Status", 'issued'=>"Issued", 'expires'=>"Expires",
+                'common_name'=>"User's Name", 'email'=>"E-mail",
+                'organization'=>"Organization", 'unit'=>"Department",
+                'locality'=>"Locality", 'province'=>"State"
         );
 
         print '<tr>';
@@ -81,14 +82,14 @@ case search:
         print '</tr>';
 
 	foreach($db as $rec) {
-		$stcolor = array(Valid=>'green', Revoked=>'red', Expired=>'orange');
+		$stcolor = array('Valid'=>'green', 'Revoked'=>'red', 'Expired'=>'orange');
 
 		?>
 		<tr style="font-size: 11px;">
 		<td style="color: <?php print $stcolor[$rec['status']]?>; font-weight: bold"><?php print htvar($rec['status'])?></td>
 		<td style="white-space: nowrap"><?php print htvar($rec['issued'])?></td>
 		<td style="white-space: nowrap"><?php print htvar($rec['expires'])?></td>
-		<td><?php print htvar($rec[common_name])?></td>
+		<td><?php print htvar($rec['common_name'])?></td>
 		<td style="white-space: nowrap">
 			<a href="mailto:<?php print htvar($rec['common_name']).' <'.htvar($rec['email']).'>' ?>">
 			<?php print htvar($rec['email']) ?>
@@ -111,7 +112,7 @@ case search:
 	?>
 	</table>
 
-	<form action=<?php print $PHP_SELF ?> method=post name=form>
+	<form action="<?php print $PHP_SELF ?>" method="post" name="form">
 	<input type="submit" name="submit" value="Another Search">
 	<input type="hidden" name="search" value="<?php print htvar($search) ?>">
 	<input type="hidden" name="show_valid" value="<?php print htvar($show_valid) ?>">
@@ -130,7 +131,7 @@ default:
 	<body onLoad="self.focus();document.search.search.focus()">
 	<div style="text-align:center"><h2>Certificate Search</h2>
 	<form action="<?php print $PHP_SELF?>" method="post" name="search">
-	<input type="text" name=search value="<?php print htvar($search)?>" maxlength=60 size=40>
+	<input type="text" name="search" value="<?php print htvar($search)?>" maxlength="60" size="40">
 	<input type="submit" name="submit" value="Find It!"><br>
 	<input type="checkbox" name="show_valid" value="V" <?php print ($show_valid?'checked':'')?>>Valid
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="show_revoked" value="R" <?php print ($show_revoked?'checked':'')?>>Revoked

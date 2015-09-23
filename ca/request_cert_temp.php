@@ -217,8 +217,8 @@ case 'confirm':
 
 case 'final':
 	if ($submit == "Yes! Create and Download") {
-		if (! $serial = CAdb_in($email, $common_name)) {
-			list($ret,$errtxt) = CA_create_cert($cert_type, $country, $province, $locality, $organization, $unit, $common_name, $email, $expiry, $passwd, $keysize);
+		if (! $serial = CAdb_in($email,$common_name)) {
+			list($ret,$errtxt) = CA_create_cert($cert_type,$country, $province, $locality, $organization, $unit, $common_name, $email, $expiry, $passwd, $keysize);
 
 			if (! $ret) {
 	                	printHeader();

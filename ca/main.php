@@ -7,7 +7,7 @@ include("../include/common.php") ;
 include("../include/openssl_functions.php");
 
 $stage = "";
-if (isset($_POST['stage']) || isset($_GET['stage'])) 
+#if (isset($_POST['stage']) || isset($_GET['stage'])) 
 $stage = gpvar('stage');
 
 switch($stage) {
@@ -59,7 +59,7 @@ default:
 	<div style="text-align:center">
 	<table class="menu" style="width:600">
 
-	<tr><th class="menu" colspan="2"><h2>CERTIFICATE MANAGEMENT MENU</h2></th></tr>
+	<tr><th class="menu" colspan="2"><h2>Certificate Management Menu</h2></th></tr>
 	<tr><td style="text-align: center; vertical-align: middle; font-weight: bold; width:33%">
 	<a href="request_cert.php">Create a New Certificate</a></td>
 	<td>Use the <strong><cite>Certificate Request Form</cite></strong> to create and download new digital certificates.  

@@ -79,7 +79,7 @@ $hidden_fields = '
     <input type=hidden name=base_url value="' . htvar($base_url) . '">
     <input type=hidden name=openssl_bin value="' . htvar($openssl_bin) . '">
     <input type=hidden name=getting_help value="' . htvar($getting_help) . '">
-    <input type=hidden name=ca_prefix value="' . htvar($ca_prefix) . '">
+    <input type=hidden name="ca_prefix" value="' . htvar($ca_prefix) . '">
     <input type=hidden name=header_title value="' . htvar($header_title) . '">
     <input type=hidden name=passwd_file value="' . htvar($passwd_file) . '">
     <input type=hidden name=store_dir value="' . htvar($store_dir) . '">
@@ -572,7 +572,7 @@ EOS;
 	print '<strong>Creating root certificate...</strong><br>';
 	flush();
 
-	exec(REQ . " -x509 -config $tmp_cnf -extensions root_ext -newkey rsa:$keysize -keyout $config[cakey] -out $config[cacert_pem] -passout pass:'$config[ca_pwd]' -days $days 2>&1");
+	exec(escapeshellcmd(REQ . " -x509 -config $tmp_cnf -extensions root_ext -newkey rsa:$keysize -keyout $config[cakey] -out $config[cacert_pem] -passout pass:'$config[ca_pwd]' -days $days").' 2>&1');
 
 	# **** DISABLED *****
 	# It appears that both IE and Netscape accept PEM formatted root certificates
@@ -586,11 +586,11 @@ EOS;
 	#
 	print '<strong>Generating certificate revocation list...</strong><br>';
 	flush();
-	exec(CA . " -gencrl -config $config[openssl_cnf] -out $config[cacrl_pem] -passin pass:'$config[ca_pwd]'");
+	exec(escapeshellcmd(CA . " -gencrl -config $config[openssl_cnf] -out $config[cacrl_pem] -passin pass:'$config[ca_pwd]'"));
 
 	# Make a copy of the CRL in DER format.
 	#
-	exec(CRL . " -in $config[cacrl_pem] -out $config[cacrl_der] -inform PEM -outform DER");
+	exec(escapeshellcmd(CRL . " -in $config[cacrl_pem] -out $config[cacrl_der] -inform PEM -outform DER"));
 
 	#
 	# Clean up.
@@ -606,14 +606,14 @@ EOS;
 	$cmd = "openssl dhparam -rand '$config[random]' -out '$config[private_dir]/dhparam1024.pem' 1024";
 	print $cmd.'<br>';
 	flush();
-	flush_exec($cmd,100);
+	flush_exec(escapeshellcmd($cmd),100);
 
 	print '<p><strong>Creating 2048 bit Diffie-Hellman parameters used by OpenVPN.<br>';
 	print "Saving to $store_dir/dhparam2048.pem.</strong><br>";
 	$cmd = "openssl dhparam -rand '$config[random]' -out '$config[private_dir]/dhparam2048.pem' 2048";
 	print $cmd.'<br>';
 	flush();
-	flush_exec($cmd,200);
+	flush_exec(escapeshellcmd($cmd),200);
 	
 	#
 	# Step aside and let the users in (create index.php files).  
@@ -695,12 +695,12 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 
 	<tr>
 	<td width=35%><strong>Organization</strong> <font color=red>*</font></td>
-	<td><input type=text name=organization value="<?php print htvar($organization) ?>" maxlength=60 size=50></td>
+	<td><input type="text" name=organization value="<?php print htvar($organization) ?>" maxlength=60 size=50></td>
 	</tr>
 
 	<tr>
 	<td><strong>Department/Unit</strong> <font color=red>*</font></td>
-	<td><input type=text name=unit value="<?php print htvar($unit) ?>" maxlength=60 size=30></td>
+	<td><input type="text" name=unit value="<?php print htvar($unit) ?>" maxlength=60 size=30></td>
 	</tr>
 
 	<tr>
@@ -710,7 +710,7 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	e-mail clients as the <cite>Issued By:</cite> text.  This is usually
 	the full name of your certificate authority (i.e. ACME Certificate Authority).
 	</td>
-	<td><input type=text name=common_name value="<?php print htvar($common_name) ?>" maxlength=60 size=60></td>
+	<td><input type="text" name="common_name" value="<?php print htvar($common_name) ?>" maxlength=60 size=60></td>
 	</tr>
 
 	<tr>
@@ -844,7 +844,7 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	<cite>"acme_caroot.crt"</cite>.
 	</td>
 	<td>
-	<input type=text name=ca_prefix value="<?php print htvar($ca_prefix) ?>" maxlength="10" size="10">
+	<input type="text" name="ca_prefix" value="<?php print htvar($ca_prefix) ?>" maxlength="10" size="10">
 	</td>
 	</tr>
 
