@@ -9,7 +9,7 @@ else {
 	$PHPki_user = md5('default');
 }
 
-$PHP_SELF = $_SERVER['PHP_SELF'];
+$PHP_SELF = htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES, "utf-8");  // sanitize against XSS
 
 
 function printHeader($withmenu="default") {

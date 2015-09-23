@@ -20,7 +20,7 @@ include(STORE_DIR.'/config/config.php');
 $serial = escapeshellcmd(trim($_SERVER['QUERY_STRING']));
 header("Content-type: application/x-netscape-revocation");
 $regexp = "^R\t.*\t.*\t$serial\t.*\t.*$";
-if (exec("egrep '$regexp' ca/$config[index]"))
+if (exec(escapeshellcmd("egrep '$regexp' ca/$config[index]")))
 	print '1';
 else
 	print '0';

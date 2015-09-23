@@ -1,7 +1,13 @@
 <?php
 
+# Whitelist of files to which redirection is exclusively allowed
+$redirect_whitelist = array("about.php", "common.php", "config.php", "index.php", "help.php", "main.php", "manage_certs.php", "my_functions.php", "openssl_functions.php", "request_cert.php", "setup.php");
+
+# Whitelist of commands allowed by exec()
+$command_whitelist = array();
+
 #$PHP_SELF = $_SERVER['PHP_SELF'];
-$PHP_SELF = $_SERVER['PHP_SELF'];
+$PHP_SELF = htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES, "utf-8");  // sanitize against XSS
 
 #
 # Returns TRUE if browser is Internet Explorer.
@@ -26,6 +32,9 @@ function isMoz() {
 # Force upload of specified file to browser.
 #
 function upload($source, $destination, $content_type="application/octet-stream") {
+#	if(!in_array($_GET["$source"],  $whitelist)) exit ;
+#	if(!in_array($_GET["$destination"],  $whitelist)) exit ;
+	
 	header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT"); 
 	header("Expires: -1");
 #	header("Cache-Control: no-store, no-cache, must-revalidate");
@@ -64,10 +73,9 @@ function upload($source, $destination, $content_type="application/octet-stream")
 function gpvar($v) {
 	global $_GET, $_POST;
     $x = "";
-	if (isset($_GET[$v]))  $x = $_GET[$v];
-	if (isset($_POST[$v])) $x = $_POST[$v];	
+	if (isset($_GET[$v]))  $x = htmlentities($_GET[$v], ENT_QUOTES, "utf-8") ;
+	if (isset($_POST[$v])) $x = htmlentities($_POST[$v], ENT_QUOTES, "utf-8");	
 	if (get_magic_quotes_gpc()) $x = stripslashes($x);
-	#$x = htmlspecialchars($x);
 	return $x;
 }
 
@@ -78,12 +86,18 @@ function gpvar($v) {
 function csort($array, $column, $ascdec=SORT_ASC){    
 	if (sizeof($array) == 0) return $array;
 
-	foreach ($array as $x) $sortarr[]=$x[$column];
+	foreach ($array as $x) $sortarr[] = $x[$column];
+	#This needs to be fixed
 	array_multisort($sortarr, $ascdec, $array);  
-
+	#array_multisort($sortarr, $ascdec, SORT_REGULAR, $array);
+	usort($sortarr, "nameComparator");
+	print implode(" . . . ", $sortarr);
 	return $array;
 }
 
+function nameComparator($a, $b) {
+	return strcmp(strtoupper($a), strtoupper($b));
+}
 
 #
 # Returns a value suitable for display in the browser.

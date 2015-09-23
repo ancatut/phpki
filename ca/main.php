@@ -7,7 +7,7 @@ include("../include/common.php") ;
 include("../include/openssl_functions.php");
 
 $stage = "";
-if (isset($_POST['stage']) || isset($_GET['stage'])) 
+#if (isset($_POST['stage']) || isset($_GET['stage'])) 
 $stage = gpvar('stage');
 
 switch($stage) {

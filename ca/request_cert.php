@@ -80,7 +80,7 @@ case 'validate':
 	if (! $locality)     $er .= 'Missing Locality (City/County)<br>';
 	if (! $organization) $er .= 'Missing Organization (Company/Agency)<br>';
 	if (! $unit)         $er .= 'Missing Unit/Department<br>';
-	if (! $common_name)  $er .= 'Missing E-mail User\'s Full Name<br>';
+	if (! $common_name)  $er .= 'Missing User\'s Full Name<br>';
 	if (! $email)        $er .= 'Missing E-mail Address<br>';
 
 	if (($cert_type == 'email' || $cert_type == 'email_signing') && ! $passwd)       $er .= 'Missing Certificate Password<br>';
