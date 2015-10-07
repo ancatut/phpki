@@ -119,7 +119,7 @@ case 'revoke-form':
 
 	?>
 	<h4>You are about to <font color="red">REVOKE</font> the following certificate:</h4>
-       	<table style="width:500"><tr>
+       	<table style="width:500px"><tr>
        	<td style='white-space: nowrap; width:25%'>
        	<p align="right">
 		Serial Number<br>
@@ -203,6 +203,7 @@ case 'renew-form':
 
 	printHeader('ca');
 	?>
+	
 	<body onLoad="self.focus();document.form.passwd.focus()">
 
 	<form action="<?php print $PHP_SELF.'?'.$qstr_sort.'&'.$qstr_filter ?>" method="post" name="form">
@@ -252,9 +253,9 @@ case 'renew-form':
 	<td><select name="expiry">
 	<?php
 
-	print "<option value=0.083 " . ($expiry == 1 ? "selected='selected'" : "") . " >1 Month</option>\n" ;
-	print "<option value=0.25 " . ($expiry == 1 ? "selected='selected'" : "") . " >3 Months</option>\n" ;
-	print "<option value=0.5 " . ($expiry == 1 ? "selected='selected'" : "") . " >6 Months</option>\n" ;
+	print "<option value=0.083 " . ($expiry == 0.083 ? "selected='selected'" : "") . " >1 Month</option>\n" ;
+	print "<option value=0.25 " . ($expiry == 0.25 ? "selected='selected'" : "") . " >3 Months</option>\n" ;
+	print "<option value=0.5 " . ($expiry == 0.5 ? "selected='selected'" : "") . " >6 Months</option>\n" ;
 	print "<option value=1 " . ($expiry == 1 ? "selected='selected'" : "") . " >1 Year</option>\n" ;
 	for ( $i = 2 ; $i < 6 ; $i++ ) {
 		print "<option value=$i " . ($expiry == $i ? "selected='selected'" : "") . " >$i Years</option>\n" ;
@@ -311,20 +312,21 @@ case 'renew':
 
 default:
 
-	printHeader('ca');
-
+	printHeader('ca');	
 	?>
 	<body onLoad="self.focus();document.filter.search.focus()">
-	<table>
-	<tr><th colspan=8><h2>CERTIFICATE MANAGEMENT CONTROL PANEL</h2></th></tr>
-	<tr><td colspan=8><div style="text-align:center">
-	<form action="<?php print "$PHP_SELF?$qstr_sort"?>" method="get" name="filter">
-        Search: <input type="text" name="search" value="<?php print htvar($search)?>" style="font-size: 11px;" maxlength=60 size=30>
-        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<input type="checkbox" name="show_valid" value="V" <?php print ($show_valid?'checked'
-:'')?>>Valid
-        &nbsp&nbsp<input type="checkbox" name="show_revoked" value="R" <?php print ($show_revoked?'checked':'')?>>Revoked
-        &nbsp&nbsp<input type="checkbox" name="show_expired" value="E" <?php print ($show_expired?'checked':'')?>>Expired
-        &nbsp&nbsp&nbsp&nbsp&nbsp<input type="submit" name="submit" value="Apply Filter" style="font-size: 11px;">
+	<div style="text-align: center">
+	<table style="margin: 0 auto">
+	<tr><th colspan="9"><h2>Certificate Management Control Panel</h2></th></tr>
+	<tr><td colspan="9"><div style="text-align:center">
+	<form action="<?php print "$PHP_SELF?$qstr_sort"?>" method="get" name="filter"> 
+	Search: 
+		<input type="text" name="search" value="<?php print htvar($search)?>" style="font-size: 11px;" maxlength="60" size="35">
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        <input type="checkbox" name="show_valid" value="V" <?php print ($show_valid?'checked':'')?>>Valid &nbsp&nbsp
+        <input type="checkbox" name="show_revoked" value="R" <?php print ($show_revoked?'checked':'')?>>Revoked &nbsp&nbsp
+        <input type="checkbox" name="show_expired" value="E" <?php print ($show_expired?'checked':'')?>>Expired &nbsp&nbsp&nbsp&nbsp&nbsp
+        <input type="submit" name="submit" value="Apply Filter" style="font-size: 11px;">
         </form>
 	</div></td>
 	</tr>
@@ -349,11 +351,11 @@ default:
 		'status'=>"Status", 'issued'=>"Issued", 'expires'=>"Expires",
 		'common_name'=>"User's Name", 'email'=>"E-mail", 
 		'organization'=>"Organization", 'unit'=>"Department", 
-		'locality'=>"Locality"
+		'locality'=>"Locality",
 	);
 
 	foreach($headings as $field=>$head) {
-		print '<th><a href="'.$PHP_SELF.'?sortfield='.$field.'&ascdec=A&'.$qstr_filter.'" title="Click to sort on this column."><u>'.$head.'</u></a>';
+		print '<th><a href="'.$PHP_SELF.'?sortfield='.$field.'&ascdec=A&'.$qstr_filter.'" title="Click to sort by this column."><u>'.$head.'</u></a>';
 
 		if ($sortfield == $field) {
 			print	'&nbsp<a href="'.$PHP_SELF.'?sortfield='.$field.'&ascdec='.$ht_ascdec.'&'.$qstr_filter.'" >'.
@@ -362,6 +364,7 @@ default:
 
 		print '</th>';
 	}
+	print '<th><a href="" title="Pick an action to perform to certificate.">Action</a></th>';
 	print '</tr>';
 
 	$x = "^[$show_valid$show_revoked$show_expired]";
@@ -406,6 +409,7 @@ default:
 	}
 ?>
 	</table>
+	</div>
 <?php
 	printFooter();
 }

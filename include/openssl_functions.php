@@ -212,18 +212,25 @@ function CAdb_to_array($search = '.*') {
 	global $config;
 
 	# Prepend a default status to search string if missing.
-	if (! ereg('^\^\[.*\]', $search)) $search = '^[VRE].*'.$search;
-
+	#if (! ereg('^\^\[.*\]', $search)) $search = '^[VRE].*'.$search;
+	if (! preg_match("/^\^\[.*\]/", $search)) $search = "/^[VRE].*/".$search;
+	
 	# Include valid certs?
-	if (ereg('^\^\[.*V.*\]',$search)) $inclval = true;
+	#if (ereg('^\^\[.*V.*\]',$search)) $inclval = true;
+	if (preg_match('/^\^\[.*V.*\]/',$search)) $inclval = true;
+	
 	# Include revoked certs?
-	if (ereg('^\^\[.*R.*\]',$search)) $inclrev = true;
+	#if (ereg('^\^\[.*R.*\]',$search)) $inclrev = true;
+	if (preg_match('/^\^\[.*R.*\]/',$search)) $inclrev = true;
+	
 	# Include expired certs?
-	if (ereg('^\^\[.*E.*\]',$search)) $inclexp = true;
+	#if (ereg('^\^\[.*E.*\]',$search)) $inclexp = true;
+	if (preg_match('/^\^\[.*E.*\]/',$search)) $inclexp = true;
 
 	# There isn't really a status of 'E' in the openssl index.
 	# Change (E)xpired to (V)alid within the search string.
-	$search = ereg_replace('^(\^\[.*)E(.*\])','\\1V\\2',$search);
+	#$search = ereg_replace('^(\^\[.*)E(.*\])','\\1V\\2',$search);
+	$search = preg_replace('/^(\^\[.*)E(.*\])/','\\1V\\2',$search);
 
 	$db = array();
 	exec('egrep -i '.escshellarg($search).' '.escapeshellcmd($config['index']), $x);
@@ -260,7 +267,7 @@ function CAdb_get_entry($serial) {
 function CAdb_in($email="", $name="") {
 	global $config;
 	$regexp = "^[V].*CN=$name/(Email|emailAddress)=$email";
-        $x =exec('egrep '.escshellarg($regexp).' '.escapeshellcmd($config['index']));
+        $x = exec('egrep '.escshellarg($regexp).' '.escapeshellcmd($config['index']));
 
         if ($x) {
 		list($j,$j,$j,$serial,$j,$j) = explode("\t", $x);
@@ -402,7 +409,8 @@ function CA_cert_subject($serial) {
 //
 function CA_cert_cname($serial) {
 	global $config;
-	return(ereg_replace('^.*/CN=(.*)/.*','\\1',CA_cert_subject($serial)));
+	#return(ereg_replace('^.*/CN=(.*)/.*','\\1',CA_cert_subject($serial)));
+	return(preg_replace('/^.*/CN=(.*)/.*/','\\1',CA_cert_subject($serial)));
 }
 
 //
@@ -488,7 +496,7 @@ function CA_create_cert($cert_type='email',$country,$province,$locality,$organiz
 
 	# Escape certain dangerous characters in user input
 	$email         = escshellcmd($email);
-	$_passwd        = escshellarg($passwd);
+	$_passwd       = escshellarg($passwd);
 	$friendly_name = escshellarg($common_name);
 	$extensions    = escshellarg($cert_type.'_ext');
 	
@@ -497,10 +505,10 @@ function CA_create_cert($cert_type='email',$country,$province,$locality,$organiz
 	$cmd_output[] = 'Creating certifcate request.';
 
 	if ($passwd) {
-		exec(REQ." -new -newkey rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' -passout pass:$_passwd  2>&1", $cmd_output, $ret);
+		exec(escapeshellcmd(REQ." -new -newkey rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' -passout pass:$_passwd  2>&1"), $cmd_output, $ret);
 	}
 	else {
-		exec(REQ." -new -nodes -newkey rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' 2>&1", $cmd_output, $ret);
+		exec(escapeshellcmd(REQ." -new -nodes -newkey rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' 2>&1"), $cmd_output, $ret);
 	}
 	
 	# Sign the certificate request and create the certificate
@@ -527,7 +535,7 @@ function CA_create_cert($cert_type='email',$country,$province,$locality,$organiz
 		}
 		else {
 			$cmd_output[] = "infile: $usercert   keyfile: $userkey   outfile: $userpfx";
-			exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile '$config[cacert_pem]' -caname '$config[organization]' -out '$userpfx' -name $friendly_name -nodes -passout pass: 2>&1", $cmd_output, $ret);
+			exec(escapeshellcmd(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile '$config[cacert_pem]' -caname '$config[organization]' -out '$userpfx' -name $friendly_name -nodes -passout pass: 2>&1"), $cmd_output, $ret);
 		}
 	};
 
@@ -588,7 +596,7 @@ function CA_renew_cert($old_serial,$expiry,$passwd) {
 	$country      = $rec['country'];
 	$province     = $rec['province'];
 	$locality     = $rec['locality'];
-	$organization = $rec['organiztion'];
+	$organization = $rec['organization'];
 	$unit         = $rec['unit'];
 	$common_name  = $rec['common_name'];
 	$email        = $rec['email'];
@@ -644,7 +652,7 @@ function CA_renew_cert($old_serial,$expiry,$passwd) {
 	if ($ret == 0) {
 		unset($cmd_output);
 		$cmd_output[] = "Creating DER format certificate.";
-		exec(X509." -in '$usercert' -out '$userder' -inform PEM -outform DER 2>&1", $cmd_output, $ret);
+		exec(escapeshellcmd(X509." -in '$usercert' -out '$userder' -inform PEM -outform DER 2>&1"), $cmd_output, $ret);
 	};
 
 	# Create a PKCS12 certificate file for download to Windows
@@ -653,7 +661,7 @@ function CA_renew_cert($old_serial,$expiry,$passwd) {
 		$cmd_output[] = "Creating PKCS12 format certificate.";
 		if ($passwd) {
 			$cmd_output[] = "infile: $usercert   keyfile: $userkey   outfile: $userpfx  pass: $_passwd";
-			exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile '$config[cacert_pem]' -caname '$config[organization]' -out '$userpfx' -name $friendly_name -rand '$config[random]' -passin pass:$_passwd -passout pass:$_passwd  2>&1", $cmd_output, $ret);
+			exec(escapeshellcmd(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile '$config[cacert_pem]' -caname '$config[organization]' -out '$userpfx' -name $friendly_name -rand '$config[random]' -passin pass:$_passwd -passout pass:$_passwd  2>&1"), $cmd_output, $ret);
 		}
 		else {
 			$cmd_output[] = "infile: $usercert   keyfile: $userkey   outfile: $userpfx";
@@ -675,7 +683,7 @@ function CA_renew_cert($old_serial,$expiry,$passwd) {
 		# Not successful, so clean up before exiting.
 		CA_remove_cert($serial);
 
-		if (eregi_array('.*private key.*',$cmd_output))
+		if (eregi_array('/.*private key.*/',$cmd_output))
 			$cmd_output[] = '<strong>This was likely caused by entering the wrong certificate password.</strong>';
 		else
 			$cmd_output[] = '<strong>Click on the "Help" link above for information on how to report this problem.</strong>';
@@ -733,7 +741,7 @@ function CA_remove_cert($serial) {
 	copy($config['index'], $tmpfile);
 
 	$regexp = "^[VR]\t.*\t.*\t".$serial."\t.*\t.*$";
-	exec(escapeshellcmd('egrep -v '.escshellarg($regexp).' '. $tmpfile).' > '.escapeshellcmd($config[index]).' 2>/dev/null');
+	exec(escapeshellcmd('egrep -v '.escshellarg($regexp).' '. $tmpfile).' > '.escapeshellcmd($config['index']).' 2>/dev/null');
 
 	unlink($tmpfile);
 	fclose($fd);
@@ -748,25 +756,46 @@ function CA_cert_type($serial) {
 
 	$certtext = CA_cert_text($serial);
 
-	if (ereg('OpenSSL.* (E.?mail|Personal) .*Certificate', $certtext) && ereg('Code Signing', $certtest)) {
+	#if (ereg('OpenSSL.* (E.?mail|Personal) .*Certificate', $certtext) && ereg('Code Signing', $certtest)) {
+	#	$cert_type = 'email_signing';
+	#}
+	if (preg_match('OpenSSL.* (E.?mail|Personal) .*Certificate', $certtext) && preg_match('Code Signing', $certtest)) {
 		$cert_type = 'email_signing';
 	}
-	if (ereg('OpenSSL.* (E.?mail|Personal) .*Certificate', $certtext)) {
+	#if (ereg('OpenSSL.* (E.?mail|Personal) .*Certificate', $certtext)) {
+	#	$cert_type = 'email';
+	#}
+	if (preg_match('OpenSSL.* (E.?mail|Personal) .*Certificate', $certtext)) {
 		$cert_type = 'email';
 	}
-	elseif (ereg('OpenSSL.* Server .*Certificate', $certtext)) {
+	#elseif (ereg('OpenSSL.* Server .*Certificate', $certtext)) {
+	#	$cert_type = 'server';
+	#}
+	elseif (preg_match('OpenSSL.* Server .*Certificate', $certtext)) {
 		$cert_type = 'server';
 	}
-	elseif (ereg('timeStamping|Time Stamping', $certtext)) {
+	#elseif (ereg('timeStamping|Time Stamping', $certtext)) {
+	#	$cert_type = 'time_stamping';
+	#}
+	elseif (preg_match('timeStamping|Time Stamping', $certtext)) {
 		$cert_type = 'time_stamping';
 	}
-	elseif (ereg('TLS Web Client Authentication', $certtext) && ereg('TLS Web Server Authentication', $certtext)) {
+	#elseif (ereg('TLS Web Client Authentication', $certtext) && ereg('TLS Web Server Authentication', $certtext)) {
+	#	$cert_type = 'vpn_client_server';
+	#}
+	elseif (preg_match('TLS Web Client Authentication', $certtext) && preg_match('TLS Web Server Authentication', $certtext)) {
 		$cert_type = 'vpn_client_server';
 	}
-	elseif (ereg('TLS Web Client Authentication', $certtext)) {
+	#elseif (ereg('TLS Web Client Authentication', $certtext)) {
+	#	$cert_type = 'vpn_client';
+	#}
+	elseif (preg_match('TLS Web Client Authentication', $certtext)) {
 		$cert_type = 'vpn_client';
 	}
-	elseif (ereg('TLS Web Server Authentication', $certtext)) {
+	#elseif (ereg('TLS Web Server Authentication', $certtext)) {
+	#	$cert_type = 'vpn_server';
+	#}
+	elseif (preg_match('TLS Web Server Authentication', $certtext)) {
 		$cert_type = 'vpn_server';
 	}
 	else {
