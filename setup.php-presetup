@@ -2,6 +2,7 @@
 include('./config.php');
 include('./include/my_functions.php');
 include('./include/common.php');
+global $config; # It's unclear why the $config array wasn't already included 
 
 # Flushes a 
 function flush_exec($command, $line_length=200) {
@@ -65,24 +66,24 @@ $store_dir    = gpvar('store_dir');
 if ($base_url && substr($base_url,-1) != '/') $base_url .= '/';
 
 $hidden_fields = '
-    <input type=hidden name=country value="' . htvar($country) . '">
-    <input type=hidden name=province value="' . htvar($province) . '">
-    <input type=hidden name=locality value="' . htvar($locality) . '">
-    <input type=hidden name=organization value="' . htvar($organization) . '">
-    <input type=hidden name=unit value="' . htvar($unit) . '">
-    <input type=hidden name=contact value="' . htvar($contact) . '">
-    <input type=hidden name=common_name value="' . htvar($common_name) . '">
-    <input type=hidden name=passwd value="' . htvar($passwd) . '">
-    <input type=hidden name=passwdv value="' . htvar($passwdv) . '">
-    <input type=hidden name=expiry value="' . htvar($expiry) . '">
-    <input type=hidden name=keysize value="' . htvar($keysize) . '">
-    <input type=hidden name=base_url value="' . htvar($base_url) . '">
-    <input type=hidden name=openssl_bin value="' . htvar($openssl_bin) . '">
-    <input type=hidden name=getting_help value="' . htvar($getting_help) . '">
-    <input type=hidden name="ca_prefix" value="' . htvar($ca_prefix) . '">
-    <input type=hidden name=header_title value="' . htvar($header_title) . '">
-    <input type=hidden name=passwd_file value="' . htvar($passwd_file) . '">
-    <input type=hidden name=store_dir value="' . htvar($store_dir) . '">
+    <input type="hidden" name="country" value="' . htvar($country) . '">
+    <input type="hidden" name="province" value="' . htvar($province) . '">
+    <input type="hidden" name="locality" value="' . htvar($locality) . '">
+    <input type="hidden" name="organization" value="' . htvar($organization) . '">
+    <input type="hidden" name="unit" value="' . htvar($unit) . '">
+    <input type="hidden" name="contact" value="' . htvar($contact) . '">
+    <input type="hidden" name="common_name" value="' . htvar($common_name) . '">
+    <input type="hidden" name="passwd" value="' . htvar($passwd) . '">
+    <input type="hidden" name="passwdv" value="' . htvar($passwdv) . '">
+    <input type="hidden" name="expiry" value="' . htvar($expiry) . '">
+    <input type="hidden" name="keysize" value="' . htvar($keysize) . '">
+    <input type="hidden" name="base_url" value="' . htvar($base_url) . '">
+    <input type="hidden" name="openssl_bin" value="' . htvar($openssl_bin) . '">
+    <input type="hidden" name="getting_help" value="' . htvar($getting_help) . '">
+    <input type="hidden" name="ca_prefix" value="' . htvar($ca_prefix) . '">
+    <input type="hidden" name="header_title" value="' . htvar($header_title) . '">
+    <input type="hidden" name="passwd_file" value="' . htvar($passwd_file) . '">
+    <input type="hidden" name="store_dir" value="' . htvar($store_dir) . '">
 ';
 
 switch ($stage) {
@@ -101,7 +102,7 @@ case 'validate':
 	if (! $passwdv)      $er .= 'Missing Certificate Password Verification "Again"<br>';
 	if (! $header_title) $er .= 'Missing Header Title<br>';
 	if (! $passwd_file)  $er .= 'Missing User Password File Location';
-	if (! $store_dir)     $er .= 'Missing Storage Directory<br>';
+	if (! $store_dir)    $er .= 'Missing Storage Directory<br>';
 
 
 	if ( $passwd && strlen($passwd) < 8 )
@@ -111,8 +112,10 @@ case 'validate':
 		$er .= 'Password and password verification do not match.<br>';
 
         if ( $email && ! is_email($contact) )
-                $er .= 'E-mail address ('. htvar($contact) . ') may be invalid.<br>';
-
+            $er .= 'E-mail address ('. htvar($contact) . ') may be invalid.<br>';
+#		if ( $contact && ! is_email($contact) )
+#			$er .= 'E-mail address ('. htvar($contact) . ') may be invalid.<br>';
+ 
 	if (strpos($store_dir,$_SERVER['DOCUMENT_ROOT']) === 0)
 		$er .= 'Store directory must exist somewhere outside of DOCUMENT_ROOT ('.$_SERVER['DOCUMENT_ROOT'].').<br>';
 
@@ -256,7 +259,7 @@ case 'write':
 
 define('OPENSSL', \$config['openssl_bin'].' ');
 define('X509', OPENSSL . ' x509 ');
-define('PKCS12', "RANDFILE='$config[random]' " . OPENSSL . ' pkcs12 ');
+define('PKCS12', "RANDFILE='${config['random']}' " . OPENSSL . ' pkcs12 ');
 define('CA', OPENSSL . ' ca ');
 define('REQ', OPENSSL . ' req ');
 define('CRL', OPENSSL . ' crl ');
@@ -302,18 +305,18 @@ EOS;
 	# in the CA home
 	#
 	$config_txt1 = <<< EOS
-HOME					= $config[home_dir]
-RANDFILE				= $config[random]
-dir						= $config[ca_dir]
-certs					= $config[cert_dir]
-crl_dir					= $config[crl_dir]
-database				= $config[index]
-new_certs_dir			= $config[new_certs_dir]
-private_dir				= $config[private_dir]
-serial					= $config[serial]
-certificate				= $config[cacert_pem]
-crl						= $config[cacrl_pem]
-private_key				= $config[cakey]
+HOME					= ${config['home_dir']}
+RANDFILE				= ${config['random']}
+dir						= ${config['ca_dir']}
+certs					= ${config['cert_dir']}
+crl_dir					= ${config['crl_dir']}
+database				= ${config['index']}
+new_certs_dir			= ${config['new_certs_dir']}
+private_dir				= ${config['private_dir']}
+serial					= ${config['serial']}
+certificate				= ${config['cacert_pem']}
+crl						= ${config['cacrl_pem']}
+private_key				= ${config['cakey']}
 crl_extensions			= crl_ext
 default_days			= 365
 default_crl_days		= 30
@@ -368,10 +371,10 @@ keyUsage               	= cRLSign, keyCertSign
 nsCertType             	= sslCA, emailCA, objCA
 subjectKeyIdentifier   	= hash
 subjectAltName         	= email:copy
-crlDistributionPoints  	= URI:$config[base_url]index.php?stage=dl_crl
+crlDistributionPoints  	= URI:${config['base_url']}index.php?stage=dl_crl
 nsComment              	= "PHPki/OpenSSL Generated Root Certificate Authority"
 #nsCaRevocationUrl	   	= ns_revoke_query.php?
-nsCaPolicyUrl          	= $config[base_url]policy.html
+nsCaPolicyUrl          	= ${config['base_url']}policy.html
 
 [ email_ext ]
 basicConstraints       	= critical, CA:false
@@ -382,12 +385,12 @@ subjectKeyIdentifier   	= hash
 authorityKeyIdentifier 	= keyid:always, issuer:always
 subjectAltName         	= email:copy
 issuerAltName          	= issuer:copy
-crlDistributionPoints  	= URI:$config[base_url]index.php?stage=dl_crl
+crlDistributionPoints  	= URI:$c{onfig['base_url']}index.php?stage=dl_crl
 nsComment              	= "PHPki/OpenSSL Generated Personal Certificate"
-nsBaseUrl              	= $config[base_url]
+nsBaseUrl              	= ${config['base_url']}
 nsRevocationUrl	       	= ns_revoke_query.php?
 #nsRenewalUrl          	=
-nsCaPolicyUrl          	= $config[base_url]policy.html
+nsCaPolicyUrl          	= $[config['base_url']}policy.html
 #nsSslServerName       	=
 
 [ email_signing_ext ]
@@ -399,12 +402,12 @@ subjectKeyIdentifier   	= hash
 authorityKeyIdentifier 	= keyid:always, issuer:always
 subjectAltName         	= email:copy
 issuerAltName          	= issuer:copy
-crlDistributionPoints  	= URI:$config[base_url]index.php?stage=dl_crl
+crlDistributionPoints  	= URI:{$config['base_url']}index.php?stage=dl_crl
 nsComment              	= "PHPki/OpenSSL Generated Personal Certificate"
-nsBaseUrl              	= $config[base_url]
+nsBaseUrl              	= ${config['base_url']}
 nsRevocationUrl			= ns_revoke_query.php?
 #nsRenewalUrl			=
-nsCaPolicyUrl			= $config[base_url]policy.html
+nsCaPolicyUrl			= ${config['base_url']}policy.html
 #nsSslServerName		=
 
 [ server_ext ]
@@ -416,11 +419,11 @@ subjectKeyIdentifier    = hash
 authorityKeyIdentifier  = keyid:always, issuer:always
 subjectAltName          = DNS:$common_name,email:copy
 issuerAltName           = issuer:copy
-crlDistributionPoints   = URI:$config[base_url]index.php?stage=dl_crl
+crlDistributionPoints   = URI:${config['base_url']}index.php?stage=dl_crl
 nsComment               = "PHPki/OpenSSL Generated Secure Server Certificate"
-nsBaseUrl		        = $config[base_url]
+nsBaseUrl		        = ${config['base_url']}
 nsRevocationUrl		    = ns_revoke_query.php?
-nsCaPolicyUrl           = $config[base_url]policy.html
+nsCaPolicyUrl           = ${config['base_url']}policy.html
 
 [ time_stamping_ext ]
 basicConstraints       	= CA:false
@@ -430,11 +433,11 @@ subjectKeyIdentifier   	= hash
 authorityKeyIdentifier 	= keyid:always, issuer:always
 subjectAltName         	= DNS:$common_name,email:copy
 issuerAltName          	= issuer:copy
-crlDistributionPoints  	= URI:$config[base_url]index.php?stage=dl_crl
+crlDistributionPoints  	= URI:${config['base_url']}index.php?stage=dl_crl
 nsComment              	= \"PHPki/OpenSSL Generated Time Stamping Certificate\"
-nsBaseUrl              	= $config[base_url]
+nsBaseUrl              	= ${config['base_url']}
 nsRevocationUrl        	= ns_revoke_query.php?
-nsCaPolicyUrl          	= $config[base_url]policy.html
+nsCaPolicyUrl          	= ${config['base_url']}policy.html
 
 
 [ vpn_client_ext ]
@@ -520,13 +523,13 @@ req_extensions			= req_ext
 prompt					= no
 
 [ req_name ]
-C						= $config[country]
-ST						= $config[province]
-L						= $config[locality]
-O						= $config[organization]
-OU						= $config[unit]
-CN						= $config[common_name]
-emailAddress			= $config[contact]
+C						= ${config['country']}
+ST						= ${config['province']}
+L						= ${config['locality']}
+O						= ${config['organization']}
+OU						= ${config['unit']}
+CN						= ${config['common_name']}
+emailAddress			= ${config['contact']}
 
 [ req_ext ]
 basicConstraints 		= critical, CA:true
@@ -544,7 +547,7 @@ EOS;
 	#
 	# Write the temporary OpenSSL config
 	#
-	$tmp_cnf = "$config[home_dir]/tmp/openssl.cnf";
+	$tmp_cnf = $config['home_dir']."/tmp/openssl.cnf";
 	$fd = fopen($tmp_cnf,'w');
 	fwrite($fd, $config_txt1 . $config_txt3);
 	fclose($fd);
@@ -572,25 +575,25 @@ EOS;
 	print '<strong>Creating root certificate...</strong><br>';
 	flush();
 
-	exec(escapeshellcmd(REQ . " -x509 -config $tmp_cnf -extensions root_ext -newkey rsa:$keysize -keyout $config[cakey] -out $config[cacert_pem] -passout pass:'$config[ca_pwd]' -days $days").' 2>&1');
+	exec(REQ . " -x509 -config $tmp_cnf -extensions root_ext -newkey rsa:$keysize -keyout ".$config['cakey']." -out ".$config['cacert_pem']." -passout pass:".$config['ca_pwd']." -days $days 2>&1");
 
 	# **** DISABLED *****
 	# It appears that both IE and Netscape accept PEM formatted root certificates
 	#
 	# Create a copy of the CA certificate in DER format.
 	#
-	#exec(X509 . " -in ca/$config[cacert_pem] -inform PEM -out ca/$config[cacert_der] -outform DER 2>&1");
+	#exec(X509 . " -in ca/$config['cacert_pem'] -inform PEM -out ca/$config['cacert_der'] -outform DER 2>&1");
 
 	#
 	# Generate the initial CRL.
 	#
 	print '<strong>Generating certificate revocation list...</strong><br>';
 	flush();
-	exec(escapeshellcmd(CA . " -gencrl -config $config[openssl_cnf] -out $config[cacrl_pem] -passin pass:'$config[ca_pwd]'"));
+	exec(CA . " -gencrl -config ".$config['openssl_cnf']." -out ".$config['cacrl_pem']." -passin pass:".$config['ca_pwd']);
 
 	# Make a copy of the CRL in DER format.
 	#
-	exec(escapeshellcmd(CRL . " -in $config[cacrl_pem] -out $config[cacrl_der] -inform PEM -outform DER"));
+	exec(CRL . " -in ".$config['cacrl_pem']." -out ".$config['cacrl_der']." -inform PEM -outform DER");
 
 	#
 	# Clean up.
@@ -603,17 +606,17 @@ EOS;
 	#
 	print '<p><strong>Creating 1024 bit Diffie-Hellman parameters used by OpenVPN.<br>';
 	print "Saving to $store_dir/dhparam1024.pem.</strong><br>";
-	$cmd = "openssl dhparam -rand '$config[random]' -out '$config[private_dir]/dhparam1024.pem' 1024";
+	$cmd = "openssl dhparam -rand ".$config['random']." -out ".$config['private_dir']."/dhparam1024.pem 1024";
 	print $cmd.'<br>';
 	flush();
-	flush_exec(escapeshellcmd($cmd),100);
+	flush_exec($cmd,100);
 
 	print '<p><strong>Creating 2048 bit Diffie-Hellman parameters used by OpenVPN.<br>';
 	print "Saving to $store_dir/dhparam2048.pem.</strong><br>";
-	$cmd = "openssl dhparam -rand '$config[random]' -out '$config[private_dir]/dhparam2048.pem' 2048";
+	$cmd = "openssl dhparam -rand ".$config['random']." -out ".$config['private_dir']."/dhparam2048.pem 2048";
 	print $cmd.'<br>';
 	flush();
-	flush_exec(escapeshellcmd($cmd),200);
+	flush_exec($cmd,200);
 	
 	#
 	# Step aside and let the users in (create index.php files).  
@@ -629,7 +632,7 @@ EOS;
 	<h2>Setup is complete. Your CA root certificate as been created.</h2>
 	<h3><font color="red">SECURITY WARNING!&nbsp;&nbsp; Be sure to run the <cite>secure.sh</cite> shell script as the <strong>root</strong> user.</font></h3>
 	<p><br><br>
-	<form action=index.php>
+	<form action="index.php">
 	<input type="submit" name="submit" value="Proceed To The PHPki Main Menu">
 	</form>
 	</div>
@@ -686,7 +689,7 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 
 	printHeader('setup');
 	 ?>
-	<form action=<?php print $PHP_SELF ?> method=post>
+	<form action="<?php print $PHP_SELF ?>" method="post">
 	<div style="text-align:center"><h2>Certificate Authority Initial Setup</h2></div>
 	<table style = "width:99%">
 	<tr>
@@ -694,13 +697,13 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	</tr>
 
 	<tr>
-	<td width=35%><strong>Organization</strong> <font color=red>*</font></td>
-	<td><input type="text" name=organization value="<?php print htvar($organization) ?>" maxlength=60 size=50></td>
+	<td width="35%"><strong>Organization</strong> <font color=red>*</font></td>
+	<td><input type="text" name="organization" value="<?php print htvar($organization) ?>" maxlength=60 size=50></td>
 	</tr>
 
 	<tr>
 	<td><strong>Department/Unit</strong> <font color=red>*</font></td>
-	<td><input type="text" name=unit value="<?php print htvar($unit) ?>" maxlength=60 size=30></td>
+	<td><input type="text" name="unit" value="<?php print htvar($unit) ?>" maxlength=60 size=30></td>
 	</tr>
 
 	<tr>

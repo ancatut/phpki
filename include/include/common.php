@@ -9,7 +9,7 @@ else {
 	$PHPki_user = md5('default');
 }
 
-$PHP_SELF = $_SERVER['PHP_SELF'];
+$PHP_SELF = htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES, "utf-8");  // sanitize against XSS
 
 
 function printHeader($withmenu="default") {
@@ -80,15 +80,15 @@ function printHeader($withmenu="default") {
 			print "<a class='$menuclass' href='ca/'>Manage</a>";
 		}
 		else {
-			print "<a class='$menuclass' href='../ca/index.php'>Menu</a>";
+			print "<a class='$menuclass' href='index.php'>Menu</a>";
 		}
 
 		if (file_exists('policy.html')) {
 			print "<a class='$menuclass' style='color: red' href='policy.html' target='help'>Policy</a>";
 		}
-		?>		
-		<a class="<?php print $menuclass?>" href="../help.php" target="_help">Help</a>
-		<a class="<?php print $menuclass?>" href="../about.php" target="_about">About</a>
+		?>
+		<a class="<?php print $menuclass?>" href="help.php" target="_help">Help</a>
+		<a class="<?php print $menuclass?>" href="about.php" target="_about">About</a>
 		</div>
 		<?php
 		break;
@@ -101,16 +101,13 @@ function printHeader($withmenu="default") {
 			print "<a class='$menuclass' href='../ca/index.php'>Manage</a>";
 		}
 		else {
-			print "<a class='$menuclass' href='../ca/index.php'>CA Menu</a>";
+			print "<a class='$menuclass' href=index.php>Menu</a>";
 		}
-		?>
-		<a class="<?php print $menuclass?>" href="../admin/index.php">Admin Panel</a>
-		<?php
+
 		if (file_exists('../policy.html')) {
 			print "<a class='$menuclass' style='color: red' href='../policy.html' target='help'>Policy</a>";
 		}
 		?>
-
 		<a class="<?php print $menuclass?>" href='../help.php' target='_help'>Help</a>
 		<a class="<?php print $menuclass?>" href='../about.php' target='_about'>About</a>
 		</div>
@@ -126,8 +123,7 @@ function printFooter() {
 	?>
 	<br>
 	<hr width="99%" align="left" color="#99caff">
-	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Based on PHPki <a href="http://sourceforge.net/projects/phpki/">v<?=PHPKI_VERSION?></a> - Copyright 2003 - William E. Roadcap</p>
-	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.6">v0.6</a></p>
+	<div style="text-align: center; margin-top: -5px; font-size: 8pt">PHPki v<?php echo PHPKI_VERSION ?> - Copyright 2003 - William E. Roadcap</div><br>
 	</body>
 	</html>
 	<?php

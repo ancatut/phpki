@@ -36,7 +36,7 @@ case 'display':
 
 case 'download':
 	$rec = CAdb_get_entry($serial);
-	upload("$config[cert_dir]/$serial.der", "$rec[common_name] ($rec[email]).cer", 'application/pkix-cert');
+	upload($config['cert_dir']."/$serial.der", $rec[common_name]." (".$rec['email'].").cer", 'application/pkix-cert');
         break;
 
 case 'search':
