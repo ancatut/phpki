@@ -7,7 +7,7 @@ include('../include/common.php') ;
 include('../include/openssl_functions.php') ;
 
 # User's preferences file
-$user_cnf = "$config[home_dir]/config/user-".strtr($PHPki_user,'/\\','|#').'.php';
+$user_cnf = $config['home_dir']."/config/user-".strtr($PHPki_user,'/\\','|#').'.php';
 
 # Retrieve GET/POST values
 // $form_stage	= gpvar('form_stage'); 
@@ -120,7 +120,7 @@ case 'validate':
 	if ($er)  { 
 		printHeader();
 		?>
-
+		
 		<form action="<?php print $PHP_SELF ?>" method="post">
 		<input type="submit" name="submit" value='Go Back'>
 		<font color=#ff0000><?php print $er ?></font>
@@ -247,7 +247,7 @@ case 'final':
 
                 switch($cert_type) {
                 case 'server':
-                        upload(array("$config[private_dir]/$serial-key.pem","$config[new_certs_dir]/$serial.pem",$config['cacert_pem']), "$common_name ($email).pem",'application/pkix-cert');
+                        upload(array($config['private_dir']."/$serial-key.pem",$config['new_certs_dir']."/$serial.pem", $config['cacert_pem']), "$common_name ($email).pem",'application/pkix-cert');
                         break;
                 case 'email':
                 case 'email_signing':
@@ -255,7 +255,7 @@ case 'final':
                 case 'vpn_client_server':
                 case 'vpn_client':
                 case 'vpn_server':
-                        upload("$config[pfx_dir]/$serial.pfx", "$common_name ($email).p12", 'application/x-pkcs12');
+                        upload($config['pfx_dir']."/$serial.pfx", $common_name." ($email).p12", 'application/x-pkcs12');
                         break;
                 }
 

@@ -1,12 +1,9 @@
 <?php
 
-# TODO: Whitelist of files to which redirection is exclusively allowed
 $redirect_whitelist = array("about.php", "common.php", "config.php", "index.php", "help.php", "main.php", "manage_certs.php", "my_functions.php", "openssl_functions.php", "request_cert.php", "setup.php");
 
-# TODO: Whitelist of commands allowed by exec()
-$command_whitelist = array();
-
-$PHP_SELF = $_SERVER['PHP_SELF'];
+#$PHP_SELF = $_SERVER['PHP_SELF'];
+$PHP_SELF = htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES, "utf-8");  // sanitize against XSS
 
 #
 # Returns TRUE if browser is Internet Explorer.
@@ -72,8 +69,8 @@ function upload($source, $destination, $content_type="application/octet-stream")
 function gpvar($v) {
 	global $_GET, $_POST;
     $x = "";
-	if (isset($_GET[$v]))  $x = $_GET[$v];
-	if (isset($_POST[$v])) $x = $_POST[$v];	
+	if (isset($_GET[$v]))  $x = htmlentities($_GET[$v], ENT_QUOTES, "utf-8") ;
+	if (isset($_POST[$v])) $x = htmlentities($_POST[$v], ENT_QUOTES, "utf-8");	
 	if (get_magic_quotes_gpc()) $x = stripslashes($x);
 	return $x;
 }
@@ -83,23 +80,14 @@ function gpvar($v) {
 # Sort a two multidimensional array by one of its columns
 #
 function csort($array, $column, $ascdec=SORT_ASC){    
-	
 	if (sizeof($array) == 0) return $array;
 
-	foreach ($array as $x) 
-		$sortarr[] = $x[$column];	
-	#usort($sortarr, "nameComparator");
-	
-	#Seems to work almost properly now
-	array_multisort($sortarr, $ascdec, SORT_NATURAL|SORT_FLAG_CASE|SORT_REGULAR, $array);  
-	#array_multisort($sortarr, $ascdec, SORT_REGULAR, $array);
+	foreach ($array as $x) $sortarr[]=$x[$column];
+	array_multisort($sortarr, $ascdec, $array);  
 
-	print "Time is: ".date('D, d M Y H:i:s ', $_SERVER['REQUEST_TIME']).'<br>';
-	print implode(" . . . ", $sortarr).'<br>';
-	print "Alphabetic: ". (int)is_alpha("Hi")." ";
-	
 	return $array;
 }
+
 
 #
 # Returns a value suitable for display in the browser.
@@ -109,7 +97,8 @@ function htvar($v, $strip=false) {
 	if ($strip) 
 		return  htmlentities(stripslashes($v));
 	else
-		return  htmlentities($v);	
+		return  htmlentities($v);
+	
 }
 
 
@@ -177,9 +166,8 @@ function undo_magic_quotes(&$a) {
 # Returns TRUE if argument contains only alphabetic characters.
 #
 function is_alpha($v) {
-##	return (eregi('[^A-Z]',$v) ? false : true) ;
-##	return (preg_match('/[^A-Z]'.'/i',$v,PCRE_CASELESS) ? false : true) ; # Replaced eregi() with preg_match()
-	return (preg_match('/[^A-Z]/i',$v) ? false : true) ;
+	return (eregi('[^A-Z]',$v) ? false : true) ;
+##	return (preg_match('[^A-Z]'.'/i',$v) ? false : true) ; # Replaced eregi() with preg_match()
 }
 
 #
@@ -187,8 +175,8 @@ function is_alpha($v) {
 #
 
 function is_num($v) {
-	##return (eregi('[^0-9]',$v) ? false : true) ;
-	return (preg_match('/[^0-9]/',$v) ? false : true) ; # Replaced eregi() with preg_match()
+	return (eregi('[^0-9]',$v) ? false : true) ;
+##	return (preg_match('[^0-9]'.'/i',$v) ? false : true) ; # Replaced eregi() with preg_match()
 }
 
 #
@@ -196,16 +184,16 @@ function is_num($v) {
 #
 
 function is_alnum($v) {
-##	return (eregi('[^A-Z0-9]',$v) ? false : true) ;
-	return (preg_match('/[^A-Z0-9]/i',$v) ? false : true) ; # Replaced eregi() with preg_match()
+	return (eregi('[^A-Z0-9]',$v) ? false : true) ;
+##	return (preg_match('[^A-Z0-9]'.'/i',$v) ? false : true) ; # Replaced eregi() with preg_match()
 }
 
 #
 # Returns TRUE if argument is in proper e-mail address format.
 #
 function is_email($v) {
-##	return (eregi('^[^@ ]+\@[^@ ]+\.[A-Z]{2,4}$',$v) ? true : false);
-	return (preg_match('/^[^@ ]+\@[^@ ]+\.[A-Z]{2,4}$'.'/i',$v) ? true : false); # Replaced eregi() with preg_match()
+	return (eregi('^[^@ ]+\@[^@ ]+\.[A-Z]{2,4}$',$v) ? true : false);
+##	return (preg_match('^[^@ ]+\@[^@ ]+\.[A-Z]{2,4}$'.'/i',$v) ? true : false); # Replaced eregi() with preg_match()
 }
 
 #
@@ -216,10 +204,8 @@ function is_email($v) {
 function eregi_array($regexp, $arr) {
 
 	foreach ($arr as $elem) {
-##		if (eregi($regexp,$elem))
-		if (! preg_match('/^\/.*\/$/', $regexp)) # if it doesn't begin and end with '/'
-			$regexp = '/'.$regexp.'/'; # pad the $regexp with '/' to prepare for preg_match()
-		if (preg_match($regexp.'i',$elem)) # Replaced eregi() with preg_match()
+		if (eregi($regexp,$elem))
+##		if (preg_match($regexp.'/i',$elem)) # Replaced eregi() with preg_match()
 			return true;
 	}
 	return false;
