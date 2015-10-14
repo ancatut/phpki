@@ -10,43 +10,43 @@ printHeader(false);
 ?>
 <p>
 <div style="text-align:center">
-<table class=menu>
+<table class="menu" width="100%">
 
-<tr><th class="menu" style="font-size: 24px;">PHPki HELP FILE<br>TABLE OF CONTENTS</th>
-<td class=menu style="padding: 1em;">
-<a href=#WHY>Why PHPki</a><br>
-<a href=#OVERVIEW>Overview</a><br>
-<a href=#MAIN-MENU>Main Menu</a><br>
-<a href=#REQUEST-FORM>Requesting a New Certificate</a><br>
-<a href=#MANAGE>Managing Your Certificate With The Control Panel</a><br>
-<a href=#REVOKE>Revoking a Certificate</a><br>
-<a href=#DISPLAY>Displaying Certificate Details</a><br>
-<a href=#RENEW>Renewing a Cettificate</a><br>
-<a href=#DOWNLOAD>Downloading a Certificate</a><br>
-<a href=../help.php target=help>End User Help Documents</a><br>
-<a href=#GLOSSARY>The PHPki Glossary of Terms</a><br>
-<a href=#GETTING-HELP>Getting Additional Help</a><br>
+<tr><th class="menu" style="font-size: 24px;">PHPki HELP FILE<br>TABLE OF CONTENTS</th><tr>
+<td class="menu" style="padding: 1em;">
+<a href="#WHY">Why PHPki</a><br>
+<a href="#OVERVIEW">Overview</a><br>
+<a href="#MAIN-MENU">Main Menu</a><br>
+<a href="#REQUEST-FORM">Requesting a New Certificate</a><br>
+<a href="#MANAGE">Managing Your Certificate With The Control Panel</a><br>
+<a href="#REVOKE">Revoking a Certificate</a><br>
+<a href="#DISPLAY">Displaying Certificate Details</a><br>
+<a href="#RENEW">Renewing a Cettificate</a><br>
+<a href="#DOWNLOAD">Downloading a Certificate</a><br>
+<a href="../help.php" target="help">End User Help Documents</a><br>
+<a href="#GLOSSARY">The PHPki Glossary of Terms</a><br>
+<a href="#GETTING-HELP">Getting Additional Help</a><br>
 </td></tr>
 </table>
 </div>
 
-<br><br><br><br><br><br>
+<br><br><br>
 
 <p>
-<h2><a name="WHY">WHY PHPki</a></h2>
+<h2><a id="WHY">WHY PHPki</a></h2>
 <blockquote>
-PHPki is an <a href=http://www.opensource.org target=_blank>Open Source</a>
+PHPki is an <a href="http://www.opensource.org" target="_blank">Open Source</a>
 Web based application for managing a 
-<a href=../help/glossary.html#PKI target=glossary> "Public Key Infrastructure"</a> 
+<a href="../help/glossary.html#PKI" target="glossary"> "Public Key Infrastructure"</a> 
 within a small organization.  
 PHPki may be used to create and manage 
-<a href=../help/glossary.html#CERTIFICATE target=glossary>digital certificates</a> 
-for use with <a href=../help/glossary.html#SMIME target=glossary>S/MIME</a> enabled 
+<a href="../help/glossary.html#CERTIFICATE" target="glossary">digital certificates</a> 
+for use with <a href="../help/glossary.html#SMIME" target="glossary">S/MIME</a> enabled 
 e-mail clients, SSL servers, and VPN applications. 
 
 <p>
 Most commercial 
-<a href=../help/glossary.html#CA target=glossary>certificate authorities (CA)</a> 
+<a href="../help/glossary.html#CA" target="glossary">certificate authorities (CA)</a> 
 require that certificates be issued to individual workstations, one at a time.  
 The transaction required to obtain a commercial certificate must usually take 
 place at the workstation on which the certifcate is to be installed, and can be
@@ -56,15 +56,15 @@ person within an organization or department must request, create, and install
 certificates on a number of workstations.
 
 <p>
-PHPki creates standard <a href=../help/glossary.html#X509 target=glossary>X.509</a> 
+PHPki creates standard <a href="../help/glossary.html#X509" target="glossary">X.509</a> 
 digital certificates which should work with most e-mail clients.  
-It packages private certificates in the <a href=../help/glossary.html#PKCS12 target=glossary>PKCS#12</a> format accepted by Microsoft 
-e-mail clients <a href=../help/glossary.html#PEM target=glossary>PEM</a> used by certain web servers.  
+It packages private certificates in the <a href="../help/glossary.html#PKCS12" target="glossary">PKCS#12</a> format accepted by Microsoft 
+e-mail clients <a href="../help/glossary.html#PEM" target="glossary">PEM</a> used by certain web servers.  
 PKCS #12 certificates usually have a <cite>.P12</cite> 
 filename extension.  Since most PKCS #12 certificates usually include the 
 certificate's private key, they should never be distributed to the general 
 public. PHPki's publicly distributable certificates are packaged in
-standard <a href=../help/glossary.html#DER target=glossary>DER</a> format.
+standard <a href="../help/glossary.html#DER" target="glossary">DER</a> format.
 
 <p>
 Server 
@@ -72,14 +72,14 @@ Server
 </blockquote>
 
 <p>
-<h2><a name="OVERVIEW">OVERVIEW</a></h2>
+<h2><a id="OVERVIEW">OVERVIEW</a></h2>
 <blockquote>
 The process of creating and using digital certificates with PHPki is 
 fairly easy.
 <ul>
 <li>
 First you must download and install our
-<a href=../help/glossary.html#ROOT-CERT target=glossary>root certificate</a> 
+<a href="../help/glossary.html#ROOT-CERT" target="glossary">root certificate</a> 
 on your computer.  Everyone else you intend to exchange encrypted e-mail
 with must also install our root certificate. 
  Everyone who installs our root certificate becomes a member of our
@@ -100,7 +100,7 @@ you download must be installed on the respective users' workstations.
 If you wish to send encrypted e-mail to someone, you must install that person's
 public certificate on your computer.  You can obtain another person's public
 certificate simply by having them send you a 
-<a href=../help/glossary.html#SIGNATURE target=glossary>digitally signed</a> e-mail message.  When you receive the message, your e-mail
+<a href="../help/glossary.html#SIGNATURE" target="glossary">digitally signed</a> e-mail message.  When you receive the message, your e-mail
 program should give you the option to add the sender's public key to your
 address book or key ring.  Once you have installed your digital certificates,
 your users should send digitally signed messages to each person who will need
@@ -139,25 +139,25 @@ Internet.
 </blockquote>
 
 <p>
-<h2><a name=MAIN-MENU>THE MAIN MENU</a></h2>
+<h2><a id=MAIN-MENU>THE MAIN MENU</a></h2>
 <p>
 <blockquote>
-<div style="text-align:center"><img src=../images/main-menu.png width=700 ></div>
+<div style="text-align:center"><img src="../images/main-menu.png" width="700px" ></div>
 <p>
 All of the PHPki primary functions can be accessed from the Main Menu.  
 It is possible to navigate back to the Main Menu from any screen by clicking the
 "Menu" link in the upper right corner of each page.  Clicking the <cite>Public</cite> link will open a new browser window to the public content menu where
 the general public may search for certificates and download the
-<a href=../help/glossary.html#ROOT-CERT target=glossary>Root Certificate</a> and <a href=../help/glossary.html#CRL target=glossary>Certificate Revocation List.</a>
+<a href="../help/glossary.html#ROOT-CERT" target="glossary">Root Certificate</a> and <a href="../help/glossary.html#CRL" target="glossary">Certificate Revocation List.</a>
 </blockquote>
 
 <p>
-<h2><a name=REQUEST-FORM>REQUESTING A NEW CERTIFICATE</a></h2>
+<h2><a id=REQUEST-FORM>REQUESTING A NEW CERTIFICATE</a></h2>
 <blockquote>
 When you select "Request a New Certificate" from the Main Menu, you will be
 presented with the Certificate Request Form.<br>
 <p>
-<div style="text-align:center"><img src=../images/cert-request-form.png width=700 ></div>
+<div style="text-align:center"><img src="../images/cert-request-form.png" width="700px" ></div>
 <p>
 This form is used to collect the minimum necessary information required to
 issued a new digital certificate. All fields must be completed.
@@ -224,7 +224,7 @@ When you have complete filling in the form, click the "Submit Request" button.
 The information you submitted will be checked for errors, and a confirmation
 screen will be displayed.
 <p>
-<div style="text-align:center"><img src=../images/request-confirm-form.png width=700></div>
+<div style="text-align:center"><img src="../images/request-confirm-form.png" width="700px"></div>
 <p>
 Clicking the "Yes! Create and Download" button will cause a file download
 window to open in your browser, allowing you to save the certificate on your
@@ -246,21 +246,21 @@ form input will be saved as your default values for the future sessions<br>
 
 
 <p>
-<h2><a name="MANAGE">MANAGING YOUR CERTIFICATES WITH THE CONTROL PANEL</a></h2>
+<h2><a id="MANAGE">MANAGING YOUR CERTIFICATES WITH THE CONTROL PANEL</a></h2>
 <blockquote>
 PHPki provides one convenient place to manage your certificates.  
 It is called the <cite>Certificate Management Control Panel</cite>.
 <p>
-<div style="text-align:center"><img src="../images/ctrl-panel-before.png" width="700"></div>
+<div style="text-align:center"><img src="../images/ctrl-panel-before.png" width="700px"></div>
 <p>
 With the <cite>Control Panel</cite> you can display, download, revoke, and 
 renew your certificates by simply clicking on the appropriate button to the 
 right of each certificate entry. Your certificates are listed in columnar 
 format, with the left-most color coded "Status" column showing whether a 
-certificate is "<font color=green>Valid</font>" or 
-"<font color=red>Revoked</font>".  The listing can be sorted in any order
+certificate is "<span style="font-color:green">Valid</span>" or 
+"<span style="font-color:red">Revoked</span>".  The listing can be sorted in any order
 by clicking on the column headings.  An arrow graphic 
-&nbsp<img src=../images/uparrow-blue.gif height=12>&nbsp beside a column heading
+&nbsp;<img src="../images/uparrow-blue.gif" height="12px">&nbsp; beside a column heading
 indicates which column is being used to sort the listing.  Clicking on the 
 arrow graphic will cause the listing to alternate between ascending and 
 descending sort order. You may find these sort features particularly useful if
@@ -270,15 +270,15 @@ your particular organizational needs.
 </blockquote>
 
 <p>
-<h2><a name="REVOKE">REVOKING A CERTIFICATE</a></h2>
+<h2><a id="REVOKE">REVOKING A CERTIFICATE</a></h2>
 <blockquote>
 At times it may become necessary to revoke or invalidate a certificate.  This
 usually happens when an e-mail address is no longer valid, or the certificate's
 private key has been lost or compromised.  
 <p>
-To revoke a certificate, click on the <img src=../images/revoke.png align=top>&nbsp icon next to the certificate entry in the <cite>Control Panel</cite>.
+To revoke a certificate, click on the <img src="../images/revoke.png" align="top">&nbsp; icon next to the certificate entry in the <cite>Control Panel</cite>.
 <p>
-<div style="text-align:center"><img src=../images/revoke-confirm.png width=700></div>
+<div style="text-align:center"><img src="../images/revoke-confirm.png" width="700px"></div>
 <p>
 You will then be asked to confirm or cancel the revocation.  Be absolutely
 sure of what you wish to do before clicking the "Yes" button.  Once a
@@ -287,37 +287,37 @@ true, as a revoked certificate can be renewed.  Renewing a revoked certificate
 results in a <strong>new</strong> certificate being issued.  Certificate
 renewal is covererd later.
 <p>
-<div style="text-align:center"><img src=../images/ctrl-panel-after-revoke.png width=700></div>
+<div style="text-align:center"><img src="../images/ctrl-panel-after-revoke.png" width="700px"></div>
 <p>
 If you click the "Yes" button, the certificate is revoked with no further
 interaction.  The certificate's status in the <cite>Control Panel</cite> 
-will change to <font color=red>Revoked</font>.
+will change to <span style="font-color:red">Revoked</span>.
 </blockquote>
 
 <p>
-<h2><a name="DISPLAY">DISPLAYING CERTIFICATE DETAILS</a></h2>
+<h2><a id="DISPLAY">DISPLAYING CERTIFICATE DETAILS</a></h2>
 <blockquote>
 Certificates may be displayed in full detail by clicking the
-<img src=../images/display.png align=top>&nbsp icon next to a certificate's 
+<img src="../images/display.png" align="top">&nbsp; icon next to a certificate's 
 entry in the <cite>Control Panel</cite>.  Although some users may find this
 feature useful, many will not find anything of interest in it.
 <p>
-<div style="text-align:center"><img src=../images/display-revoked.png width=700></div>
+<div style="text-align:center"><img src="../images/display-revoked.png" width="700px"></div>
 </blockquote>
 
 <p>
-<h2><a name="RENEW">RENEWING A CERTIFICATE</a></h2>
+<h2><a id="RENEW">RENEWING A CERTIFICATE</a></h2>
 <blockquote>
 Certificates expire periodically.  The usually length a time for which a
 certificate is valid is one year.  With PHPki, you have the option to
 issue certificates with a more extended life span.  Regardless, sooner or later
 your certificates will begin to expire.  
 <p>To renew a certificate which has expired or is near expiration, simply click
-the <img src=../images/renew.png align=top>&nbsp icon next to the
+the <img src="../images/renew.png" align="top">&nbsp; icon next to the
 certifcate's <cite>Control Panel</cite> entry.  You will then be presented
 with a certificate renewal form.
 <p>
-<div style="text-align:center"><img src=../images/renewal-form.png width=700></div>
+<div style="text-align:center"><img src="../images/renewal-form.png" width="700px"></div>
 <p>
 The certificate renewal form takes the values for <cite>Common Name, 
 E-mail Address, Organization, etc.</cite> from the original certificate.
@@ -329,43 +329,43 @@ you will not be able to renew the certificate.  You may cancel this operation
 by clicking the "Back" button, which will take you back to the 
 <cite>Control Panel</cite>.
 <p>
-<div style="text-align:center"><img src=../images/ctrl-panel-after-renew.png width=700></div>
+<div style="text-align:center"><img src="../images/ctrl-panel-after-renew.png" width="700px"></div>
 <p>
 If you click the "Submit Request" button to renew the certificate, it is
 renewed with no further interaction, and you will be returned to the
 <cite>Control Panel</cite>.  You will notice a new 
-<font color=green>Valid</font> certificate in the <cite>Control Panel</cite>, 
-and the old expired certificate is marked <font color=red>Revoked</font>.
+<span style="font-color:green">Valid</span> certificate in the <cite>Control Panel</cite>, 
+and the old expired certificate is marked <span style="font-color:red">Revoked</span>.
 </blockquote>
 
 <p>
-<h2><a name=DOWNLOAD>DOWNLOADING A CERTIFICATE</a></h2>
+<h2><a id=DOWNLOAD>DOWNLOADING A CERTIFICATE</a></h2>
 <blockquote>
 If you lose the original file you downloaded when you first created a
 certificate, you may download another copy of a certificate at any time by
 clicking the
-<img src=../images/download.png align=top>&nbsp icon next to the certificate's entry
+<img src="../images/download.png" align="top">&nbsp; icon next to the certificate's entry
 in the <cite>Control Panel</cite>. When downloading a certificate, you will
 be reminded that the certificate is a
-<strong><font color=red>PRIVATE</font> certificate, which <font color=red>
-SHOULD NEVER BE DISTRIBUTED TO THE PUBLIC</font></strong>. 
-You may choose to download <a href=../help/glossary.html#PKCS12 target=glossary>PKCS #12</a> or <a href=../help/glossary.html#PEM target=glossary>PEM</a> formatted bundles.
+<b style="color:red">PRIVATE</b> certificate, which <b style="color:red">
+SHOULD NEVER BE DISTRIBUTED TO THE PUBLIC</b>. 
+You may choose to download <a href="../help/glossary.html#PKCS12" target="glossary">PKCS #12</a> or <a href="../help/glossary.html#PEM" target="glossary">PEM</a> formatted bundles.
 <p>
-<div style="text-align:center"><img src=../images/confirm-download.png width=700></div>
+<div style="text-align:center"><img src=../images/confirm-download.png width="700px"></div>
 </blockquote>
 
 <p>
-<h2><a name=GLOSSARY>GLOSSARY</a></h2>
+<h2><a id=GLOSSARY>GLOSSARY</a></h2>
 <blockquote>
-Click <a href=../help/glossary.html#TOP target=glossary>here</a> to view the complete
+Click <a href="../help/glossary.html#TOP" target="glossary">here</a> to view the complete
 PHPki glossary of terms.
 </blockquote>
 
 
 <p>
-<h2><a name="GETTING-HELP">GETTING ADDITIONAL HELP</a></h2>
+<h2><a id="GETTING-HELP">GETTING ADDITIONAL HELP</a></h2>
 <blockquote>
-<?php print $config[getting_help]?>
+<?php print $config['getting_help']?>
 </blockquote>
 <br>
 

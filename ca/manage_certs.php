@@ -51,13 +51,13 @@ case 'display':
 
 	?>
     <div style="text-align:center"><h2>Certificate Details</h2></div>
-	<div style="text-align:center"><h3 style="color:#0000AA">(#<?php print $serial ?>)<br><?php print htvar(CA_cert_cname($serial).' <'.CA_cert_email($serial).'>') ?> </h3></div>
+	<div style="text-align:center"><h3 style="color:#0000AA">(#<?php echo $serial ?>)<br><?php echo htvar(CA_cert_cname($serial).' <'.CA_cert_email($serial).'>') ?> </h3></div>
 	<?php
 
 	if ($revoke_date = CAdb_is_revoked($serial))
 		print '<div style="text-align:center"><h2 style="color:red">REVOKED '.$revoke_date.'</h2></div>';
 
-    print '<pre>'.htvar(CA_cert_text($serial)).'</pre>'; # Added htvar() to sanitize against htmlentities
+    print '<pre>'.CA_cert_text($serial).'</pre>'; # Added htvar() to sanitize against htmlentities
 	break;
 
 case 'dl-confirm':
@@ -66,9 +66,9 @@ case 'dl-confirm':
 	$rec = CAdb_get_entry($serial);
 
 	?>
-	<h3>You are about to download the <font color="red">PRIVATE</font> certificate key for <?php print htvar($rec['common_name']).' &lt;'.htvar($rec['email']).'&gt; '?></h3>
+	<h3>You are about to download the <font color="red">PRIVATE</font> certificate key for <?php echo htvar($rec['common_name']).' &lt;'.htvar($rec['email']).'&gt; '?></h3>
 	<h3 style="color:red">DO NOT DISTRIBUTE THIS FILE TO THE PUBLIC!</h3>
-	<form action="<?php print $PHP_SELF.'?stage=download&serial='.$serial.'&'.$qstr_sort.'&'.$qstr_filter?>" method="post">
+	<form action="<?php echo $PHP_SELF.'?stage=download&serial='.$serial.'&'.$qstr_sort.'&'.$qstr_filter?>" method="post">
 	<strong>File type: </strong>
 	<select name="dl_type">
 	<option value="PKCS#12">PKCS#12 Bundle</option>
@@ -168,7 +168,7 @@ case 'revoke':
 		<h2 style="color:#ff0000">There was an error revoking your certificate.</h2><br>
 		<blockquote>
 		<h3>Debug Info:</h3>
-		<pre><?php print $errtxt ?></pre>
+		<pre><?php echo $errtxt ?></pre>
 		</blockquote>
 		<p>
 		<input type="submit" name="submit" value="Back">
@@ -206,46 +206,46 @@ case 'renew-form':
 	
 	<body onLoad="self.focus();document.form.passwd.focus()">
 
-	<form action="<?php print $PHP_SELF.'?'.$qstr_sort.'&'.$qstr_filter ?>" method="post" name="form">
+	<form action="<?php echo $PHP_SELF.'?'.$qstr_sort.'&'.$qstr_filter ?>" method="post" name="form">
 	<table style="width:99%">	
 	<tr>
-	<th colspan=2><h3>Certificate Renewal Form</h3></th>
+	<th colspan="2"><h3>Certificate Renewal Form</h3></th>
 	</tr>
 	<tr>
-	<td width=25%>Common Name </td>
-	<td><input type="text" name="common_name" value="<?php print htvar($common_name)?>" size=50 maxlength=60 disabled></td>
+	<td width="25%">Common Name </td>
+	<td><input type="text" name="common_name" value="<?php echo htvar($common_name)?>" size=50 maxlength=60 disabled></td>
 	</tr>
 
 	<tr>
 	<td>E-mail Address </td>
-	<td><input type="text" name="email" value="<?php print htvar($email)?>" size=50 maxlength=60 disabled></td>
+	<td><input type="text" name="email" value="<?php echo htvar($email)?>" size=50 maxlength=60 disabled></td>
 	</tr>
 
 	<tr>
 	<td>Organization </td>
-	<td><input type="text" name="organization" value="<?php print htvar($organization)?>" size=60 maxlength=60 disabled></td>
+	<td><input type="text" name="organization" value="<?php echo htvar($organization)?>" size=60 maxlength=60 disabled></td>
 	</tr>
 
 	<tr>
-	<td>Department/Unit </td><td><input type="text" name="unit" value="<?php print htvar($unit) ?>" size=40 maxlength=60 disabled></td>
+	<td>Department/Unit </td><td><input type="text" name="unit" value="<?php echo htvar($unit) ?>" size=40 maxlength=60 disabled></td>
 	</tr>
 
 	<tr>
-	<td>Locality</td><td><input type="text" name="locality" value="<?php print htvar($locality) ?>" size=30 maxlength=30 disabled></td>
+	<td>Locality</td><td><input type="text" name="locality" value="<?php echo htvar($locality) ?>" size=30 maxlength=30 disabled></td>
 	</tr>
 
 	<tr>
-	<td>State/Province</td><td><input type="text" name="province" value="<?php print htvar($province) ?>" size=30 maxlength=30 disabled></td>
+	<td>State/Province</td><td><input type="text" name="province" value="<?php echo htvar($province) ?>" size=30 maxlength=30 disabled></td>
 	</tr>
 
 	<tr>
 	<td>Country</td>
-	<td><input type="text" name="country" value="<?php print htvar($country) ?>" size=2 maxlength=2 disabled></td>
+	<td><input type="text" name="country" value="<?php echo htvar($country) ?>" size=2 maxlength=2 disabled></td>
 	</tr>
 
 	<tr>
 	<td>Certificate Password </td>
-	<td><input type="password" name="passwd" value="<?php print htvar($passwd) ?>" size=30></td>
+	<td><input type="password" name="passwd" value="<?php echo htvar($passwd) ?>" size=30></td>
 	</tr>
 
 	<tr>
@@ -273,7 +273,7 @@ case 'renew-form':
 	</td>
 	<td>
 	<input type="hidden" name="stage" value="renew">
-	<input type="hidden" name="serial" value="<?php print $serial?>">
+	<input type="hidden" name="serial" value="<?php echo $serial?>">
 	</td>
 	</tr>
 	</table>
@@ -296,7 +296,7 @@ case 'renew':
 		<h2 style="color:#ff0000">There was an error creating your certificate.</h2><br>
 		<blockquote>
 		<h3>Debug Info:</h3>
-		<pre><?php print $errtxt?></pre>
+		<pre><?php echo $errtxt?></pre>
 		</blockquote>
 		<p>
 		<input type="submit" name="submit" value="Back">
@@ -319,12 +319,12 @@ default:
 	<table style="margin: 0 auto">
 	<tr><th colspan="9"><h2>Certificate Management Control Panel</h2></th></tr>
 	<tr><td colspan="9"><div style="text-align:center">
-	<form action="<?php print "$PHP_SELF?$qstr_sort"?>" method="get" name="filter"> 
+	<form action="<?php echo "$PHP_SELF?$qstr_sort"?>" method="get" name="filter"> 
 	Search: 
-		<input type="text" name="search" value="<?php print htvar($search)?>" style="font-size: 11px;" maxlength="60" size="35">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <input type="checkbox" name="show_valid" value="V" <?php print ($show_valid?'checked':'')?>>Valid &nbsp;&nbsp;
-        <input type="checkbox" name="show_revoked" value="R" <?php print ($show_revoked?'checked':'')?>>Revoked &nbsp;&nbsp;
-        <input type="checkbox" name="show_expired" value="E" <?php print ($show_expired?'checked':'')?>>Expired &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="text" name="search" value="<?php echo htvar($search)?>" style="font-size: 11px;" maxlength="60" size="35">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="checkbox" name="show_valid" value="V" <?php echo ($show_valid?'checked':'')?>>Valid &nbsp;&nbsp;
+        <input type="checkbox" name="show_revoked" value="R" <?php echo ($show_revoked?'checked':'')?>>Revoked &nbsp;&nbsp;
+        <input type="checkbox" name="show_expired" value="E" <?php echo ($show_expired?'checked':'')?>>Expired &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <input type="submit" name="submit" value="Apply Filter" style="font-size: 11px;">
         </form>
 	</div></td>
@@ -365,10 +365,6 @@ default:
 	}
 	print '<th><a href="" title="Pick an action to perform to certificate.">Action</a></th>';
 	print '</tr>';
-
-	#####
-	#$db = CAdb_to_array("^[${show_valid}${show_revoked}${show_expired}].*$search");
-	#####
 	
 	$x = "^[${show_valid}${show_revoked}${show_expired}]";
 
@@ -378,9 +374,9 @@ default:
 	else {
 		$x = "$x.*$search.*$PHPki_user|$x.*$PHPki_user.*$search";
 	}
-
-	$db = csort(CAdb_to_array($x), $sortfield, $ascdec=='A'?SORT_ASC:SORT_DESC);
-
+	
+    $db = csort(CAdb_to_array($x), $sortfield, ($ascdec=='A'?SORT_ASC:SORT_DESC));
+ 
 	$stcolor = array('Valid'=>'green', 'Revoked'=>'red', 'Expired'=>'orange');
 
 	 foreach($db as $rec) {
