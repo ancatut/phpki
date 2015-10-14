@@ -146,11 +146,11 @@ case 'revoke-form':
        	</td>
        	</tr></table>
 	<h4>Are you sure?</h4>
-       	<p><form action="'.$PHP_SELF.'?'.$qstr_sort.'&'.$qstr_filter.'" method="post">
-	<input type=hidden name=stage value=revoke >
-	<input type=hidden name=serial value='.$serial.' >
-       	<input type="submit" name="submit" value=Yes >&nbsp
-       	<input type="submit" name="submit" value=Cancel>
+       	<p><form action="'.$PHP_SELF.'?'.$qstr_sort.'&'.$qstr_filter.' method="post">
+	<input type="hidden" name="stage" value="revoke" >
+	<input type="hidden" name="serial" value='.$serial.' >
+       	<input type="submit" name="submit" value="Yes" >&nbsp
+       	<input type="submit" name="submit" value="Cancel">
        	</form>';
 	
 	break;
@@ -163,12 +163,12 @@ case 'revoke':
 	if (! $ret) {
 		printHeader('ca');
 
-		print "<form action='$PHP_SELF?stage=revoke-form&serial=$serial&$qstr_sort&$qstr_filter' method='post'>";
+		print '<form action="$PHP_SELF?stage=revoke-form&serial=$serial&$qstr_sort&$qstr_filter" method="post">';
 		?>
 		<h2 style="color:#ff0000">There was an error revoking your certificate.</h2><br>
 		<blockquote>
 		<h3>Debug Info:</h3>
-		<pre><?php print $errtxt?></pre>
+		<pre><?php print $errtxt ?></pre>
 		</blockquote>
 		<p>
 		<input type="submit" name="submit" value="Back">
@@ -291,7 +291,7 @@ case 'renew':
 	if (! $ret) {
 		printHeader('ca');
 
-		print "<form action=\"$PHP_SELF?stage=renew-form&serial=$serial&$qstr_sort&$qstr_filter\" method=\"post\">";
+		print '<form action="$PHP_SELF?stage=renew-form&serial=$serial&$qstr_sort&$qstr_filter" method="post">';
 		?>
 		<h2 style="color:#ff0000">There was an error creating your certificate.</h2><br>
 		<blockquote>
@@ -321,11 +321,10 @@ default:
 	<tr><td colspan="9"><div style="text-align:center">
 	<form action="<?php print "$PHP_SELF?$qstr_sort"?>" method="get" name="filter"> 
 	Search: 
-		<input type="text" name="search" value="<?php print htvar($search)?>" style="font-size: 11px;" maxlength="60" size="35">
-        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-        <input type="checkbox" name="show_valid" value="V" <?php print ($show_valid?'checked':'')?>>Valid &nbsp&nbsp
-        <input type="checkbox" name="show_revoked" value="R" <?php print ($show_revoked?'checked':'')?>>Revoked &nbsp&nbsp
-        <input type="checkbox" name="show_expired" value="E" <?php print ($show_expired?'checked':'')?>>Expired &nbsp&nbsp&nbsp&nbsp&nbsp
+		<input type="text" name="search" value="<?php print htvar($search)?>" style="font-size: 11px;" maxlength="60" size="35">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="checkbox" name="show_valid" value="V" <?php print ($show_valid?'checked':'')?>>Valid &nbsp;&nbsp;
+        <input type="checkbox" name="show_revoked" value="R" <?php print ($show_revoked?'checked':'')?>>Revoked &nbsp;&nbsp;
+        <input type="checkbox" name="show_expired" value="E" <?php print ($show_expired?'checked':'')?>>Expired &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <input type="submit" name="submit" value="Apply Filter" style="font-size: 11px;">
         </form>
 	</div></td>
@@ -367,7 +366,11 @@ default:
 	print '<th><a href="" title="Pick an action to perform to certificate.">Action</a></th>';
 	print '</tr>';
 
-	$x = "^[$show_valid$show_revoked$show_expired]";
+	#####
+	#$db = CAdb_to_array("^[${show_valid}${show_revoked}${show_expired}].*$search");
+	#####
+	
+	$x = "^[${show_valid}${show_revoked}${show_expired}]";
 
 	if (in_array($PHPki_user, $PHPki_admins)) {
 		$x = "$x.*$search";
@@ -376,35 +379,36 @@ default:
 		$x = "$x.*$search.*$PHPki_user|$x.*$PHPki_user.*$search";
 	}
 
-	$db = csort(CAdb_to_array($x), $sortfield, ($ascdec=='A'?SORT_ASC:SORT_DESC));
+	$db = csort(CAdb_to_array($x), $sortfield, $ascdec=='A'?SORT_ASC:SORT_DESC);
 
 	$stcolor = array('Valid'=>'green', 'Revoked'=>'red', 'Expired'=>'orange');
 
-	foreach($db as $rec) {
-		print	'<tr style="font-size: 11px;">
+	 foreach($db as $rec) {
+		print '<tr style="font-size: 11px;">
 			 <td><font color='.$stcolor[$rec['status']].'><b>' .$rec['status'].'</b></font></td>
 			 <td style="white-space: nowrap">'.$rec['issued'].'</td>
 			 <td style="white-space: nowrap">'.$rec['expires'].'</td>
 			 <td>'.$rec['common_name'].'</td>
 			 <td style="white-space: nowrap">
 				<a href="mailto:' . htvar($rec['common_name']) . ' <' . htvar($rec['email']) . '>" >' . htvar($rec['email']) . '</a>
-			</td>
+			 </td>
 			 <td>'.htvar($rec['organization']).'</td>
 			 <td>'.htvar($rec['unit']).'</td>
 			 <td>'.htvar($rec['locality']).'</td>
 			 <td><a href="'.$PHP_SELF.'?stage=display&serial='.$rec['serial'].'" target="_certdisp">'.
-			 '<img src=../images/display.png alt="Display" title="Display complete certificate details."></a>';
+			 '<img src="../images/display.png" alt="Display" title="Display complete certificate details."></a>';
 
 		if ($rec['status'] == 'Valid') {
 			print '
 			<a href="'.$PHP_SELF.'?stage=dl-confirm&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
-			'<img src=../images/download.png alt="Download" title="Download the PRIVATE certificate. DO NOT DISTRIBUTE THIS TO THE PUBLIC!"></a>
+			'<img src="../images/download.png" alt="Download" title="Download the PRIVATE certificate. DO NOT DISTRIBUTE THIS TO THE PUBLIC!"></a>
 			<a href="'.$PHP_SELF.'?stage=revoke-form&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
-			'<img src=../images/revoke.png alt="Revoke" title="Revoke the certificate when the e-mail address is no longer valid or the certificate password or private key has been compromised."></a>';
-		}
+			'<img src="../images/revoke.png" alt="Revoke" title="Revoke the certificate when the e-mail address is no longer valid or the certificate password or private key has been compromised."></a>';
+		} 	
+			
 		print '
 		<a href="'.$PHP_SELF.'?stage=renew-form&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
-		'<img src=../images/renew.png alt="Renew" title="Renew the certificate by revoking it, if necessary, and creating a replacement with a new expiration date."></a></td></tr>';
+		'<img src="../images/renew.png" alt="Renew" title="Renew the certificate by revoking it, if necessary, and creating a replacement with a new expiration date."></a></td></tr>';
 		
 	}
 ?>
