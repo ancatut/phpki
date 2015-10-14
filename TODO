@@ -20,8 +20,6 @@ ANCA'S TODO:
 
 Figure out why gpvar() doesn't initialize variables as it should (at least with empty string).
 
-Fix bug that prevents certs older than a week to display in the Control Panel.
-
 Replace regex search function eregi() by preg_match() and adjust regex patterns accordingly.
 
 Remove repopulation of password field after error for security.
@@ -30,3 +28,6 @@ Reintroduce SSL mode for accessing the page.
 
 Implement a better password storage solution (check apache's current method).
 
+Fix bug that prevents certs older than a week to display in the Control Panel. <=> Figure out why Iceweasel can't display the list of certs in the manage_certs.php page sometimes, while in Chrome and Firefox it works.
+
+Warn user not to use special characters like § or ß in the password (tests with $ / \ ' " worked fine).

@@ -213,7 +213,7 @@ function CAdb_to_array($search = '.*') {
 
 	# Prepend a default status to search string if missing.
 	#if (! ereg('^\^\[.*\]', $search)) $search = '^[VRE].*'.$search;
-	if (! preg_match("/^\^\[.*\]/", $search)) $search = "/^[VRE].*/".$search;
+	if (! preg_match("/^\^\[.*\]/", $search)) $search = '^[VRE].*'.$search;
 	
 	# Include valid certs?
 	#if (ereg('^\^\[.*V.*\]',$search)) $inclval = true;
@@ -230,7 +230,7 @@ function CAdb_to_array($search = '.*') {
 	# There isn't really a status of 'E' in the openssl index.
 	# Change (E)xpired to (V)alid within the search string.
 	#$search = ereg_replace('^(\^\[.*)E(.*\])','\\1V\\2',$search);
-	$search = preg_replace('/^(\^\[.*)E(.*\])/','${1}${2}',$search);
+	$search = preg_replace('/^(\^\[.*)E(.*\])/','${1}V${2}',$search);
 
 	$db = array();
 	exec('egrep -i '.escshellarg($search).' '.$config['index'], $x);
@@ -310,7 +310,7 @@ function CAdb_issuer($serial) {
 //
 function CAdb_explode_entry($dbentry) {
 	$a = explode("\t", $dbentry);
-	$b  = preg_split('/\/([A-Z]|[a-z])+=/', $a[5]);
+	$b = preg_split('/\/([A-Z]|[a-z])+=/', $a[5]);
 
 	switch ($a[0]) {
 	case "V":
@@ -322,10 +322,10 @@ function CAdb_explode_entry($dbentry) {
 	}
 
 	sscanf(CA_cert_startdate($a[3]),"%s %s %s %s", $mm,$dd,$tt,$yy);
-	$db['issued'] = strftime("%y-%b-%d", strtotime("$dd $mm $yy"));
+	$db['issued'] = strftime("%Y-%m-%d", strtotime("$dd $mm $yy"));
 
 	sscanf($a[1], "%2s%2s%2s",$yy,$mm,$dd);
-	$db['expires'] = strftime("%y-%b-%d", strtotime("$mm/$dd/$yy"));
+	$db['expires'] = strftime("%Y-%m-%d", strtotime("$mm/$dd/$yy"));
 
 	if (time() > strtotime("$mm/$dd/$yy"))
 		$db['status'] = "Expired";
@@ -354,7 +354,7 @@ function CAdb_is_revoked($serial) {
 	if  ($x) {
 		list($j,$j,$revoke_date,$j,$j,$j) = explode("\t", $x);
 		sscanf($revoke_date, "%2s%2s%2s",$yy,$mm,$dd);
-		return strftime("%b %d, %Y", strtotime("$mm/$dd/$yy"));
+		return strftime("%Y-%m-%d", strtotime("$mm/$dd/$yy"));
 	}
 	else
 		return false;
@@ -451,7 +451,7 @@ function CA_revoke_cert($serial) {
 	$fd = fopen($config['index'],'a');
 	flock($fd, LOCK_EX);
 
-	$certfile     = $config['new_certs_dir']."/$serial.pem";
+	$certfile = $config['new_certs_dir']."/$serial.pem";
 	
 	$cmd_output[] = 'Revoking the certificate.';
 	exec(CA." -config ".$config['openssl_cnf']." -revoke ".escshellarg($certfile)." -passin pass:".$config['ca_pwd']." 2>&1", $cmd_output, $ret);

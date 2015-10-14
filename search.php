@@ -36,7 +36,7 @@ case 'display':
 
 case 'download':
 	$rec = CAdb_get_entry($serial);
-	upload($config['cert_dir']."/$serial.der", $rec[common_name]." (".$rec['email'].").cer", 'application/pkix-cert');
+	upload($config['cert_dir']."/$serial.der", $rec['common_name']." (".$rec['email'].").cer", 'application/pkix-cert');
         break;
 
 case 'search':
@@ -63,16 +63,16 @@ case 'search':
 	}
 		?>
 	
-
+<div style="width:80%; margin:0 auto">
 	<table>
-	<tr><th colspan=9><h2>CERTIFICATE SEARCH RESULTS</h2></th></tr>
+	<tr><th colspan="10"><h2>CERTIFICATE SEARCH RESULTS</h2></th></tr>
 	<tr>
 <?php
         $headings = array(
                 'status'=>"Status", 'issued'=>"Issued", 'expires'=>"Expires",
                 'common_name'=>"User's Name", 'email'=>"E-mail",
                 'organization'=>"Organization", 'unit'=>"Department",
-                'locality'=>"Locality", 'province'=>"State"
+                'locality'=>"Locality", 'province'=>"State", 'action'=>'Action'
         );
 
         print '<tr>';
@@ -119,6 +119,7 @@ case 'search':
 	<input type="hidden" name="show_revoked" value="<?php print htvar($show_revoked) ?>">
 	<input type="hidden" name="show_expired" value="<?php print htvar($show_expired) ?>">
 	</form>
+	</div>
 	<?php
 
 	printFooter();

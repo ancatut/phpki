@@ -79,7 +79,7 @@ AuthName "Restricted Area"
 AuthType Basic
 AuthUserFile "$passwd_file"
 require valid-user
-SSLRequireSSL
+#SSLRequireSSL
 
 EOS
 
@@ -88,9 +88,9 @@ AuthName "Restricted Area"
 AuthType Basic
 AuthUserFile "$passwd_file"
 require valid-user
-SSLRequireSSL
-Order Allow,Deny
-Allow from $subnet
+#SSLRequireSSL
+#Order Allow,Deny
+#Allow from $subnet
 
 EOS
 
