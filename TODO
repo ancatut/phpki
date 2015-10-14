@@ -31,3 +31,5 @@ Implement a better password storage solution (check apache's current method).
 Fix bug that prevents certs older than a week to display in the Control Panel. <=> Figure out why Iceweasel can't display the list of certs in the manage_certs.php page sometimes, while in Chrome and Firefox it works.
 
 Warn user not to use special characters like § or ß in the password (tests with $ / \ ' " worked fine).
+
+What about umlauts in common name? Currently they get converted somehow (maybe by escshellargs?) into code like \xC4\x45
