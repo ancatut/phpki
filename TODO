@@ -33,3 +33,5 @@ Fix bug that prevents certs older than a week to display in the Control Panel. <
 Warn user not to use special characters like § or ß in the password (tests with $ / \ ' " worked fine).
 
 What about umlauts in common name? Currently they get converted somehow (maybe by escshellargs?) into code like \xC4\x45
+
+The default signature algorithm is set as default_md = md5 in the conf file and the Signature Algorithm in certs appears to be sha1WithRSAEncryption. This needs to change to sha512. Generally, the  Signature Algorithm needs to be sha512WithRSAEncryption. Investigate how this can be changed and what its implications are, considering the CA key can't be changed at present.
