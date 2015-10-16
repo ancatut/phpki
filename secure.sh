@@ -16,13 +16,14 @@ design of this application to protect the security of your certificates,
 on the condition that you INSTALL IT AS THE ROOT USER.  However, no
 software is 100% secure.  
 
+Please run this script from INSIDE the application folder and AFTER running setup.php.
+
 EOM
 
-read -p "Enter the location of your PHPki password (i.e. /etc/phpkipasswd): " passwd_file
+read -p "Enter the location of your PHPki password [/etc/phpkipasswd]: " passwd_file
+passwd_file=${passwd_file:-"/etc/phpkipasswd"}
 
-echo
-
-if [ ! -f "$passwd_file" ] 
+if [[ ! -f "$passwd_file" ]]
 then
     echo "The file you specified does not yet exist."
     echo "Let's create it and add your first user."
@@ -39,9 +40,7 @@ then
     htpasswd -m "$passwd_file" 'pkiadmin' || exit
 fi
 
-echo
-
-if [ ! "${owner}_" = "root_" ] 
+if [[ ! "${owner}_" = "root_" ]]
 then
 	cat <<EOM
 YOU ARE NOT LOGGED ON AS ROOT!
@@ -51,26 +50,26 @@ available over the Internet, you increase the risk of compromising the
 security of your certifcates and your server.  
 
 This script may not run correctly if you are not the ROOT user.
-
 EOM
 fi
 
-echo -n "Enter the user ID your web server runs as [apache]: " ; read x
 echo
-echo -n "Enter the group ID your web server runs as [apache]: " ; read z
+echo -n "Enter the user ID your web server runs as (apache, www-data etc.) [www-data]: " ; read -r x
+echo
+echo -n "Enter the group ID your web server runs as (apache, www-data etc.) [www-data]: " ; read -r z
 echo
 echo "Enter the IP or subnet address [192.168.0.0/16] which will be allowed access"
-echo -n "to the user admin module in under ./admin: " ; read y
+echo -n "to the user admin module in under ./admin: " ; read -r y
 
-user=${x:-apache}
-group=${z:-apache}
+user=${x:-"www-data"}
+group=${z:-"www-data"}
 subnet=${y:-'192.168.0.0/16'}
 subnet="${subnet} 127.0.0.1"
 
-echo "Working..."
+echo
+echo "Writing htaccess files..."
 
-for i in ./include
-do
+for i in ./include; do
 	echo "deny from all" >$i/.htaccess
 done 
 
@@ -89,15 +88,54 @@ AuthType Basic
 AuthUserFile "$passwd_file"
 require valid-user
 #SSLRequireSSL
-#Order Allow,Deny
-#Allow from $subnet
+Order Allow,Deny
+Allow from $subnet
 
 EOS
+
+echo
+echo "Writing permissions to PHPki web directory..."
 
 # Start with web server getting read-only access to everything.
 # Directories have sticky bits set.
 find .           -exec chown $owner:$group {} \;
+find .   -type l -exec chown -h $owner:$group {} \;
 find . ! -type d -exec chmod 640 {} \;
 find .   -type d -exec chmod 3750 {} \;
 
-echo "Done."
+# Display file list with new permissions
+list_files=`ls -la .`
+echo "$list_files"
+
+echo
+echo "Now we will secure the storage directory."
+read -p "Please enter storage directory path [/var/www/phpki-store]: " -r storage_dir
+storage_dir=${storage_dir:-"/var/www/phpki-store"}
+
+# Secure the storage directory
+
+# Check if other users are in the web server group
+another_user=`egrep ^${group} '/etc/group' | awk -F':' '{print $4}'`
+if [[ $another_user ]]; then
+	echo "Warning: There are other users in the ${group} group and they will get the same group permissions, make sure that's intentional."
+fi
+
+find $storage_dir           -exec chown $user:$group {} \;
+find $storage_dir   -type l -exec chown -h $user:$group {} \;
+find $storage_dir ! -type d -exec chmod 700 {} \;
+find $storage_dir   -type d -exec chmod 700 {} \;
+
+#chown -R -- $owner:$group $storage_dir
+#find . ! -type d -exec chmod 640 {} \;
+#chmod -R 670 -- $storage_dir/CA
+#chmod -R 670 -- $storage_dir/tmp
+#chmod -R 660 -- $storage_dir/config
+
+echo
+echo "Writing permissions to PHPki storage directory..."
+echo
+# Display file list with new permissions
+list_files=`ls -la ${storage_dir}`
+echo "$list_files"
+echo
+echo "All done."
