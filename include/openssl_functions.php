@@ -504,10 +504,10 @@ function CA_create_cert($cert_type='email',$country,$province,$locality,$organiz
 	$cmd_output[] = 'Creating certifcate request.';
 
 	if ($passwd) {
-		exec(REQ." -new -newkey rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' -passout pass:$_passwd  2>&1", $cmd_output, $ret);
+		exec(REQ." -new -".$config['default_md']." -newkey rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' -passout pass:$_passwd  2>&1", $cmd_output, $ret);
 	}
 	else {
-		exec(REQ." -new -nodes -newkey rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' 2>&1", $cmd_output, $ret);
+		exec(REQ." -new -".$config['default_md']." -nodes -newkey rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' 2>&1", $cmd_output, $ret);
 	}
 	
 	# Sign the certificate request and create the certificate

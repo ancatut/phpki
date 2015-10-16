@@ -319,7 +319,7 @@ crl_extensions			= crl_ext
 default_days			= 365
 default_crl_days		= 30
 preserve	 			= no
-default_md	 			= md5
+default_md	 			= sha512
 
 [ ca ]
 default_ca				= email_cert
@@ -573,7 +573,7 @@ EOS;
 	print '<strong>Creating root certificate...</strong><br>';
 	flush();
 
-	exec(REQ . " -x509 -config $tmp_cnf -extensions root_ext -newkey rsa:$keysize -keyout ".$config['cakey']." -out ".$config['cacert_pem']." -passout pass:".$config['ca_pwd']." -days $days 2>&1");
+	exec(REQ . " -x509 -config $tmp_cnf -extensions root_ext -".$config['default_md']." -newkey rsa:$keysize -keyout ".$config['cakey']." -out ".$config['cacert_pem']." -passout pass:".$config['ca_pwd']." -days $days 2>&1");
 
 	# **** DISABLED *****
 	# It appears that both IE and Netscape accept PEM formatted root certificates
@@ -815,7 +815,7 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	</tr>
 
 	<tr>
-	<td width=35%>
+	<td width="35%">
 	<strong>Location of OpenSSL Executable <font color=red>*</font></strong><br>
 	Enter the location of your OpenSSL binary.  The default is usually ok.
 	</td>
@@ -825,7 +825,7 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	</tr>
 
 	<tr>
-	<td width=35%>
+	<td width="35%">
 	<strong>Location of HTTP password file <font color=red>*</font></strong><br>
 	Enter the location of your PHPki user password file.  The default is usually ok.
 	</td>
