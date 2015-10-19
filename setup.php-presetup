@@ -241,7 +241,7 @@ case 'write':
 \$config['cert_dir']      	= \$config['ca_dir']   . '/certs';
 \$config['req_dir']       	= \$config['ca_dir']   . '/requests';
 \$config['crl_dir']       	= \$config['ca_dir']   . '/crl';
-\$config['pfx_dir']       	= \$config['ca_dir']   . '/pfx';
+\$config['pfx_dir']       	= \$config['private_dir']   . '/pfx';
 \$config['index']         	= \$config['ca_dir']   . '/index.txt';
 \$config['serial']        	= \$config['ca_dir']   . '/serial';
 \$config['random']        	= \$config['ca_dir'] . '/.rnd';
