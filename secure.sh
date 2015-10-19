@@ -79,6 +79,7 @@ AuthType Basic
 AuthUserFile "$passwd_file"
 require valid-user
 #SSLRequireSSL
+php_flag magic_quotes_gpc off
 
 EOS
 
@@ -90,6 +91,7 @@ require valid-user
 #SSLRequireSSL
 Order Allow,Deny
 Allow from $subnet
+php_flag magic_quotes_gpc off
 
 EOS
 
@@ -125,11 +127,11 @@ find $storage_dir   -type l -exec chown -h $user:$group {} \;
 find $storage_dir ! -type d -exec chmod 700 {} \;
 find $storage_dir   -type d -exec chmod 700 {} \;
 
-#chown -R -- $owner:$group $storage_dir
-#find . ! -type d -exec chmod 640 {} \;
-#chmod -R 670 -- $storage_dir/CA
-#chmod -R 670 -- $storage_dir/tmp
-#chmod -R 660 -- $storage_dir/config
+# TODO see if these permissions work better:
+# chown -R -- $owner:$group $storage_dir
+# chmod -R 770 -- $storage_dir/CA
+# chmod -R 770 -- $storage_dir/tmp
+# chmod -R 740 -- $storage_dir/config
 
 echo
 echo "Writing permissions to PHPki storage directory..."
