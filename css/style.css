@@ -179,3 +179,37 @@ pre {
 	white-space: -o-pre-wrap;
 	word-wrap: break-word;
 }
+
+.btn {
+  background: #ffffff;
+  background-image: -webkit-linear-gradient(top, #ffffff, #f5f5f5);
+  background-image: -moz-linear-gradient(top, #ffffff, #f5f5f5);
+  background-image: -ms-linear-gradient(top, #ffffff, #f5f5f5);
+  background-image: -o-linear-gradient(top, #ffffff, #f5f5f5);
+  background-image: linear-gradient(to bottom, #ffffff, #f5f5f5);
+  -webkit-border-radius: 20;
+  -moz-border-radius: 20;
+  border-radius: 20px;
+  /*text-shadow: 1px 0px 1px #8a8a8f;*/
+  -webkit-box-shadow: 0px 1px 6px #666666;
+  -moz-box-shadow: 0px 1px 6px #666666;
+  box-shadow: 0px 1px 6px #666666;
+  font-family: Arial;
+  color: #212121;  
+  padding: 3px 10px 3px 10px;
+  border: solid #1f628d 0px;
+  outline: none;
+  text-decoration: none;
+  margin: 0.2em 0.4em 0.2em 0.2em;
+}
+.btn:hover {
+  background: #AFC3E4;
+  outline: none;
+  text-decoration: none;
+}
+.btn:focus {
+  background: #AFC3E4;
+  outline: none;
+  text-decoration: none;
+}
+

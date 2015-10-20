@@ -1,5 +1,4 @@
 <?php
-
 include('../config.php');
 include(STORE_DIR.'/config/config.php');
 include('../include/my_functions.php');
@@ -72,15 +71,16 @@ case 'dl-confirm':
 	<strong>File type: </strong>
 	<select name="dl_type">
 	<option value="PKCS#12">PKCS#12 Bundle</option>
+	<option value="PKCS#12-OPENVPN">Archived PKCS#12 Bundle and OpenVPN config</option>
 	<option value="PEMCERT">PEM Certificate</option>
 	<option value="PEMKEY">PEM Key</option>
 	<option value="PEMBUNDLE">PEM Bundle</option>
 	<option value="PEMCABUNDLE">PEM Bundle w/Root</option>
 	</select>
 
-	<input type="submit" name="submit" value="Download">
+	<input class="btn" type="submit" name="submit" value="Download">
 	&nbsp; or &nbsp;
-	<input type="submit" name="submit" value="Go Back">
+	<input class="btn" type="submit" name="submit" value="Go Back">
 	</form>
 	<?php
 
@@ -94,6 +94,10 @@ case 'download':
 	switch ($dl_type) {
 	case 'PKCS#12':
 		upload("$config[pfx_dir]/$serial.pfx", "$rec[common_name] ($rec[email]).p12", 'application/x-pkcs12');
+		break;
+	case 'PKCS#12-OPENVPN':
+		create_openvpn_archive($serial);
+		upload("$config[archive_dir]/$serial.zip", "$rec[common_name] ($rec[email]).zip", 'application/zip');
 		break;
 	case 'PEMCERT':
 		upload("$config[new_certs_dir]/$serial.pem", "$rec[common_name] ($rec[email]).pem",'application/pkix-cert');
@@ -149,8 +153,8 @@ case 'revoke-form':
        	<p><form action="'.$PHP_SELF.'?'.$qstr_sort.'&'.$qstr_filter.' method="post">
 	<input type="hidden" name="stage" value="revoke" >
 	<input type="hidden" name="serial" value='.$serial.' >
-       	<input type="submit" name="submit" value="Yes" >&nbsp
-       	<input type="submit" name="submit" value="Cancel">
+       	<input class="btn" type="submit" name="submit" value="Yes" >&nbsp
+       	<input class="btn" type="submit" name="submit" value="Cancel">
        	</form>';
 	
 	break;
@@ -268,8 +272,8 @@ case 'renew-form':
 	<tr>
 	<td>
 	<div style="text-align:center">
-	<input type="submit" name="submit" value="Submit Request">
-	<input type="submit" name="submit" value="Back"></div>
+	<input class="btn" type="submit" name="submit" value="Submit Request">
+	<input class="btn" type="submit" name="submit" value="Back"></div>
 	</td>
 	<td>
 	<input type="hidden" name="stage" value="renew">
@@ -379,7 +383,7 @@ default:
  
 	$stcolor = array('Valid'=>'green', 'Revoked'=>'red', 'Expired'=>'orange');
 
-	 foreach($db as $rec) {
+    foreach($db as $rec) {
 		print '<tr style="font-size: 11px;">
 			 <td><font color='.$stcolor[$rec['status']].'><b>' .$rec['status'].'</b></font></td>
 			 <td style="white-space: nowrap">'.$rec['issued'].'</td>

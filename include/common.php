@@ -66,69 +66,69 @@ function printHeader($withmenu="default") {
 	case 'setup':
 	?>
 		<div class="<?php echo $menuclass?>">
-			<a class="<?php echo $menuclass ?>" href="readme.php">ReadMe</a>
-			<a class="<?php echo $menuclass ?>" href="setup.php">Setup</a>
-			<a class="<?php echo $menuclass ?>" href="about.php" target="_about">About</a>
+			<a href="readme.php"><button class="btn">ReadMe</button></a>
+			<a href="setup.php"><button class="btn">Setup</button></a>
+			<a href="about.php"><button class="btn">About</button></a>
 		</div>
 		<?php
 		break;
 	case 'public':
-		print "<div class='".$menuclass."'>";
+		print "<div class=".$menuclass.">";
 
 		if (DEMO)  {
-			print "<a class='".$menuclass."' href='index.php'>Public</a>";
-			print "<a class='".$menuclass."' href='ca/'>Manage</a>";
+			print "<a href='index.php'><button class='btn'>Public</button></a>";
+			print "<a href='ca/'><button class='btn'>Manage</button></a>";
 		}
 		else {
-			print "<a class='".$menuclass."' href='index.php'>Public Menu</a>";
-			print "<a class='".$menuclass."' href='ca/index.php'>Manage CA</a>";
+			print "<a href='index.php'><button class='btn'>Public Menu</button></a>";
+			print "<a href='ca/index.php'><button class='btn'>Manage CA</button></a>";
 		}
 
 		if (file_exists('policy.html')) {
-			print "<a class='".$menuclass."' style='color: red' href='policy.html' target='help'>Policy</a>";
+			print "<a style='color: red' href='policy.html' target='help'><button class='btn'>Policy</button></a>";
 		}
 		?>		
-		<a class="<?php print $menuclass?>" href="help.php" target="_help">Help</a>
-		<a class="<?php print $menuclass?>" href="about.php" target="_about">About</a>
+		<a href="help.php"><button class="btn">Help</button></a>
+		<a href="about.php"><button class="btn">About</button></a>
 		</div>
 		<?php
 		break;
 	case 'ca':
 	default:
-		print "<div class='".$menuclass."'>";
+		print "<div class=".$menuclass.">";
 
 		if (DEMO)  {
-			print "<a class='".$menuclass."' href='../index.php'>Public</a>";
-			print "<a class='".$menuclass."' href='../ca/index.php'>Manage</a>";
+			print "<a href='../index.php'>Public</a>";
+			print "<a href='../ca/index.php'><button class='btn'>Manage CA</button></a>";
 		}
 		else {
-			print "<a class='".$menuclass."' href='../ca/index.php'>Manage CA</a>";
+			print "<a href='../ca/index.php'><button class='btn'>Manage CA</button></a>";
 		}
 		?>
-		<a class="<?php print $menuclass?>" href="../admin/index.php">Admin Panel</a>
+		<a href="../openvpn/change_openvpn_settings.php"><button class="btn">Edit OpenVPN Config</button></a>
+		<a href="../admin/index.php"><button class="btn">Admin Panel</button></a>
 		<?php
 		if (file_exists('../policy.html')) {
-			print "<a class='".$menuclass."' style='color: red' href='../policy.html' target='help'>Policy</a>";
+			print "<a style='color: red' href='../policy.html'><button class='btn'>Policy</button></a>";
 		}
 		?>
 
-		<a class="<?php print $menuclass?>" href='../help.php' target='_help'>Help</a>
-		<a class="<?php print $menuclass?>" href='../about.php' target='_about'>About</a>
+		<a href='../help.php'><button class="btn">Help</button></a>
+		<a href='../about.php'><button class="btn">About</button></a>
 		</div>
 		<?php
 	}
 		?>
-	<hr width="99%" align="left" color="#99caff">
+	<hr width="100%" align="left" color="#99caff">
 	<?php
 }
-
 
 function printFooter() {
 	?>
 	<br>
 	<hr width="99%" align="left" color="#99caff">
 	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Based on PHPki <a href="http://sourceforge.net/projects/phpki/">v<?=PHPKI_VERSION?></a> - Copyright 2003 - William E. Roadcap</p>
-	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.10.3">v0.10.3</a></p>
+	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.10.4">v0.10.4</a></p>
 	</body>
 	</html>
 	<?php

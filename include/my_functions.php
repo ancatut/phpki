@@ -63,6 +63,30 @@ function upload($source, $destination, $content_type="application/octet-stream")
 #        fclose($fd);
 }
 
+# When called, this function creates or updates the config file for a user.
+# The config file will be stored in $config['openvpn_client_configs'] folder.
+# The config file is used for connecting via OpenVPN.
+# It requires the user serial number and the file extension (.conf or .ovpn).
+# These config files are archived with the PKCS#12 file into a .zip file to be sent to the user's email address.
+function create_client_openvpn_config($extension, $name, $email) {
+	
+	
+#	AWKOUT = exec("awk '/^[^#]/ {print "s/"$1"/"$2"/;"}' < openvpn_config_params.txt");
+#	exec('sed -f substitute.sed < '.$config['openvpn_client_config_template'].' > '
+#			.escshellarg($name)." (".escshellarg($email).").".escshellarg($extension));
+			
+	
+}
+
+# This function generates the .zip archive containing the PKCS#12 bundle
+# and the .ovpn and .conf configuration files for the client.
+function create_openvpn_archive($serial) {
+	global $config;
+	create_client_openvpn_config($serial, '.ovpn');
+	create_client_openvpn_config($serial, '.conf');
+	exec('zip '. escshellarg($v));
+	return ovpn_arch;
+}
 
 #
 # Returns a value from the GET/POST global array referenced
@@ -231,6 +255,15 @@ function eregi_array($regexp, $arr) {
 #
 function my_file_get_contents($f) {
 	return implode('', file($f));
+}
+
+# 
+# Returns the previous page the user was on if not the same as the current page, for navigation
+#
+function back_link() {
+	if (isset($_SERVER['HTTP_REFERER']) && ($_SERVER['HTTP_REFERER'] != $_SERVER['REQUEST_URI']))
+		return $_SERVER['HTTP_REFERER'];
+	else return "";
 }
 
 ?>
