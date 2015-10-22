@@ -110,12 +110,10 @@ default:
 	<br>
 	<br>
 	<div style="text-align:center">
-	<table class="menu"><tr><th class="menu">SYSADMIN MENU</th></tr>
-	<tr><td class="menu" style="padding-left: 1em;"><table>
-	<tr><td class="menu-pad"><a href="<?php echo $PHP_SELF?>?stage=add_user_form">Add User or Change Password</a></td></tr>
-	<tr><td class="menu-pad"><a href="<?php echo $PHP_SELF?>?stage=del_user_form">Remove User</a></td></tr>
-	<tr><td class="menu-pad"><a href="<?php echo $PHP_SELF?>?stage=list_users">List Password File Contents</a></td></tr>
-	</table></td></tr>
+	<table class="menu"><tr><th><h3>SYSADMIN MENU</h3></th></tr>
+	<tr><td><a href="<?php echo $PHP_SELF?>?stage=add_user_form"><strong>Add User or Change Password</strong></a></td></tr>
+	<tr><td><a href="<?php echo $PHP_SELF?>?stage=del_user_form"><strong>Remove User</strong></a></td></tr>
+	<tr><td><a href="<?php echo $PHP_SELF?>?stage=list_users"><strong>List Password File Contents</strong></a></td></tr>
 	</table>
 	</div>
 	<br><br>

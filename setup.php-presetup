@@ -70,26 +70,26 @@ $openvpn_client_cnf_dir = gpvar('openvpn_client_cnf_dir');
 if ($base_url && substr($base_url,-1) != '/') $base_url .= '/';
 
 $hidden_fields = '
-    <input type="hidden" name="country" value="' . htvar($country) . '">
-    <input type="hidden" name="province" value="' . htvar($province) . '">
-    <input type="hidden" name="locality" value="' . htvar($locality) . '">
-    <input type="hidden" name="organization" value="' . htvar($organization) . '">
-    <input type="hidden" name="unit" value="' . htvar($unit) . '">
-    <input type="hidden" name="contact" value="' . htvar($contact) . '">
-    <input type="hidden" name="common_name" value="' . htvar($common_name) . '">
-    <input type="hidden" name="passwd" value="' . htvar($passwd) . '">
-    <input type="hidden" name="passwdv" value="' . htvar($passwdv) . '">
-    <input type="hidden" name="expiry" value="' . htvar($expiry) . '">
-    <input type="hidden" name="keysize" value="' . htvar($keysize) . '">
-    <input type="hidden" name="base_url" value="' . htvar($base_url) . '">
-    <input type="hidden" name="openssl_bin" value="' . htvar($openssl_bin) . '">
-    <input type="hidden" name="getting_help" value="' . htvar($getting_help) . '">
-    <input type="hidden" name="ca_prefix" value="' . htvar($ca_prefix) . '">
-    <input type="hidden" name="header_title" value="' . htvar($header_title) . '">
-    <input type="hidden" name="passwd_file" value="' . htvar($passwd_file) . '">
-    <input type="hidden" name="store_dir" value="' . htvar($store_dir) . '">
-    <input type="hidden" name="openvpn_client_cnf_file" value="' . htvar($openvpn_client_cnf_file) . '">
-    <input type="hidden" name="openvpn_client_cnf" value="' . htvar($openvpn_client_cnf) . '">
+    <input class="btn" type="hidden" name="country" value="' . htvar($country) . '">
+    <input class="btn" type="hidden" name="province" value="' . htvar($province) . '">
+    <input class="btn" type="hidden" name="locality" value="' . htvar($locality) . '">
+    <input class="btn" type="hidden" name="organization" value="' . htvar($organization) . '">
+    <input class="btn" type="hidden" name="unit" value="' . htvar($unit) . '">
+    <input class="btn" type="hidden" name="contact" value="' . htvar($contact) . '">
+    <input class="btn" type="hidden" name="common_name" value="' . htvar($common_name) . '">
+    <input class="btn" type="hidden" name="passwd" value="' . htvar($passwd) . '">
+    <input class="btn" type="hidden" name="passwdv" value="' . htvar($passwdv) . '">
+    <input class="btn" type="hidden" name="expiry" value="' . htvar($expiry) . '">
+    <input class="btn" type="hidden" name="keysize" value="' . htvar($keysize) . '">
+    <input class="btn" type="hidden" name="base_url" value="' . htvar($base_url) . '">
+    <input class="btn" type="hidden" name="openssl_bin" value="' . htvar($openssl_bin) . '">
+    <input class="btn" type="hidden" name="getting_help" value="' . htvar($getting_help) . '">
+    <input class="btn" type="hidden" name="ca_prefix" value="' . htvar($ca_prefix) . '">
+    <input class="btn" type="hidden" name="header_title" value="' . htvar($header_title) . '">
+    <input class="btn" type="hidden" name="passwd_file" value="' . htvar($passwd_file) . '">
+    <input class="btn" type="hidden" name="store_dir" value="' . htvar($store_dir) . '">
+    <input class="btn" type="hidden" name="openvpn_client_cnf_file" value="' . htvar($openvpn_client_cnf_file) . '">
+    <input class="btn" type="hidden" name="openvpn_client_cnf" value="' . htvar($openvpn_client_cnf) . '">
 ';
 
 switch ($stage) {
@@ -149,9 +149,9 @@ case 'validate':
              ?>
 
             <form action="<?php print $PHP_SELF ?>" method="post">
-            <input type="submit" name="Submit" value="Go Back">
+            <input class="btn" type="submit" name="Submit" value="Go Back">
             <font color="#ff0000"><?php print "$er" ?></font>
-            <br><input type="submit" name="Submit2" value="Go Back">
+            <br><input class="btn" type="submit" name="Submit2" value="Go Back">
 
             <?php
             print $hidden_fields; 
@@ -655,7 +655,7 @@ EOS;
 	<h3><font color="red">SECURITY WARNING!&nbsp;&nbsp; Be sure to run the <cite>secure.sh</cite> shell script as the <strong>root</strong> user.</font></h3>
 	<br><br>
 	<form action="index.php">
-	<input type="submit" name="submit" value="Proceed To The PHPki Main Menu">
+	<input class="btn" type="submit" name="submit" value="Proceed To The PHPki Main Menu">
 	</form>
 	</div>
 	<?php
@@ -723,12 +723,12 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 
 	<tr>
 	<td style="width:35%"><strong>Organization</strong> <font color=red>*</font></td>
-	<td><input type="text" name="organization" value="<?php print htvar($organization) ?>" maxlength="60" size="40"></td>
+	<td><input class="btn" type="text" name="organization" value="<?php print htvar($organization) ?>" maxlength="60" size="40"></td>
 	</tr>
 
 	<tr>
 	<td><strong>Department/Unit</strong> <font color=red>*</font></td>
-	<td><input type="text" name="unit" value="<?php print htvar($unit) ?>" maxlength="60" size="40"></td>
+	<td><input class="btn" type="text" name="unit" value="<?php print htvar($unit) ?>" maxlength="60" size="40"></td>
 	</tr>
 
 	<tr>
@@ -737,7 +737,7 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	e-mail clients as the <cite>Issued By:</cite> text.  This is usually
 	the full name of your certificate authority (i.e. ACME Certificate Authority).
 	</td>
-	<td><input type="text" name="common_name" value="<?php print htvar($common_name) ?>" maxlength="60" size="40"></td>
+	<td><input class="btn" type="text" name="common_name" value="<?php print htvar($common_name) ?>" maxlength="60" size="40"></td>
 	</tr>
 
 	<tr>
@@ -745,22 +745,22 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	Enter an e-mail address where users should send correspondence
 	regarding your certificate authority and the certificates you issue.
 	</td>	
-	<td><input type="text" name="contact" value="<?php print htvar($contact) ?>" maxlength="60" size="30"></td>
+	<td><input class="btn" type="text" name="contact" value="<?php print htvar($contact) ?>" maxlength="60" size="30"></td>
 	</tr>
 
 	<tr>
 	<td style="width:35%"><strong>Locality</strong> <font color="red">*</font></td>
-	<td><input type="text" name="locality" value="<?php print htvar($locality) ?>" maxlength="60" size="30"></td>
+	<td><input class="btn" type="text" name="locality" value="<?php print htvar($locality) ?>" maxlength="60" size="30"></td>
 	</tr>
 
 	<tr>
 	<td style="width:35%"><strong>State/Province</strong> <font color=red>*</font></td>
-	<td><input type="text" name="province" value="<?php print htvar($province) ?>" maxlength="60" size="20"></td>
+	<td><input class="btn" type="text" name="province" value="<?php print htvar($province) ?>" maxlength="60" size="20"></td>
 	</tr>
 
 	<tr>
 	<td style="width:35%"><strong>Country</strong> <font color="red">*</font></td>
-	<td><input type="text" name="country" value="<?php print htvar($country) ?>" maxlength="3" size="2"></td>
+	<td><input class="btn" type="text" name="country" value="<?php print htvar($country) ?>" maxlength="3" size="2"></td>
 	</tr>
 
 	<tr>
@@ -768,8 +768,8 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	This password will be used to protect your root certificate private
 	key.  <strong><font color=red>Do not lose or forget this password.</font></strong>
 	</td>
-	<td><input type="password" name="passwd" value="<?php print htvar($passwd) ?>" size="40">&nbsp;&nbsp; 
-	Again: <input type="password" name="passwdv" value="<?php print htvar($passwdv) ?>" size="40"></td>
+	<td><input class="btn" type="password" name="passwd" value="<?php print htvar($passwd) ?>" size="40">&nbsp;&nbsp; 
+	Again: <input class="btn" type="password" name="passwdv" value="<?php print htvar($passwdv) ?>" size="40"></td>
 	</tr>
 
 	<tr>
@@ -812,7 +812,7 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	by your CA, for informational purposes.
 	</td>
 	<td>
-	<input type="text" name="base_url" value="<?php print htvar($base_url) ?>" size="50">
+	<input class="btn" type="text" name="base_url" value="<?php print htvar($base_url) ?>" size="50">
 	</td>
 	</tr>
 
@@ -832,7 +832,7 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	outside of DOCUMENT_ROOT (<?php print $_SERVER['DOCUMENT_ROOT'] ?>).  You may have to manually create the directory before completing this form.
 	</td>
 	<td>
-	<input type="text" name="store_dir" value="<?php print htvar($store_dir) ?>" size="50">
+	<input class="btn" type="text" name="store_dir" value="<?php print htvar($store_dir) ?>" size="50">
 	</td>
 	</tr>
 
@@ -842,7 +842,7 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	Enter the location of your OpenSSL binary.  The default is usually ok.
 	</td>
 	<td>
-	<input type="text" name="openssl_bin" value="<?php print htvar($openssl_bin) ?>" size="50">
+	<input class="btn" type="text" name="openssl_bin" value="<?php print htvar($openssl_bin) ?>" size="50">
 	</td>
 	</tr>
 
@@ -852,7 +852,7 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	Enter the location of your PHPki user password file. The default is usually ok.
 	</td>
 	<td>
-	<input type="text" name="passwd_file" value="<?php print htvar($passwd_file) ?>" size="50">
+	<input class="btn" type="text" name="passwd_file" value="<?php print htvar($passwd_file) ?>" size="50">
 	</td>
 	</tr>
 
@@ -866,7 +866,7 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	<cite>"acme_caroot.crt"</cite>.
 	</td>
 	<td>
-	<input type="text" name="ca_prefix" value="<?php print htvar($ca_prefix) ?>" maxlength="10" size="10">
+	<input class="btn" type="text" name="ca_prefix" value="<?php print htvar($ca_prefix) ?>" maxlength="10" size="10">
 	</td>
 	</tr>
 
@@ -876,7 +876,7 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	This title will be displayed superimposed over the PHPki logo at the top of every page.
 	</td>
 	<td>
-	<input type="text" name="header_title" value="<?php print htvar($header_title) ?>" maxlength="50" size="50">
+	<input class="btn" type="text" name="header_title" value="<?php print htvar($header_title) ?>" maxlength="50" size="50">
 	</td>
 	</tr>
 
@@ -886,7 +886,7 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	Enter the location of the OpenVPN Client Config File. It's recommended to leave this as it is.
 	</td>
 	<td>
-	<input type="text" name="openvpn_client_cnf_file" value="<?php print htvar($openvpn_client_cnf_file) ?>" size="50">
+	<input class="btn" type="text" name="openvpn_client_cnf_file" value="<?php print htvar($openvpn_client_cnf_file) ?>" size="50">
 	</td>
 	</tr>
 
@@ -897,7 +897,7 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	under the OpenVPN panel.
 	</td>
 	<td>	
-	<textarea name="openvpn_client_cnf" cols="50" rows="15"><?php print htvar($openvpn_client_cnf); ?></textarea>
+	<pre><textarea name="openvpn_client_cnf" class="btn" cols="50" rows="15"><?php print htvar($openvpn_client_cnf); ?></textarea></pre>
 	</td>
 	</tr>
 
@@ -907,15 +907,15 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	This text will be inserted into the online help document under the "Getting Additional Help" section. Include full contact info for the convenience of your users. Use HTML tags to improve presentation.
 	</td>
 	<td>
-	<textarea name="getting_help" cols="50" rows="15"><?php print htvar($getting_help) ?></textarea>
+	<textarea name="getting_help" class="btn" cols="50" rows="15"><?php print htvar($getting_help) ?></textarea>
 	</td>
 	</tr>
 	</table>
 
 	<font color="red">* Required field</font>
 	
-	<div style="text-align:center"><input type="submit" name="submit" value="Submit"></div>
-	<input type="hidden" name="stage" value="validate">
+	<div style="text-align:center"><input class="btn" type="submit" name="submit" value="Submit"></div>
+	<input class="btn" type="hidden" name="stage" value="validate">
 	</form>
 
 <?php
