@@ -62,7 +62,10 @@ $getting_help = gpvar('getting_help');
 $ca_prefix    = gpvar('ca_prefix');
 $header_title = gpvar('header_title');
 $store_dir    = gpvar('store_dir');
+$openvpn_client_cnf_file = gpvar('openvpn_client_cnf_file');
 $openvpn_client_cnf = gpvar('openvpn_client_cnf');
+$openvpn_cnf_dir = gpvar('openvpn_cnf_dir');
+$openvpn_client_cnf_dir = gpvar('openvpn_client_cnf_dir');
 
 if ($base_url && substr($base_url,-1) != '/') $base_url .= '/';
 
@@ -85,6 +88,7 @@ $hidden_fields = '
     <input type="hidden" name="header_title" value="' . htvar($header_title) . '">
     <input type="hidden" name="passwd_file" value="' . htvar($passwd_file) . '">
     <input type="hidden" name="store_dir" value="' . htvar($store_dir) . '">
+    <input type="hidden" name="openvpn_client_cnf_file" value="' . htvar($openvpn_client_cnf_file) . '">
     <input type="hidden" name="openvpn_client_cnf" value="' . htvar($openvpn_client_cnf) . '">
 ';
 
@@ -113,9 +117,9 @@ case 'validate':
 	if ( $passwd and $passwd != $passwdv )
 		$er .= 'Password and password verification do not match.<br>';
 
-        if ( $contact && ! is_email($contact) )
-            $er .= 'E-mail address ('. htvar($contact) . ') may be invalid.<br>';
-        
+    if ( $contact && ! is_email($contact) )
+        $er .= 'E-mail address ('. htvar($contact) . ') may be invalid.<br>';
+    
 	if (strpos($store_dir,$_SERVER['DOCUMENT_ROOT']) === 0)
 		$er .= 'Store directory must exist somewhere outside of DOCUMENT_ROOT ('.$_SERVER['DOCUMENT_ROOT'].').<br>';
 
@@ -137,25 +141,25 @@ case 'validate':
 		}
 	}
 
-        if ( $er )
-                $er = '<h2>ERROR(S) IN FORM:</h2><h4><blockquote>' . $er . '</blockquote></h4>';
+    if ( $er )
+            $er = '<h2>ERROR(S) IN FORM:</h2><h4><blockquote>' . $er . '</blockquote></h4>';
 
-        if ($er)  {
-                printHeader('setup');
-                 ?>
+    if ($er)  {
+            printHeader('setup');
+             ?>
 
-                <form action="<?php print $PHP_SELF ?>" method="post">
-                <input type="submit" name="Submit" value="Go Back">
-                <font color="#ff0000"><?php print "$er" ?></font>
-                <br><input type="submit" name="Submit2" value="Go Back">
+            <form action="<?php print $PHP_SELF ?>" method="post">
+            <input type="submit" name="Submit" value="Go Back">
+            <font color="#ff0000"><?php print "$er" ?></font>
+            <br><input type="submit" name="Submit2" value="Go Back">
 
-                <?php
-                print $hidden_fields; 
-                ?>
-                </form>
-				<?php
-                printFooter();
-                break;
+            <?php
+            print $hidden_fields; 
+            ?>
+            </form>
+			<?php
+            printFooter();
+            break;
 	}
 
 case 'write':
@@ -177,7 +181,11 @@ case 'write':
 	if (! file_exists("$store_dir/CA/newcerts")) mkdir("$store_dir/CA/newcerts",$store_perms);
 	if (! file_exists("$store_dir/CA/requests")) mkdir("$store_dir/CA/requests",$store_perms);
 	if (! file_exists("$store_dir/CA/crl")) mkdir("$store_dir/CA/crl",$store_perms);
-	if (! file_exists("$store_dir/CA/pfx")) mkdir("$store_dir/CA/pfx",$store_perms);
+	if (! file_exists("$store_dir/CA/private/pfx")) mkdir("$store_dir/CA/private/pfx",$store_perms);
+
+	if (! file_exists("$openvpn_cnf_dir")) mkdir("$openvpn_client_cnf_dir",$store_perms);
+	if (! file_exists("$openvpn_client_cnf_dir")) mkdir("$openvpn_client_cnf_dir",$store_perms);
+
 
 
 	#
@@ -197,13 +205,13 @@ case 'write':
 \$config['locality']    	= '$locality';
 \$config['province']     	= '$province';
 \$config['country']     	= '$country';
-\$config['common_name']  = '$common_name';
+\$config['common_name']  	= '$common_name';
 
 # Store Directory
-\$config['store_dir']	 = '$store_dir';
+\$config['store_dir']	 	= '$store_dir';
 
 # Location HTTP Password File
-\$config['passwd_file']	= '$passwd_file';
+\$config['passwd_file']		= '$passwd_file';
 
 # Password for CA root certificate.
 \$config['ca_pwd'] 			= '$passwd';
@@ -253,12 +261,12 @@ case 'write':
 # Default OpenSSL Config File.
 \$config['openssl_cnf']   = \$config['home_dir'] . '/config/openssl.cnf';
 
-
 # Default signature algorithm.
 \$config['default_md'] 	= 'sha512';
 
 # Default OpenVPN Client Config Directory.
-\$config['openvpn_client_cnf_dir'] = \$config['store_dir'] . '/config/openvpn_config/clients';
+\$config['openvpn_cnf_dir'] = \$config['store_dir'] . '/config/openvpn-config';
+\$config['openvpn_client_cnf_dir'] = \$config['openvpn_cnf_dir'] . '/clients';
 
 \$PHPki_admins = Array(md5('pkiadmin'));
 
@@ -626,8 +634,7 @@ EOS;
 	#
 	# Write out the general OpenVPN config file
 	# This is the base config file and later extra client info is appended 
-	# The final config file is used by the client in order to connect to an OpenVPN server
-	exec('mkdir '.$config['openvpn_client_cnf_dir']);
+	# The final config file is used by the client in order to connect to an OpenVPN server	
 	exec('touch '.$config['openvpn_client_cnf_dir'].'/general_client.conf');
 	$fd = fopen($config['openvpn_client_cnf_dir']."/general_client.conf", 'w');
 	fwrite($fd, $openvpn_client_cnf);
@@ -699,7 +706,8 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	if (! $passwd_file) $passwd_file = $config['passwd_file'];
 	if (! $passwd_file) $passwd_file = dirname($_SERVER['DOCUMENT_ROOT']).'/phpkipasswd';
 
-	if (! $openvpn_client_cnf) $openvpn_client_cnf = $config['openvpn_client_cnf'];
+	if (! $openvpn_cnf_dir) $openvpn_cnf_dir = $config['openvpn_cnf_dir'];
+	if (! $openvpn_cnf_dir) $openvpn_cnf_dir = $store_dir."/config/openvpn-config";
 	
 	if (! $header_title) $header_title = $config['header_title'];
 	if (! $header_title) $header_title = 'Certificate Authority';
@@ -878,7 +886,7 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	Enter the location of the OpenVPN Client Config File. It's recommended to leave this as it is.
 	</td>
 	<td>
-	<input type="text" name="openvpn_client_cnf_file" value="<?php print htvar($openvpn_client_cnf) ?>" size="50">
+	<input type="text" name="openvpn_client_cnf_file" value="<?php print htvar($openvpn_client_cnf_file) ?>" size="50">
 	</td>
 	</tr>
 
@@ -889,8 +897,7 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	under the OpenVPN panel.
 	</td>
 	<td>	
-	<input type="text" name="openvpn_client_cnf" value="<?php if (file_get_contents(htvar($openvpn_client_cnf)) != "") 
-		print file_get_contents(htvar($openvpn_client_cnf)) ?>" cols="50" rows="15">
+	<textarea name="openvpn_client_cnf" cols="50" rows="15"><?php print htvar($openvpn_client_cnf); ?></textarea>
 	</td>
 	</tr>
 
