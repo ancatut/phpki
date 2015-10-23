@@ -213,7 +213,7 @@ case 'renew-form':
 	<form action="<?php echo $PHP_SELF.'?'.$qstr_sort.'&'.$qstr_filter ?>" method="post" name="form">
 	<table style="width:99%">	
 	<tr>
-	<th colspan="2"><h3>Certificate Renewal Form</h3></th>
+	<th colspan="2">Certificate Renewal Form</th>
 	</tr>
 	<tr>
 	<td width="25%">Common Name </td>
@@ -341,11 +341,11 @@ default:
 	}
 
 	if ($ascdec == 'A') {
-		$arrow_gif = '../images/uparrow-blue.gif';
+		$arrow_gif = '../images/blue-go-up.png';
 		$ht_ascdec = 'D';
 	}
 	else {
-		$arrow_gif = '../images/downarrow-blue.gif';
+		$arrow_gif = '../images/blue-go-down-th.png';
 		$ht_ascdec = 'A';
 	}
 
@@ -408,7 +408,7 @@ default:
 			
 		print '
 		<a href="'.$PHP_SELF.'?stage=renew-form&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
-		'<img src="../images/renew.png" alt="Renew" title="Renew the certificate by revoking it, if necessary, and creating a replacement with a new expiration date."></a></td></tr>';
+		'<img src="../images/view-refresh-th.png" alt="Renew" title="Renew the certificate by revoking it, if necessary, and creating a replacement with a new expiration date."></a></td></tr>';
 		
 	}
 ?>
