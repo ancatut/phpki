@@ -301,49 +301,49 @@ default:
 	
 	<form action="<?php print $PHP_SELF?>" method="post" name="request">
 	<div>
-	<table style="width:99%">
+	<table style="width: 100%">
 	<tr><th colspan="2"><h2>Certificate Request Form</h2></th></tr>
 
 	<tr>
 	<td width=30%>Common Name<br>(i.e. User real name or computer hostname) </td>
-	<td><input class="btn" type="text" name="common_name" value="<?php print  htvar($common_name)?>" size="50" maxlength="60"></td>
+	<td><input class="inputbox" type="text" name="common_name" value="<?php print  htvar($common_name)?>" size="50" maxlength="60"></td>
 	</tr>
 
 	<tr>
 	<td>E-mail Address </td>
-	<td><input class="btn" type="text" name="email" value="<?php print htvar($email)?>" size="50" maxlength="60"></td>
+	<td><input class="inputbox" type="text" name="email" value="<?php print htvar($email)?>" size="50" maxlength="60"></td>
 	</tr>
 
 	<tr>
 	<td>Organization (Company/Agency)</td>
-	<td><input class="btn" type="text" name="organization" value="<?php print htvar($organization)?>" size="60" maxlength="60"></td>
+	<td><input class="inputbox" type="text" name="organization" value="<?php print htvar($organization)?>" size="60" maxlength="60"></td>
 	</tr>
 
 	<tr>
-	<td>Department/Unit </td><td><input class="btn" type="text" name="unit" value="<?php print  htvar($unit) ?>" size="40" maxlength="60"></td>
+	<td>Department/Unit </td><td><input class="inputbox" type="text" name="unit" value="<?php print  htvar($unit) ?>" size="40" maxlength="60"></td>
 	</tr>
 
 	<tr>
-	<td>Locality (City/County)</td><td><input class="btn" type="text" name="locality" value="<?php print  htvar($locality) ?>" size=30 maxlength=30></td>
+	<td>Locality (City/County)</td><td><input class="inputbox" type="text" name="locality" value="<?php print  htvar($locality) ?>" size=30 maxlength=30></td>
 	</tr>
 
 	<tr>
-	<td>State/Province</td><td><input class="btn" type="text" name="province" value="<?php print  htvar($province) ?>" size=30 maxlength=30></td>
+	<td>State/Province</td><td><input class="inputbox" type="text" name="province" value="<?php print  htvar($province) ?>" size=30 maxlength=30></td>
 	</tr>
 
 	<tr>
 	<td>Country</td>
-	<td><input class="btn" type="text" name="country" value="<?php print  htvar($country) ?>" size=2 maxlength=2></td>
+	<td><input class="inputbox" type="text" name="country" value="<?php print  htvar($country) ?>" size=2 maxlength=2></td>
 	</tr>
 
 	<tr>
 	<td>Certificate Password </td>
-	<td><input type="password" class="btn" name="passwd" value="<?php print  htvar($passwd) ?>" size="30">&nbsp;&nbsp; Again <input class="btn" type=password name=passwdv  value="<?php print  htvar($passwdv) ?>" size=30></td>
+	<td><input type="password" class="inputbox" name="passwd" value="<?php print  htvar($passwd) ?>" size="30">&nbsp;&nbsp; Again <input class="inputbox" type=password name=passwdv  value="<?php print  htvar($passwdv) ?>" size=30></td>
 	</tr>
 
 	<tr>
 	<td>Certificate Life </td>
-	<td><select class="btn" name="expiry">
+	<td><select class="inputbox" name="expiry">
 	<?php
 
 	# Fixed bug where certificate life would rever to 1 Month if < 1 Year
@@ -362,7 +362,7 @@ default:
 
 	<tr>
 	<td>Key Size </td>
-	<td><select class="btn" name="keysize">
+	<td><select class="inputbox" name="keysize">
 	<?php
 	for ( $i = 512 ; $i < 4096 ; $i+= 512 ) {
 		print "<option value=$i " . ($keysize == $i ? "selected='selected'" : "") . " >$i bits</option>\n" ;
@@ -374,7 +374,7 @@ default:
 
 	<tr>
 	<td>Certificate Use: </td>
-	<td><select class="btn" name="cert_type">
+	<td><select class="inputbox" name="cert_type">
 	<?php
 	print "<option value='email' ".($cert_type=="email"?"selected":"").">E-mail, SSL Client</option>";
 	print "<option value='email_signing' ".($cert_type=="email_signing"?"selected":"").">E-mail, SSL Client, Code Signing</option>";

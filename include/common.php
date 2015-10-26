@@ -2,15 +2,24 @@
 
 umask(0007);
 
+# session_start();
+
+#if (! isset($_SERVER['PHP_AUTH_USER']) && ! isset($_SERVER['PHP_AUTH_PW'])) {
+#	header('WWW-Authenticate: Basic realm="Restricted Access"');
+#	header('HTTP/1.0 401 Unauthorized');
+#}
+
 if (isset($_SERVER['PHP_AUTH_USER'])) {
 	$PHPki_user = md5($_SERVER['PHP_AUTH_USER']);
 }
+
 else {
 	$PHPki_user = md5('default');
 }
 
 $PHP_SELF = $_SERVER['PHP_SELF'];
 
+##### echo "<p>You entered {$_SERVER['PHP_AUTH_PW']} as your password.</p>"; <--
 
 function printHeader($withmenu="default") {
 	global $config;
@@ -93,7 +102,7 @@ function printHeader($withmenu="default") {
 		</div>
 		<?php
 		break;
-	case 'ca':
+	case 'ca':		
 	default:
 		print "<div class=".$menuclass.">";
 
@@ -107,6 +116,7 @@ function printHeader($withmenu="default") {
 		?>
 		<a href="../openvpn/change_openvpn_settings.php"><button class="btn">Edit OpenVPN Config</button></a>
 		<a href="../admin/index.php"><button class="btn">Admin Panel</button></a>
+				
 		<?php
 		if (file_exists('../policy.html')) {
 			print "<a style='color: red' href='../policy.html'><button class='btn'>Policy</button></a>";
@@ -115,6 +125,13 @@ function printHeader($withmenu="default") {
 
 		<a href='../help.php'><button class="btn">Help</button></a>
 		<a href='../about.php'><button class="btn">About</button></a>
+		
+		<span style="display:inline">
+		<form id="logout_btn" method="post" style="display:inline" action="">
+		<button class='btn' name="logout" type="submit" style="background: #FF8566">Log Out</button>
+		</form>
+		</span>
+		
 		</div>
 		<?php
 	}
@@ -128,10 +145,39 @@ function printFooter() {
 	<br>
 	<hr width="99%" align="left" color="#99caff">
 	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Based on PHPki <a href="http://sourceforge.net/projects/phpki/">v<?=PHPKI_VERSION?></a> - Copyright 2003 - William E. Roadcap</p>
-	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.11.3">v0.11.3</a></p>
+	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.12">v0.12</a></p>
 	</body>
 	</html>
 	<?php
 }
 
 ?>
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script>
+$(document).ready(function() {
+	$('#logout_btn').submit(function() { // catch the form's submit event
+	    var request = $.ajax({ // create an AJAX call...
+		    // This creates a POST Basic Auth call to a PHP file.
+		    // The call attempts to log in an user with false credentials,  
+		    // and when that fails the previous user is logged out.
+		    // Therefore, this acts like logging out a user previously logged in with Basic Auth.
+	        type: "POST", // GET or POST	        
+            async: false,
+            username: "logmeout",
+            password: "12345",
+            headers: { "Authorization": "Basic xxx" },
+	        url: "../ca/logout.php", // the file to call with false credentials        
+	        });
+	    request.done(function() {	  
+	        alert("Logging out error, try again."); // Alert success	       
+		});
+		request.fail(function( jqXHR, textStatus ) {
+			location.assign("../index.php"); // Redirect user to public page
+			alert("You have been successfully logged out.");  // This indicates we got a 401 header,
+			// which means successful logout.
+		});
+	    return false; // cancel original event to prevent form submitting
+	});
+});
+</script>

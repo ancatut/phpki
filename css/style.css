@@ -21,8 +21,7 @@ body {
 	padding: 0;
 	padding-right: 200px;
 	padding-left: 200px;
-	/*background: #fafaff;*/
-	background: #fdfaff;	
+	background: #FAFAFA;	
 	font-family: Arial, Verdana, Helvetica, sans-serif;
 	font-size: 12px;
 }
@@ -214,12 +213,12 @@ pre {
 }
 
 .btn {
-	background: ##99caff;
-	background-image: -webkit-linear-gradient(top, #99caff, #99c0f5);
-	background-image: -moz-linear-gradient(top, #99caff, #99c0f5);
-	background-image: -ms-linear-gradient(top, #99caff, #99c0f5);
-	background-image: -o-linear-gradient(top, #99caff, #99c0f5);
-	background-image: linear-gradient(to bottom, #99caff, #99c0f5);
+	background: #ADD5FF;
+	background-image: -webkit-linear-gradient(top, #ADD5FF, #99caff);
+	background-image: -moz-linear-gradient(top, #ADD5FF, #99caff);
+	background-image: -ms-linear-gradient(top, #ADD5FF, #99caff);
+	background-image: -o-linear-gradient(top, #ADD5FF, #99caff);
+	background-image: linear-gradient(to bottom, #ADD5FF, #99caff);
 	-webkit-border-radius: 0px;
 	-moz-border-radius: 0px;
 	border-radius: 0px;
@@ -236,14 +235,16 @@ pre {
 	margin: 0.2em 0.4em 0.2em 0.2em;
 }
 .btn:hover {
-	background: #AFC3E4;
+	background: #7A88A0;
 	outline: none;
 	text-decoration: none;
+	color:white;
 }
 .btn:focus {
-	background: #AFC3E4;
+	background: #7A88A0;
 	outline: none;
 	text-decoration: none;
+	color:white;
 }
 
 .inputbox {
@@ -263,20 +264,34 @@ pre {
 	/*font-family: Arial;*/
 	color: #212121;  
 	padding: 4px 12px 4px 12px;
-	border: solid #1f628d 0px;
+	border: solid #fff 0px;
 	outline: none;
 	text-decoration: none;
 	margin: 0.2em 0.4em 0.2em 0.2em;
 }
 .inputbox:hover {
-	background: #AFC3E4;
+	background: #7A88A0;
 	outline: none;
 	text-decoration: none;
+	color:white;
 }
 .inputbox:focus {
-	background: #AFC3E4;
+	background: #ADD5FF;
 	outline: none;
 	text-decoration: none;
+	color: black;
+}
+.inputbox:-webkit-autofill {
+    -webkit-box-shadow: 0px 1px 4px #666666, 0 0 0px 1000px #fefefe inset;    
+    -webkit-text-fill-color: black;
+}
+.inputbox:-webkit-autofill:hover {
+    -webkit-box-shadow: 0px 1px 4px #666666, 0 0 0px 1000px #7A88A0 inset;    
+    -webkit-text-fill-color: white;
+}
+.inputbox:-webkit-autofill:focus {
+	-webkit-box-shadow: 0px 1px 4px #666666, 0 0 0px 1000px #ADD5FF inset;
+	-webkit-text-fill-color: black;
 }
 
 hr {
@@ -284,5 +299,3 @@ hr {
 	margin-bottom: 15px;
 	box-shadow: 0px 1px 3px #666666;
 }
-
-white_on_blue

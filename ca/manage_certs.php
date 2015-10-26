@@ -1,3 +1,15 @@
+<script type="text/javascript">
+function loadPage()
+{
+    if (document.login)//if the form login exists, focus:
+    {
+        document.login.name.focus();//the username input
+        document.login.pass.focus();//the password input
+        document.login.login.focus();//the login button (submitbutton)
+    }
+}
+</script>
+
 <?php
 include('../config.php');
 include(STORE_DIR.'/config/config.php');
@@ -325,11 +337,11 @@ default:
 	<tr><td colspan="9"><div style="text-align:center">
 	<form action="<?php echo "$PHP_SELF?$qstr_sort"?>" method="get" name="filter"> 
 	Search: 
-		<input type="text" name="search" value="<?php echo htvar($search)?>" style="font-size: 11px;" maxlength="60" size="35">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<input class="inputbox" type="text" name="search" value="<?php echo htvar($search)?>" style="font-size: 11px;" maxlength="60" size="35">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <input type="checkbox" name="show_valid" value="V" <?php echo ($show_valid?'checked':'')?>>Valid &nbsp;&nbsp;
         <input type="checkbox" name="show_revoked" value="R" <?php echo ($show_revoked?'checked':'')?>>Revoked &nbsp;&nbsp;
         <input type="checkbox" name="show_expired" value="E" <?php echo ($show_expired?'checked':'')?>>Expired &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <input type="submit" name="submit" value="Apply Filter" style="font-size: 11px;">
+        <input class="btn" type="submit" name="submit" value="Apply Filter" style="font-size: 11px;">
         </form>
 	</div></td>
 	</tr>
@@ -341,7 +353,7 @@ default:
 	}
 
 	if ($ascdec == 'A') {
-		$arrow_gif = '../images/blue-go-up.png';
+		$arrow_gif = '../images/blue-go-up-th.png';
 		$ht_ascdec = 'D';
 	}
 	else {

@@ -211,6 +211,11 @@ subjectAltName          = DNS:$common_name,email:copy
 function CAdb_to_array($search = '.*') {
 	global $config;
 
+	# Default value is false = cert with filter conditions not found
+	$inclval = false;
+	$inclrev = false;
+	$inclexp = false;
+
 	# Prepend a default status to search string if missing.
 	#if (! ereg('^\^\[.*\]', $search)) $search = '^[VRE].*'.$search;
 	if (! preg_match("/^\^\[.*\]/", $search)) $search = '^[VRE].*'.$search;
@@ -267,7 +272,7 @@ function CAdb_get_entry($serial) {
 function CAdb_in($email="", $name="") {
 	global $config;
 	$regexp = "^[V].*CN=$name/(Email|emailAddress)=$email";
-        $x =exec('egrep '.escshellarg($regexp).' '.$config['index']);
+        $x = exec('egrep '.escshellarg($regexp).' '.$config['index']);
 
         if ($x) {
 		list($j,$j,$j,$serial,$j,$j) = explode("\t", $x);
