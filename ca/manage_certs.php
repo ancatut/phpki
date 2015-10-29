@@ -81,9 +81,9 @@ case 'dl-confirm':
 	<h3 style="color:red">DO NOT DISTRIBUTE THIS FILE TO THE PUBLIC!</h3>
 	<form action="<?php echo $PHP_SELF.'?stage=download&serial='.$serial.'&'.$qstr_sort.'&'.$qstr_filter?>" method="post">
 	<strong>File type: </strong>
-	<select name="dl_type">
+	<select class="inputbox" name="dl_type">
 	<option value="PKCS#12">PKCS#12 Bundle</option>
-	<option value="PKCS#12-OPENVPN">Archived PKCS#12 Bundle and OpenVPN config</option>
+	<option value="PKCS#12-OPENVPN">Zipped PKCS#12 and OpenVPN config</option>
 	<option value="PEMCERT">PEM Certificate</option>
 	<option value="PEMKEY">PEM Key</option>
 	<option value="PEMBUNDLE">PEM Bundle</option>
@@ -108,8 +108,8 @@ case 'download':
 		upload("$config[pfx_dir]/$serial.pfx", "$rec[common_name] ($rec[email]).p12", 'application/x-pkcs12');
 		break;
 	case 'PKCS#12-OPENVPN':
-		create_openvpn_archive($serial);
-		upload("$config[archive_dir]/$serial.zip", "$rec[common_name] ($rec[email]).zip", 'application/zip');
+		CA_create_openvpn_archive($serial, $rec['common_name'], $rec['email']);
+		upload("$config[openvpn_archives_dir]/$rec[common_name] ($rec[email]).zip", "$rec[common_name] ($rec[email]).zip", 'application/zip');
 		break;
 	case 'PEMCERT':
 		upload("$config[new_certs_dir]/$serial.pem", "$rec[common_name] ($rec[email]).pem",'application/pkix-cert');
@@ -229,44 +229,44 @@ case 'renew-form':
 	</tr>
 	<tr>
 	<td width="25%">Common Name </td>
-	<td><input type="text" name="common_name" value="<?php echo htvar($common_name)?>" size=50 maxlength=60 disabled></td>
+	<td><input class="inputbox" type="text" name="common_name" value="<?php echo htvar($common_name)?>" size=50 maxlength=60 disabled></td>
 	</tr>
 
 	<tr>
 	<td>E-mail Address </td>
-	<td><input type="text" name="email" value="<?php echo htvar($email)?>" size=50 maxlength=60 disabled></td>
+	<td><input class="inputbox" type="text" name="email" value="<?php echo htvar($email)?>" size=50 maxlength=60 disabled></td>
 	</tr>
 
 	<tr>
 	<td>Organization </td>
-	<td><input type="text" name="organization" value="<?php echo htvar($organization)?>" size=60 maxlength=60 disabled></td>
+	<td><input class="inputbox" type="text" name="organization" value="<?php echo htvar($organization)?>" size=60 maxlength=60 disabled></td>
 	</tr>
 
 	<tr>
-	<td>Department/Unit </td><td><input type="text" name="unit" value="<?php echo htvar($unit) ?>" size=40 maxlength=60 disabled></td>
+	<td>Department/Unit </td><td><input class="inputbox" type="text" name="unit" value="<?php echo htvar($unit) ?>" size=40 maxlength=60 disabled></td>
 	</tr>
 
 	<tr>
-	<td>Locality</td><td><input type="text" name="locality" value="<?php echo htvar($locality) ?>" size=30 maxlength=30 disabled></td>
+	<td>Locality</td><td><input class="inputbox" type="text" name="locality" value="<?php echo htvar($locality) ?>" size=30 maxlength=30 disabled></td>
 	</tr>
 
 	<tr>
-	<td>State/Province</td><td><input type="text" name="province" value="<?php echo htvar($province) ?>" size=30 maxlength=30 disabled></td>
+	<td>State/Province</td><td><input class="inputbox" type="text" name="province" value="<?php echo htvar($province) ?>" size=30 maxlength=30 disabled></td>
 	</tr>
 
 	<tr>
 	<td>Country</td>
-	<td><input type="text" name="country" value="<?php echo htvar($country) ?>" size=2 maxlength=2 disabled></td>
+	<td><input class="inputbox" type="text" name="country" value="<?php echo htvar($country) ?>" size=2 maxlength=2 disabled></td>
 	</tr>
 
 	<tr>
 	<td>Certificate Password </td>
-	<td><input type="password" name="passwd" value="<?php echo htvar($passwd) ?>" size=30></td>
+	<td><input class="inputbox" type="password" name="passwd" value="<?php echo htvar($passwd) ?>" size=30></td>
 	</tr>
 
 	<tr>
 	<td>Certificate Life </td>
-	<td><select name="expiry">
+	<td><select class="inputbox" name="expiry">
 	<?php
 
 	print "<option value=0.083 " . ($expiry == 0.083 ? "selected='selected'" : "") . " >1 Month</option>\n" ;

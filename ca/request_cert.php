@@ -316,7 +316,7 @@ default:
 
 	<tr>
 	<td>Organization (Company/Agency)</td>
-	<td><input class="inputbox" type="text" name="organization" value="<?php print htvar($organization)?>" size="60" maxlength="60"></td>
+	<td><input class="inputbox" type="text" name="organization" value="<?php print htvar($organization)?>" size="50" maxlength="60"></td>
 	</tr>
 
 	<tr>
@@ -338,7 +338,7 @@ default:
 
 	<tr>
 	<td>Certificate Password </td>
-	<td><input type="password" class="inputbox" name="passwd" value="<?php print  htvar($passwd) ?>" size="30">&nbsp;&nbsp; Again <input class="inputbox" type=password name=passwdv  value="<?php print  htvar($passwdv) ?>" size=30></td>
+	<td><input type="password" class="inputbox" name="passwd" value="<?php print  htvar($passwd) ?>" size="30">&nbsp;&nbsp; Again: <input class="inputbox" type=password name=passwdv  value="<?php print  htvar($passwdv) ?>" size=30></td>
 	</tr>
 
 	<tr>

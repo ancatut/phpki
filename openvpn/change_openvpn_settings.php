@@ -6,7 +6,7 @@ include('../include/my_functions.php');
 include('../include/common.php');
 include('../include/openssl_functions.php');
  
-$openvpn_client_cnf = file_get_contents($config['openvpn_client_cnf_dir']."/general_client.conf");
+$openvpn_client_basecnf_text = file_get_contents($config['openvpn_client_cnf_dir']."/client_basecnf.conf");
 
 printHeader('ca');
 
@@ -23,9 +23,9 @@ This is the template used by PHPki to generate the OpenVPN config file.<br>
 All users in possession of a valid certificate also need the config file to connect to our VPN.<br>
 Edit if you know what you're doing.<br><br>
 <form id="openvpn_edit_settings" action="" method="post" style="display:inline">
-<textarea id="openvpn_client_cnf_text" name="txtarea" cols="40" rows="20" style="background:#DEE3EC" readonly><?php print htvar($openvpn_client_cnf) ?></textarea>
+<textarea id="openvpn_client_basecnf_text" name="cnf_textarea" cols="40" rows="20" style="background:#DEE3EC" readonly><?php print htvar($openvpn_client_basecnf_text) ?></textarea>
 <br><br>
-<button class="btn" value="Edit" onclick="return hitEdit('openvpn_client_cnf_text');">Edit</button>
+<button class="btn" value="Edit" onclick="return hitEdit('openvpn_client_basecnf_text');">Edit</button>
 <input type="submit" class="btn" name="submit" value="Save" onclick="return hitSave('openvpn_client_cnf_text');">
 </form>
 </span>
@@ -48,7 +48,7 @@ function hitEdit(id) {
 function hitSave(id) {
 	document.getElementById(id).readOnly = true;
 	//document.getElementById(id).style.background = "lightgrey";
-	//document.getElementById(id).value = <?php echo json_encode($openvpn_client_cnf) ?>;
+	//document.getElementById(id).value = <?php echo json_encode($openvpn_client_basecnf_text) ?>;
 	return true;	
 }
 $(document).ready(function() {

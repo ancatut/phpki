@@ -16,7 +16,11 @@ design of this application to protect the security of your certificates,
 on the condition that you INSTALL IT AS THE ROOT USER.  However, no
 software is 100% secure.  
 
+<<<<<<< HEAD
 Please run this script from INSIDE the application folder and AFTER running setup.php.
+=======
+Please run this script after running setup.php.
+>>>>>>> refs/remotes/origin/master
 
 EOM
 
@@ -79,7 +83,6 @@ AuthType Basic
 AuthUserFile "$passwd_file"
 require valid-user
 #SSLRequireSSL
-php_flag magic_quotes_gpc off
 
 EOS
 
@@ -91,7 +94,6 @@ require valid-user
 #SSLRequireSSL
 Order Allow,Deny
 Allow from $subnet
-php_flag magic_quotes_gpc off
 
 EOS
 
@@ -118,6 +120,7 @@ storage_dir=${storage_dir:-"/var/www/phpki-store"}
 
 # Check if other users are in the web server group
 another_user=`egrep ^${group} '/etc/group' | awk -F':' '{print $4}'`
+<<<<<<< HEAD
 if [[ $another_user ]]; then
 	echo "Warning: There are other users in the ${group} group and they will get the same group permissions, make sure that's intentional."
 fi
@@ -127,11 +130,21 @@ find $storage_dir   -type l -exec chown -h $user:$group {} \;
 find $storage_dir ! -type d -exec chmod 700 {} \;
 find $storage_dir   -type d -exec chmod 700 {} \;
 
-# TODO see if these permissions work better:
-# chown -R -- $owner:$group $storage_dir
-# chmod -R 770 -- $storage_dir/CA
-# chmod -R 770 -- $storage_dir/tmp
-# chmod -R 740 -- $storage_dir/config
+#chown -R -- $owner:$group $storage_dir
+#find . ! -type d -exec chmod 640 {} \;
+#chmod -R 670 -- $storage_dir/CA
+#chmod -R 670 -- $storage_dir/tmp
+#chmod -R 660 -- $storage_dir/config
+=======
+if [[ ! $another_user ]]; then
+	echo "Warning: There are other users in the ${group} group and they will get the same permissions, make sure that's intentional."
+fi
+
+chown -R -- $owner:$group $storage_dir
+chmod -R 770 -- $storage_dir/CA
+chmod -R 770 -- $storage_dir/tmp
+chmod -R 740 -- $storage_dir/config
+>>>>>>> refs/remotes/origin/master
 
 echo
 echo "Writing permissions to PHPki storage directory..."

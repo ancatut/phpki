@@ -814,4 +814,28 @@ function CA_get_root_pem() {
 	return(file_get_contents($config['cacert_pem']));
 }
 
+function CA_create_openvpn_archive($serial, $username, $email) {
+	global $config;	
+	
+	$base_cnf_file = $config["openvpn_client_cnf_dir"]."/client_basecnf.conf";
+	
+	$user_conf = $config['openvpn_client_cnf_dir'] . "/'" . $username . " (". $email . ").conf'";
+	$user_ovpn = $config['openvpn_client_cnf_dir'] . "/'" . $username . " (". $email . ").ovpn'";		
+	
+	if (file_exists($base_cnf_file)) 
+	{
+		$contents = file_get_contents($base_cnf_file);
+		$added_cnf_line = "pkcs12 " . $username . " (" . $email . ").p12";
+		exec("echo '" . $contents . "' > " . $user_conf);
+		exec("echo '" . $added_cnf_line . "' >> " . $user_conf);
+		exec("cp " . $user_conf . " " . $user_ovpn);
+		
+		$pkcs12 = $config["pfx_dir"]."/" . $serial . ".pfx";
+		exec("cp " . $pkcs12 . " " . $config["private_dir"]."/tmp/'".$username . " (" . $email . ").p12'");
+		$pkcs12 = $config["private_dir"]."/tmp/'" . $username . " (" . $email . ").p12'";
+		$archive_target = $config["private_dir"]."/openvpn-archives/'" . $username . " (" . $email . ").zip'";
+		exec("zip -j ". $archive_target . " " . $user_conf . " " . $user_ovpn . " " . $pkcs12);		
+	}
+}
+
 ?>

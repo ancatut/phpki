@@ -232,7 +232,8 @@ pre {
 	border: solid #1f628d 0px;
 	outline: none;
 	text-decoration: none;
-	margin: 0.2em 0.4em 0.2em 0.2em;
+	margin: 0.2em 0.2em 0.2em 0.2em;
+	font-size: 12px;
 }
 .btn:hover {
 	background: #7A88A0;
@@ -242,6 +243,12 @@ pre {
 }
 .btn:focus {
 	background: #7A88A0;
+	outline: none;
+	text-decoration: none;
+	color:white;
+}
+.btn:active {
+	background: #99caff;
 	outline: none;
 	text-decoration: none;
 	color:white;
@@ -263,11 +270,11 @@ pre {
 	box-shadow: 0px 1px 4px #666666;
 	/*font-family: Arial;*/
 	color: #212121;  
-	padding: 4px 12px 4px 12px;
+	padding: 3px 10px 3px 10px;
 	border: solid #fff 0px;
 	outline: none;
 	text-decoration: none;
-	margin: 0.2em 0.4em 0.2em 0.2em;
+	margin: 0.2em 0.2em 0.2em 0.2em;
 }
 .inputbox:hover {
 	background: #7A88A0;
@@ -280,6 +287,12 @@ pre {
 	outline: none;
 	text-decoration: none;
 	color: black;
+}
+.inputbox:disabled {
+	background: #EBEBEB;
+	outline: none;
+	text-decoration: none;
+	color: #545454;
 }
 .inputbox:-webkit-autofill {
     -webkit-box-shadow: 0px 1px 4px #666666, 0 0 0px 1000px #fefefe inset;    
