@@ -16,11 +16,7 @@ design of this application to protect the security of your certificates,
 on the condition that you INSTALL IT AS THE ROOT USER.  However, no
 software is 100% secure.  
 
-<<<<<<< HEAD
 Please run this script from INSIDE the application folder and AFTER running setup.php.
-=======
-Please run this script after running setup.php.
->>>>>>> refs/remotes/origin/master
 
 EOM
 
@@ -130,21 +126,8 @@ find $storage_dir   -type l -exec chown -h $user:$group {} \;
 find $storage_dir ! -type d -exec chmod 700 {} \;
 find $storage_dir   -type d -exec chmod 700 {} \;
 
-#chown -R -- $owner:$group $storage_dir
-#find . ! -type d -exec chmod 640 {} \;
-#chmod -R 670 -- $storage_dir/CA
-#chmod -R 670 -- $storage_dir/tmp
-#chmod -R 660 -- $storage_dir/config
-=======
-if [[ ! $another_user ]]; then
-	echo "Warning: There are other users in the ${group} group and they will get the same permissions, make sure that's intentional."
-fi
-
-chown -R -- $owner:$group $storage_dir
-chmod -R 770 -- $storage_dir/CA
-chmod -R 770 -- $storage_dir/tmp
-chmod -R 740 -- $storage_dir/config
->>>>>>> refs/remotes/origin/master
+# Reconsider this one?
+chmod -R 600 -- $storage_dir/CA/private
 
 echo
 echo "Writing permissions to PHPki storage directory..."
