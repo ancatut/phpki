@@ -763,43 +763,43 @@ function CA_cert_type($serial) {
 	#if (ereg('OpenSSL.* (E.?mail|Personal) .*Certificate', $certtext) && ereg('Code Signing', $certtest)) {
 	#	$cert_type = 'email_signing';
 	#}
-	if (preg_match('OpenSSL.* (E.?mail|Personal) .*Certificate', $certtext) && preg_match('Code Signing', $certtest)) {
+	if (preg_match('/OpenSSL.* (E.?mail|Personal) .*Certificate/', $certtext) && preg_match('/Code Signing/', $certtest)) {
 		$cert_type = 'email_signing';
 	}
 	#if (ereg('OpenSSL.* (E.?mail|Personal) .*Certificate', $certtext)) {
 	#	$cert_type = 'email';
 	#}
-	if (preg_match('OpenSSL.* (E.?mail|Personal) .*Certificate', $certtext)) {
+	if (preg_match('/OpenSSL.* (E.?mail|Personal) .*Certificate/', $certtext)) {
 		$cert_type = 'email';
 	}
 	#elseif (ereg('OpenSSL.* Server .*Certificate', $certtext)) {
 	#	$cert_type = 'server';
 	#}
-	elseif (preg_match('OpenSSL.* Server .*Certificate', $certtext)) {
+	elseif (preg_match('/OpenSSL.* Server .*Certificate/', $certtext)) {
 		$cert_type = 'server';
 	}
 	#elseif (ereg('timeStamping|Time Stamping', $certtext)) {
 	#	$cert_type = 'time_stamping';
 	#}
-	elseif (preg_match('timeStamping|Time Stamping', $certtext)) {
+	elseif (preg_match('/timeStamping|Time Stamping/', $certtext)) {
 		$cert_type = 'time_stamping';
 	}
 	#elseif (ereg('TLS Web Client Authentication', $certtext) && ereg('TLS Web Server Authentication', $certtext)) {
 	#	$cert_type = 'vpn_client_server';
 	#}
-	elseif (preg_match('TLS Web Client Authentication', $certtext) && preg_match('TLS Web Server Authentication', $certtext)) {
+	elseif (preg_match('/TLS Web Client Authentication/', $certtext) && preg_match('/TLS Web Server Authentication/', $certtext)) {
 		$cert_type = 'vpn_client_server';
 	}
 	#elseif (ereg('TLS Web Client Authentication', $certtext)) {
 	#	$cert_type = 'vpn_client';
 	#}
-	elseif (preg_match('TLS Web Client Authentication', $certtext)) {
+	elseif (preg_match('/TLS Web Client Authentication/', $certtext)) {
 		$cert_type = 'vpn_client';
 	}
 	#elseif (ereg('TLS Web Server Authentication', $certtext)) {
 	#	$cert_type = 'vpn_server';
 	#}
-	elseif (preg_match('TLS Web Server Authentication', $certtext)) {
+	elseif (preg_match('/TLS Web Server Authentication/', $certtext)) {
 		$cert_type = 'vpn_server';
 	}
 	else {

@@ -1,4 +1,7 @@
 <?php
+ 
+define('__ROOT__', dirname(dirname(__FILE__))); 
+require_once(__ROOT__.'/vendor/phpmailer/phpmailer/class.phpmailer.php');
 
 # TODO: Whitelist of files to which redirection is exclusively allowed
 $redirect_whitelist = array("about.php", "common.php", "config.php", "index.php", "help.php", "main.php", "manage_certs.php", "my_functions.php", "openssl_functions.php", "request_cert.php", "setup.php");
@@ -63,30 +66,23 @@ function upload($source, $destination, $content_type="application/octet-stream")
 #        fclose($fd);
 }
 
-# When called, this function creates or updates the config file for a user.
-# The config file will be stored in $config['openvpn_client_configs'] folder.
-# The config file is used for connecting via OpenVPN.
-# It requires the user serial number and the file extension (.conf or .ovpn).
-# These config files are archived with the PKCS#12 file into a .zip file to be sent to the user's email address.
-function create_client_openvpn_config($extension, $name, $email) {
+# Use PHPMailer to send an email with attachment
+function send_email($from_addr, $from_alias, $to_addr, $subject, $bodytext, $file_to_attach="") {
+	$email = new PHPMailer();
+	$email->From      = htvar($from_addr);
+	$email->FromName  = htvar($from_alias);
+	$email->Subject   = htvar($subject);
+	$email->Body      = htvar($bodytext);
+	$email->AddAddress( htvar($to_addr) );
 	
+	#$file_to_attach = 'PATH_OF_YOUR_FILE_HERE';
 	
-#	AWKOUT = exec("awk '/^[^#]/ {print "s/"$1"/"$2"/;"}' < openvpn_config_params.txt");
-#	exec('sed -f substitute.sed < '.$config['openvpn_client_config_template'].' > '
-#			.escshellarg($name)." (".escshellarg($email).").".escshellarg($extension));
-			
+	$email->AddAttachment( htvar($file_to_attach), basename(htvar($file_to_attach)) );
 	
+	return $email->Send();
+	#$email->Send();
 }
 
-# This function generates the .zip archive containing the PKCS#12 bundle
-# and the .ovpn and .conf configuration files for the client.
-function create_openvpn_archive($serial) {
-	global $config;
-	create_client_openvpn_config($serial, '.ovpn');
-	create_client_openvpn_config($serial, '.conf');
-	exec('zip '. escshellarg($v));
-	return ovpn_arch;
-}
 
 #
 # Returns a value from the GET/POST global array referenced

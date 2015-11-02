@@ -78,8 +78,7 @@ table {
 	font-family: Arial, Verdana, Helvetica, sans-serif;
 	color: #212121;  
 	font-size: 12px;
-	margin-top: .1in;
-	margin-bottom: .1in;
+	margin: 0.4em 0.2em 0.4em 0.2em;
 }
 
 th {
@@ -232,7 +231,7 @@ pre {
 	border: solid #1f628d 0px;
 	outline: none;
 	text-decoration: none;
-	margin: 0.2em 0.2em 0.2em 0.2em;
+	margin: 0.4em 0.2em 0.4em 0.2em;
 	font-size: 12px;
 }
 .btn:hover {
@@ -274,7 +273,7 @@ pre {
 	border: solid #fff 0px;
 	outline: none;
 	text-decoration: none;
-	margin: 0.2em 0.2em 0.2em 0.2em;
+	margin: 0.4em 0.2em 0.4em 0.2em;
 }
 .inputbox:hover {
 	background: #7A88A0;

@@ -31,6 +31,12 @@ $show_valid   = gpvar('show_valid');
 $show_revoked = gpvar('show_revoked');
 $show_expired = gpvar('show_expired');
 
+# Email variables
+$sender_addr   = gpvar('sender_addr');
+$sender_alias  = gpvar('sender_alias');
+$email_subject = gpvar('email_subject');
+$email_text    = gpvar('email_text');
+$to_addr       = gpvar('to_addr'); 
 
 # Prevent handling certs that don't belong to user
 if ($serial && CAdb_issuer($serial) != $PHPki_user && ! in_array($PHPki_user, $PHPki_admins)) { 
@@ -325,6 +331,108 @@ case 'renew':
 	}
 
 	break;
+	
+case 'request-send-email':
+	
+	printHeader('ca');
+
+	# 
+	# Get values from the certificate.
+	#
+	$rec = CAdb_get_entry($serial);
+	$country      = $rec['country'];
+	$province     = $rec['province'];
+	$locality     = $rec['locality'];
+	$organization = $rec['organization'];
+	$unit         = $rec['unit'];
+	$common_name  = $rec['common_name'];
+	$email        = $rec['email'];
+	$status 	  = $rec['status'];
+
+	# Set some default values for sender
+	if (!isset($sender_addr) || $sender_addr == '') $sender_addr = gethostname();
+	if (!isset($sender_alias) || $sender_alias == '') $sender_alias = gethostname();
+	if (!isset($email_text) || $email_text == '') $email_text = " ";
+
+	?>
+	<h4>You are about to email to the user below with a zip archive containing <span style="color:red">PKCS#12 and OpenVPN config</span>.</h4>
+	 	User certificate details:
+	 	<table style="width:400px">
+       	<tr>
+       	<td style='white-space: nowrap; width:30%'>
+       	<p align="right">
+		Serial Number<br>
+       	User's Name<br>
+       	Email Address<br>
+       	Organization<br>
+       	Department/Unit<br>
+       	Locality<br>
+       	State/Province<br>
+       	Country<br>
+       	Status<br>
+       	</td>
+
+	<?php 
+	print '
+       	<td>
+	'.htvar($rec["serial"]).'<br>
+       	'.htvar($rec["common_name"]).'<br>
+       	'.htvar($rec["email"]).'<br>
+       	'.htvar($rec["organization"]).'<br>
+       	'.htvar($rec["unit"]).'<br>
+       	'.htvar($rec["locality"]).'<br>
+       	'.htvar($rec["province"]).'<br>
+       	'.htvar($rec["country"]).'<br>
+       	'.htvar($rec["status"]).'<br>
+       	</td>
+       	</tr></table>'
+       	?>
+    <br>
+    <?php  
+	print 		
+		'<form action="'.$PHP_SELF.'?'.$qstr_sort.'&'.$qstr_filter.' method="post">'.
+		'From:<br>
+		<input class="inputbox" type="text" name="sender_addr" value="'. $sender_addr .'" style="width:400px"><br>'.
+		'Sender name:<br>
+		<input class="inputbox" type="text" name="sender_alias" value="'. $sender_alias .'" style="width:400px"><br>'.
+		'To:<br>
+		<input class="inputbox" type="text" name="to_addr" value="'. $email .'" style="width:400px"><br>'.
+		'Subject:<br>
+		<input class="inputbox" type="text" name="email_subject" value="'. $email_subject .'" style="width:400px"><br>'.
+		'Email Message:<br>
+		<textarea class="inputbox" name="email_text" rows="7" style="width:400px">'. $email_text .'</textarea><br>'.
+		'Attachment:<br> <input type="checkbox" checked disabled><i><span style="color:red">' . $rec["common_name"] . ' (' . $rec["email"] . ').zip</i></span>';
+	?>
+
+      
+    
+	<h4>Are you sure?</h4>
+       	<p>
+		<input type="hidden" name="stage" value="confirm-email" >
+		<input type="hidden" name="serial" value="<?php print $serial ?>" >
+	    <input class="btn" type="submit" name="submit" value="Send email" >
+       	<input class="btn" type="submit" name="submit" value="Cancel">
+       	</form>
+<?php
+
+	break;
+
+case 'confirm-email':
+
+	if ($submit == 'Send email') {
+
+		#print $sender_alias;
+		$rec = CAdb_get_entry($serial);
+		$attachment = $config['openvpn_archives_dir']."/".$rec["common_name"] . " (" . $rec["email"] . ").zip";
+		if (! file_exists($attachment)) {
+	    	CA_create_openvpn_archive($serial, $rec['common_name'], $rec['email']);
+		}
+		send_email($sender_addr, $sender_alias, $to_addr, $email_subject, $email_text, $attachment);
+		#send_email($sender_addr, $sender_alias, $to_addr, $email_subject, $email_text);
+		
+	}
+	#header("Location: ${PHP_SELF}?$qstr_sort&$qstr_filter");
+	break;
 
 default:
 
@@ -413,11 +521,13 @@ default:
 		if ($rec['status'] == 'Valid') {
 			print '
 			<a href="'.$PHP_SELF.'?stage=dl-confirm&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
-			'<img src="../images/download.png" alt="Download" title="Download the PRIVATE certificate. DO NOT DISTRIBUTE THIS TO THE PUBLIC!"></a>
-			<a href="'.$PHP_SELF.'?stage=revoke-form&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
+			'<img src="../images/download.png" alt="Download" title="Download the PRIVATE certificate. DO NOT DISTRIBUTE THIS TO THE PUBLIC!"></a>'.
+			'<a href="'.$PHP_SELF.'?stage=request-send-email&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
+			'<img src="../images/email.png" alt="Email" title="Email the archive to the user."></a>'.
+			'<a href="'.$PHP_SELF.'?stage=revoke-form&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
 			'<img src="../images/revoke.png" alt="Revoke" title="Revoke the certificate when the e-mail address is no longer valid or the certificate password or private key has been compromised."></a>';
-		} 	
-			
+		} 
+
 		print '
 		<a href="'.$PHP_SELF.'?stage=renew-form&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
 		'<img src="../images/view-refresh-th.png" alt="Renew" title="Renew the certificate by revoking it, if necessary, and creating a replacement with a new expiration date."></a></td></tr>';

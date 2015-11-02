@@ -37,6 +37,10 @@ Unpack the PHPki tarball onto your web server. For example:
 	cd /var/www/html
 	tar -xzvf /var/tmp/phpki.tar.gz
 
+Install Composer by running from the installation folder:
+	
+	php composer.phar install
+
 To configure the certificate authority and create your root certificate,
 point your browser to where you unpacked PHPki. For example:
 
