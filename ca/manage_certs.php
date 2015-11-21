@@ -353,8 +353,9 @@ case 'request-send-email':
 	if (!isset($sender_addr) || $sender_addr == '') $sender_addr = gethostname();
 	if (!isset($sender_alias) || $sender_alias == '') $sender_alias = gethostname();
 	if (!isset($email_text) || $email_text == '') $email_text = " ";
-
+	if (!isset($to_addr) || $to_addr == "") $to_addr = $email;
 	?>
+	<div style="align:center">
 	<h4>You are about to email to the user below with a zip archive containing <span style="color:red">PKCS#12 and OpenVPN config</span>.</h4>
 	 	User certificate details:
 	 	<table style="width:400px">
@@ -396,7 +397,7 @@ case 'request-send-email':
 		'Sender name:<br>
 		<input class="inputbox" type="text" name="sender_alias" value="'. $sender_alias .'" style="width:400px"><br>'.
 		'To:<br>
-		<input class="inputbox" type="text" name="to_addr" value="'. $email .'" style="width:400px"><br>'.
+		<input class="inputbox" type="text" name="to_addr" value="'. $to_addr .'" style="width:400px"><br>'.
 		'Subject:<br>
 		<input class="inputbox" type="text" name="email_subject" value="'. $email_subject .'" style="width:400px"><br>'.
 		'Email Message:<br>
@@ -408,16 +409,17 @@ case 'request-send-email':
     
 	<h4>Are you sure?</h4>
        	<p>
-		<input type="hidden" name="stage" value="confirm-email" >
+		<input type="hidden" name="stage" value="send-email" >
 		<input type="hidden" name="serial" value="<?php print $serial ?>" >
 	    <input class="btn" type="submit" name="submit" value="Send email" >
        	<input class="btn" type="submit" name="submit" value="Cancel">
        	</form>
+       	</div>
 <?php
 
 	break;
 
-case 'confirm-email':
+case 'send-email':
 
 	if ($submit == 'Send email') {
 
@@ -427,12 +429,20 @@ case 'confirm-email':
 		if (! file_exists($attachment)) {
 	    	CA_create_openvpn_archive($serial, $rec['common_name'], $rec['email']);
 		}
-		send_email($sender_addr, $sender_alias, $to_addr, $email_subject, $email_text, $attachment);
-		#send_email($sender_addr, $sender_alias, $to_addr, $email_subject, $email_text);
 		
+		if (! send_email($sender_addr, $sender_alias, $to_addr, $email_subject, $email_text, $attachment))
+		
+		# This method makes the page flicker because it refreshes it, might want to implement an ajax call instead
+			echo "<script type='text/javascript'>
+			alert('Error: Email was not sent, check for missing or incorrect fields.');
+			window.location.href = '${PHP_SELF}?stage=request-send-email&serial=$serial';
+			</script>";
+		else 
+			echo "<script type='text/javascript'>alert('Email sent.');
+			window.location.href = '${PHP_SELF}?$qstr_sort&$qstr_filter';
+			</script>";	
 	}
-	#header("Location: ${PHP_SELF}?$qstr_sort&$qstr_filter");
-	break;
+	
 
 default:
 

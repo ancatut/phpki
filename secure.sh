@@ -4,17 +4,9 @@ owner="`id -nu`"
 
 cat <<EOM
 
-This application is designed to be an easy to use "certificate factory"
-requiring minimum human intervention to administer.  It is intended for
-use within a trusted INTRAnet for the creation and management of x.509
-e-mail digital certificates by departmental managers.  IT IS NOT INTENDED
-FOR USE OVER THE INTERNET.
+This application is designed to be an easy to use "certificate factory" requiring minimum human intervention to administer. It is intended for use within a trusted INTRAnet for the creation and management of x.509 e-mail digital certificates by departmental managers. IT IS NOT INTENDED FOR USE OVER THE INTERNET.
 
-This application stores private keys within a sub-directory, making them
-potentially susceptible to compromise.  Extra care has been taken in the
-design of this application to protect the security of your certificates,
-on the condition that you INSTALL IT AS THE ROOT USER.  However, no
-software is 100% secure.  
+This application stores private keys within a sub-directory, making them potentially susceptible to compromise. Extra care has been taken in the design of this application to protect the security of your certificates, on the condition that you INSTALL IT AS THE ROOT USER.  However, no software is 100% secure.  
 
 Please run this script from INSIDE the application folder and AFTER running setup.php.
 
@@ -70,7 +62,7 @@ echo
 echo "Writing htaccess files..."
 
 for i in ./include; do
-	echo "deny from all" >$i/.htaccess
+	echo "Require all denied" >$i/.htaccess
 done 
 
 cat <<EOS >> ./ca/.htaccess
@@ -78,7 +70,7 @@ AuthName "Restricted Area"
 AuthType Basic
 AuthUserFile "$passwd_file"
 require valid-user
-#SSLRequireSSL
+SSLRequireSSL
 
 EOS
 
@@ -87,7 +79,7 @@ AuthName "Restricted Area"
 AuthType Basic
 AuthUserFile "$passwd_file"
 require valid-user
-#SSLRequireSSL
+SSLRequireSSL
 Order Allow,Deny
 Allow from $subnet
 
@@ -104,7 +96,8 @@ find . ! -type d -exec chmod 640 {} \;
 find .   -type d -exec chmod 3750 {} \;
 
 # Display file list with new permissions
-list_files=`ls -la .`
+
+list_files=`ls -la --color .`
 echo "$list_files"
 
 echo
@@ -115,25 +108,22 @@ storage_dir=${storage_dir:-"/var/www/phpki-store"}
 # Secure the storage directory
 
 # Check if other users are in the web server group
-another_user=`egrep ^${group} '/etc/group' | awk -F':' '{print $4}'`
-<<<<<<< HEAD
-if [[ $another_user ]]; then
-	echo "Warning: There are other users in the ${group} group and they will get the same group permissions, make sure that's intentional."
-fi
-
+#another_user=`egrep ^${group} '/etc/group' | awk -F':' '{print $4}'`
+#if [[ $another_user ]]; then
+#    echo "Other members of ${group} group except $user: $another_user."
+#fi
+echo "Only the apache server will receive (read-write) permissions over the storage folder."
 find $storage_dir           -exec chown $user:$group {} \;
 find $storage_dir   -type l -exec chown -h $user:$group {} \;
-find $storage_dir ! -type d -exec chmod 700 {} \;
+find $storage_dir ! -type d -exec chmod 600 {} \;
 find $storage_dir   -type d -exec chmod 700 {} \;
-
-# Reconsider this one?
-chmod -R 600 -- $storage_dir/CA/private
 
 echo
 echo "Writing permissions to PHPki storage directory..."
 echo
+
 # Display file list with new permissions
-list_files=`ls -la ${storage_dir}`
+list_files=`ls -lahR ${storage_dir}`
 echo "$list_files"
 echo
 echo "All done."

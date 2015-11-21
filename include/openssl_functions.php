@@ -1,196 +1,197 @@
 <?php
 
-//
-// Creates a temporary openssl config file specific to given parameters.
-// File name is placed in ./tmp with a random name. It lingers unless
-// removed manually.
-//
+/**
+ * Creates a temporary openssl config file specific to given parameters.
+ * 
+ * The file is placed in ./tmp with a random name. It lingers unless
+ * removed manually.
+ */
 function CA_create_cnf($country='',$province='',$locality='',$organization='',$unit='',$common_name='',$email='',$keysize=2048) {
 	global $config, $PHPki_user;
 
 	$issuer = $PHPki_user;
 	
 	$cnf_contents = "
-HOME             = ".$config['home_dir']."
-RANDFILE         = ".$config['random']."
-dir	             = ".$config['ca_dir']."
-certs            = ".$config['cert_dir']."
-crl_dir	         = ".$config['crl_dir']."
-database         = ".$config['index']."
-new_certs_dir    = ".$config['new_certs_dir']."
-private_dir      = ".$config['private_dir']."
-serial           = ".$config['serial']."
-certificate      = ".$config['cacert_pem']."
-crl              = ".$config['cacrl_pem']."
-private_key      = ".$config['cakey']."
-crl_extentions	 = crl_ext
-default_days     = 365
-default_crl_days = 30
-preserve         = no
-default_md       = sha512
+HOME 					= ".$config['home_dir']."
+RANDFILE 				= ".$config['random']."
+dir						= ".$config['ca_dir']."
+certs 					= ".$config['cert_dir']."
+crl_dir					= ".$config['crl_dir']."
+database 				= ".$config['index']."
+new_certs_dir 			= ".$config['new_certs_dir']."
+private_dir 			= ".$config['private_dir']."
+serial 					= ".$config['serial']."
+certificate 			= ".$config['cacert_pem']."
+crl 					= ".$config['cacrl_pem']."
+private_key 			= ".$config['cakey']."
+crl_extentions 			= crl_ext
+default_days 			= 365
+default_crl_days 		= 30
+preserve 				= no
+default_md 				= ".$config['default_md']."
 
 [ req ]
-default_bits        = $keysize
-string_mask         = nombstr
-prompt              = no
-distinguished_name  = req_name
-req_extensions      = req_ext
+default_bits 			= $keysize
+string_mask 			= nombstr
+prompt 					= no
+distinguished_name 		= req_name
+req_extensions 			= req_ext
 
-[ req_name]
-C=$country
-ST=$province
-L=$locality
-0.O=$organization
-1.O='$issuer'
-OU=$unit
-CN=$common_name
-emailAddress=$email
+[ req_name ]
+C 						= $country
+ST 						= $province
+L 						= $locality
+0.O						= $organization
+1.O						= '$issuer'
+OU						= $unit
+CN						= $common_name
+emailAddress			= $email
 
 [ ca ]
-default_ca             = email_cert
+default_ca				= email_cert
 
 [ root_cert ]
-x509_extensions        = root_ext
-default_days           = 3650
-policy                 = policy_supplied
+x509_extensions			= root_ext
+default_days			= 3650
+policy					= policy_supplied
 
 [ email_cert ]
-x509_extensions        = email_ext
-default_days           = 365
-policy                 = policy_supplied
+x509_extensions			= email_ext
+default_days			= 365
+policy					= policy_supplied
 
 [ email_signing_cert ]
-x509_extensions        = email_signing_ext
-default_days           = 365
-policy                 = policy_supplied
+x509_extensions			= email_signing_ext
+default_days			= 365
+policy					= policy_supplied
 
 [ server_cert ]
-x509_extensions        = server_ext
-default_days           = 365
-policy                 = policy_supplied
+x509_extensions			= server_ext
+default_days			= 365
+policy					= policy_supplied
 
 [ vpn_cert ]
-x509_extensions        = vpn_client_server_ext
-default_days           = 365
-policy                 = policy_supplied
+x509_extensions			= vpn_client_server_ext
+default_days			= 365
+policy					= policy_supplied
  
 [ time_stamping_cert ]
-x509_extensions        = time_stamping_ext
-default_days           = 365
-policy                 = policy_supplied
+x509_extensions			= time_stamping_ext
+default_days			= 365
+policy					= policy_supplied
 
 
 [ policy_supplied ]
-countryName            = supplied
-stateOrProvinceName    = supplied
-localityName           = supplied
-organizationName       = supplied
-organizationalUnitName = supplied
-commonName             = supplied
-emailAddress           = supplied
+countryName				= supplied
+stateOrProvinceName		= supplied
+localityName			= supplied
+organizationName		= supplied
+organizationalUnitName	= supplied
+commonName				= supplied
+emailAddress			= supplied
 
 [ req_ext]
-basicConstraints = CA:false
+basicConstraints		= CA:false
 
 [ crl_ext ]
-issuerAltName=issuer:copy
-authorityKeyIdentifier=keyid:always,issuer:always
+issuerAltName			= issuer:copy
+authorityKeyIdentifier	= keyid:always,issuer:always
 
 [ root_ext ]
-basicConstraints       = CA:true
-keyUsage               = cRLSign, keyCertSign
-nsCertType             = sslCA, emailCA, objCA
-subjectKeyIdentifier   = hash
-subjectAltName         = email:copy
-crlDistributionPoints  = URI:".$config['base_url']."index.php?stage=dl_crl
-nsComment              = \"PHPki/OpenSSL Generated Root Certificate\"
-#nsCaRevocationUrl      = ns_revoke_query.php?
-nsCaPolicyUrl          = ".$config['base_url']."policy.html
+basicConstraints		= CA:true
+keyUsage				= cRLSign, keyCertSign
+nsCertType				= sslCA, emailCA, objCA
+subjectKeyIdentifier	= hash
+subjectAltName			= email:copy
+crlDistributionPoints	= URI:".$config['base_url']."index.php?stage=dl_crl
+nsComment				= \"PHPki/OpenSSL Generated Root Certificate\"
+#nsCaRevocationUrl		= ns_revoke_query.php?
+nsCaPolicyUrl			= ".$config['base_url']."policy.html
 
 [ email_ext ]
-basicConstraints       = critical, CA:false
-keyUsage               = critical, nonRepudiation, digitalSignature, keyEncipherment
-extendedKeyUsage       = critical, emailProtection, clientAuth
-nsCertType             = critical, client, email
-subjectKeyIdentifier   = hash
-authorityKeyIdentifier = keyid:always, issuer:always
-subjectAltName         = email:copy
-issuerAltName          = issuer:copy
-crlDistributionPoints  = URI:".$config['base_url']."index.php?stage=dl_crl
-nsComment              = \"PHPki/OpenSSL Generated Personal Certificate\"
-nsBaseUrl              = ".$config['base_url']."
-nsRevocationUrl        = ns_revoke_query.php?
-nsCaPolicyUrl          = ".$config['base_url']."policy.html
+basicConstraints		= critical, CA:false
+keyUsage				= critical, nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage		= critical, emailProtection, clientAuth
+nsCertType				= critical, client, email
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid:always, issuer:always
+subjectAltName			= email:copy
+issuerAltName			= issuer:copy
+crlDistributionPoints	= URI:".$config['base_url']."index.php?stage=dl_crl
+nsComment				= \"PHPki/OpenSSL Generated Personal Certificate\"
+nsBaseUrl				= ".$config['base_url']."
+nsRevocationUrl			= ns_revoke_query.php?
+nsCaPolicyUrl			= ".$config['base_url']."policy.html
 
 [ email_signing_ext ]
-basicConstraints       = critical, CA:false
-keyUsage               = critical, nonRepudiation, digitalSignature, keyEncipherment
-extendedKeyUsage       = critical, emailProtection, clientAuth, codeSigning
-nsCertType             = critical, client, email
-subjectKeyIdentifier   = hash
-authorityKeyIdentifier = keyid:always, issuer:always
-subjectAltName         = email:copy
-issuerAltName          = issuer:copy
-crlDistributionPoints  = URI:".$config['base_url']."index.php?stage=dl_crl
-nsComment              = \"PHPki/OpenSSL Generated Personal Certificate\"
-nsBaseUrl              = ".$config['base_url']."
-nsRevocationUrl        = ns_revoke_query.php?
-nsCaPolicyUrl          = ".$config['base_url']."policy.html
+basicConstraints		= critical, CA:false
+keyUsage				= critical, nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage		= critical, emailProtection, clientAuth, codeSigning
+nsCertType				= critical, client, email
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid:always, issuer:always
+subjectAltName			= email:copy
+issuerAltName			= issuer:copy
+crlDistributionPoints	= URI:".$config['base_url']."index.php?stage=dl_crl
+nsComment				= \"PHPki/OpenSSL Generated Personal Certificate\"
+nsBaseUrl				= ".$config['base_url']."
+nsRevocationUrl			= ns_revoke_query.php?
+nsCaPolicyUrl			= ".$config['base_url']."policy.html
 
 [ server_ext ]
-basicConstraints        = critical, CA:false
-keyUsage                = critical, digitalSignature, keyEncipherment
-nsCertType              = critical, server
-extendedKeyUsage        = critical, serverAuth
-subjectKeyIdentifier    = hash
-authorityKeyIdentifier  = keyid:always, issuer:always
-subjectAltName          = DNS:$common_name,email:copy
-issuerAltName           = issuer:copy
-crlDistributionPoints   = URI:".$config['base_url']."index.php?stage=dl_crl
-nsComment               = \"PHPki/OpenSSL Generated Server Certificate\"
-nsBaseUrl               = ".$config['base_url']."
-nsRevocationUrl         = ns_revoke_query.php?
-nsCaPolicyUrl           = ".$config['base_url']."policy.html
+basicConstraints		= critical, CA:false
+keyUsage				= critical, digitalSignature, keyEncipherment
+nsCertType				= critical, server
+extendedKeyUsage		= critical, serverAuth
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid:always, issuer:always
+subjectAltName			= DNS:$common_name,email:copy
+issuerAltName			= issuer:copy
+crlDistributionPoints	= URI:".$config['base_url']."index.php?stage=dl_crl
+nsComment				= \"PHPki/OpenSSL Generated Server Certificate\"
+nsBaseUrl				= ".$config['base_url']."
+nsRevocationUrl			= ns_revoke_query.php?
+nsCaPolicyUrl			= ".$config['base_url']."policy.html
 
 [ time_stamping_ext ]
-basicConstraints       = CA:false
-keyUsage               = critical, nonRepudiation, digitalSignature
-extendedKeyUsage       = timeStamping
-subjectKeyIdentifier   = hash
-authorityKeyIdentifier = keyid:always, issuer:always
-subjectAltName         = DNS:$common_name,email:copy
-issuerAltName          = issuer:copy
-crlDistributionPoints   = URI:".$config['base_url']."index.php?stage=dl_crl
-nsComment              = \"PHPki/OpenSSL Generated Time Stamping Certificate\"
-nsBaseUrl              = ".$config['base_url']."
-nsRevocationUrl        = ns_revoke_query.php?
+basicConstraints		= CA:false
+keyUsage				= critical, nonRepudiation, digitalSignature
+extendedKeyUsage		= timeStamping
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid:always, issuer:always
+subjectAltName			= DNS:$common_name,email:copy
+issuerAltName			= issuer:copy
+crlDistributionPoints	= URI:".$config['base_url']."index.php?stage=dl_crl
+nsComment				= \"PHPki/OpenSSL Generated Time Stamping Certificate\"
+nsBaseUrl				= ".$config['base_url']."
+nsRevocationUrl			= ns_revoke_query.php?
 
 [ vpn_client_ext ]
-basicConstraints        = critical, CA:false
-keyUsage                = critical, digitalSignature
-extendedKeyUsage        = critical, clientAuth
-nsCertType              = critical, client
-subjectKeyIdentifier    = hash
-authorityKeyIdentifier  = keyid:always, issuer:always
-subjectAltName          = DNS:$common_name,email:copy
+basicConstraints		= critical, CA:false
+keyUsage				= critical, digitalSignature
+extendedKeyUsage		= critical, clientAuth
+nsCertType				= critical, client
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid:always, issuer:always
+subjectAltName			= DNS:$common_name,email:copy
 
 [ vpn_server_ext ]
-basicConstraints        = critical, CA:false
-keyUsage                = critical, digitalSignature, keyEncipherment
-extendedKeyUsage        = critical, serverAuth
-nsCertType              = critical, server
-subjectKeyIdentifier    = hash
-authorityKeyIdentifier  = keyid:always, issuer:always
-subjectAltName          = DNS:$common_name,email:copy
+basicConstraints		= critical, CA:false
+keyUsage				= critical, digitalSignature, keyEncipherment
+extendedKeyUsage		= critical, serverAuth
+nsCertType				= critical, server
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid:always, issuer:always
+subjectAltName			= DNS:$common_name,email:copy
 
 [ vpn_client_server_ext ]
-basicConstraints        = critical, CA:false
-keyUsage                = critical, digitalSignature, keyEncipherment
-extendedKeyUsage        = critical, serverAuth, clientAuth
-nsCertType              = critical, server, client
-subjectKeyIdentifier    = hash
-authorityKeyIdentifier  = keyid:always, issuer:always
-subjectAltName          = DNS:$common_name,email:copy
+basicConstraints		= critical, CA:false
+keyUsage				= critical, digitalSignature, keyEncipherment
+extendedKeyUsage		= critical, serverAuth, clientAuth
+nsCertType				= critical, server, client
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid:always, issuer:always
+subjectAltName			= DNS:$common_name,email:copy
 ";
 
 	# Write out the config file.
@@ -202,12 +203,12 @@ subjectAltName          = DNS:$common_name,email:copy
 	return($cnf_file);
 }
 
-//
-// Search the certificate index and return resulting
-// records in array[cert_serial_number][field_name].
-// Fields: serial, country, province, locality, organization,
-//         issuer, unit, common_name, email
-//
+/**
+ * Search the certificate index and return resulting
+ * records in array[cert_serial_number][field_name].
+ * Fields: serial, country, province, locality, organization, 
+ * issuer, unit, common_name, email
+*/
 function CAdb_to_array($search = '.*') {
 	global $config;
 
@@ -282,37 +283,37 @@ function CAdb_in($email="", $name="") {
 		return false;
 }
 
-
-//
-// Alias for CAdb_in()
-//
+/**
+ * Alias for CAdb_in()
+ */
 function CAdb_serial($email, $name='') {
 	return CAdb_in($email, $name='');
 }
 
-//
-// Alias for CAdb_in()
-//
+/**
+ * Alias for CAdb_in()
+ */
 function CAdb_exists($email, $name='') {
 	return CAdb_in($email, $name='');
 }
 
-
-//
-// Returns the certificate 'issuer'
-//
+/**
+ * Returns the certificate 'issuer'
+ */
 function CAdb_issuer($serial) {
 	global $config;
 	$rec = CAdb_get_entry($serial);
 	return $rec['issuer'];
 }
 
-//
-// Returns an array containing the respective fields given a
-// a raw line ($dbentry) from the certificate index.
-// Fields: serial, country, province locality, organization, 
-//         issuer, unit, common_name, email
-//
+/**
+ * Returns an array containing the respective fields given as
+ * a raw line ($dbentry) from the certificate index.
+ * Fields: serial, country, province locality, organization, 
+ *        issuer, unit, common_name, email
+ *        
+ * @filesource 
+ */
 function CAdb_explode_entry($dbentry) {
 	$a = explode("\t", $dbentry);
 	$b = preg_split('/\/([A-Z]|[a-z])+=/', $a[5]);
@@ -348,10 +349,10 @@ function CAdb_explode_entry($dbentry) {
 	return $db;
 }
 
-//
-// Returns the date & time a specified certificate is revoked,
-// Returns FALSE if the certificate is not revoked.
-//
+/**
+ * Returns the date & time a specified certificate is revoked,
+ * Returns FALSE if the certificate is not revoked.
+ */
 function CAdb_is_revoked($serial) {
 	global $config;
 	$regexp = "^R\t.*\t.*\t$serial\t.*\t.*$";
@@ -365,9 +366,9 @@ function CAdb_is_revoked($serial) {
 		return false;
 }
 
-//
-// Returns TRUE if a certificate is valid, otherwise FALSE.
-//
+/**
+ * Returns TRUE if a certificate is valid, otherwise FALSE.
+ */
 function CAdb_is_valid($serial) {
 	global $config;
 	$regexp = "^V\t.*\t.*\t$serial\t.*\t.*$";
@@ -377,29 +378,29 @@ function CAdb_is_valid($serial) {
 		return false;
 }
 
-//
-// Returns the long-form certificate description as output by
-// openssl x509 -in certificatefile -text -purpose
-//
+/**
+ * Returns the long-form certificate description as output by
+ * openssl x509 -in certificatefile -text -purpose
+ */
 function CA_cert_text($serial) {
 	global $config;
 	$certfile = $config['new_certs_dir'] . '/' . $serial . '.pem';
 	return(shell_exec(X509.' -in '.escshellarg($certfile).' -text -purpose 2>&1'));
 }
 
-//
-// Returns the long-form text of the Certificate Revocation List
-// openssl crl -in crlfile -text 
-//
+/**
+ * Returns the long-form text of the Certificate Revocation List
+ * openssl crl -in crlfile -text 
+ */
 function CA_crl_text() {
 	global $config;
 	$crlfile = $config['cacrl_pem'];
 	return(shell_exec(CRL.' -in '.escshellarg($crlfile).' -text 2>&1'));
 }
 
-//
-// Returns the subject of a certificate.
-//
+/**
+ * Returns the subject of a certificate.
+ */
 function CA_cert_subject($serial) {
 	global $config;
 	$certfile = $config['new_certs_dir'] . '/' . $serial . '.pem';
@@ -407,9 +408,9 @@ function CA_cert_subject($serial) {
 	return(str_replace('subject=', '', $x));
 }
 
-//
-// Returns the common name of a certificate.
-//
+/**
+ * Returns the common name of a certificate.
+ */
 function CA_cert_cname($serial) {
 	global $config;
 	#return(ereg_replace('^.*/CN=(.*)/.*','\\1',CA_cert_subject($serial)));
@@ -417,9 +418,9 @@ function CA_cert_cname($serial) {
 	return(preg_replace('/^.*\/CN=(.*)\/.*/','${1}',CA_cert_subject($serial)));
 }
 
-//
-// Returns the email address of a certificate.
-//
+/**
+ * Returns the email address of a certificate.
+ */
 function CA_cert_email($serial) {
 	global $config;
 	$certfile = $config['new_certs_dir'] . '/' . $serial . '.pem';
@@ -427,9 +428,9 @@ function CA_cert_email($serial) {
 	return($x);
 }
 
-//
-// Returns the effective date of a certificate.
-//
+/**
+ * Returns the effective date of a certificate.
+ */
 function CA_cert_startdate($serial) {
 	global $config;
 	$certfile = $config['new_certs_dir'] . '/' . $serial . '.pem';
@@ -543,10 +544,10 @@ function CA_create_cert($cert_type='email',$country,$province,$locality,$organiz
 		}
 	};
 
-	#Unlock the CA database
+	# Unlock the CA database
 	fclose($fd);
 
-	#Remove temporary openssl config file.
+	# Remove temporary openssl config file.
 	if (file_exists($cnf_file)) unlink($cnf_file);
 
 	if ($ret == 0) {
@@ -565,16 +566,18 @@ function CA_create_cert($cert_type='email',$country,$province,$locality,$organiz
 	}
 }
 
-//
-// Renews a specified certificate, revoking any existing valid versions.
-// Uses old certificate request to Creates a new request, and certificate 
-// in various formats.
-//
-// Returns an array containing the output of failed openssl commands.
-//
-// FIXME: Yes, I know... This functions contains much duplicative code 
-//        from CA_create_cert().  Bleh!
-//        
+/**
+ * 
+ * Renews a specified certificate, revoking any existing valid versions.
+ * Uses old certificate request to Creates a new request, and certificate 
+ * in various formats.
+ *
+ * Returns an array containing the output of failed openssl commands.
+ *
+ * FIXME: Yes, I know... This functions contains much duplicative code 
+ *       from CA_create_cert().  Bleh!       
+ * 
+ */
 function CA_renew_cert($old_serial,$expiry,$passwd) {
 	global $config;
 

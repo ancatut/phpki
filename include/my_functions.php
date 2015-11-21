@@ -1,6 +1,6 @@
 <?php
  
-define('__ROOT__', dirname(dirname(__FILE__))); 
+define('__ROOT__', dirname(dirname(__FILE__))); # Fetches the root folder of phpki
 require_once(__ROOT__.'/vendor/phpmailer/phpmailer/class.phpmailer.php');
 
 # TODO: Whitelist of files to which redirection is exclusively allowed
@@ -78,8 +78,16 @@ function send_email($from_addr, $from_alias, $to_addr, $subject, $bodytext, $fil
 	#$file_to_attach = 'PATH_OF_YOUR_FILE_HERE';
 	
 	$email->AddAttachment( htvar($file_to_attach), basename(htvar($file_to_attach)) );
+	try {
+	return $email->Send(); # returns true/false
+	}
+	catch (phpmailerException $e) {
+		echo "<script type='text/javascript'>alert($e->errorMessage())</script>";		
+	} 	catch (Exception $e) {
+		echo "<script type='text/javascript'>alert($e->getMessage())</script>";
+	}
 	
-	return $email->Send();
+	#return $email->Send();
 	#$email->Send();
 }
 
@@ -114,9 +122,9 @@ function csort($array, $column, $ascdec=SORT_ASC){
 	array_multisort($sortarr, $ascdec, SORT_NATURAL|SORT_FLAG_CASE|SORT_REGULAR, $array);  
 	#array_multisort($sortarr, $ascdec, SORT_REGULAR, $array);
 
-	print "Time is: ".date('D, d M Y H:i:s ', $_SERVER['REQUEST_TIME']).'<br>';
-	print implode(" . . . ", $sortarr).'<br>';
-	print "Alphabetic: ". (int)is_alpha("Hi")." ";
+	#print "Time is: ".date('D, d M Y H:i:s ', $_SERVER['REQUEST_TIME']).'<br>';
+	#print implode(" . . . ", $sortarr).'<br>';
+	#print "Alphabetic: ". (int)is_alpha("Hi")." ";
 	
 	return $array;
 }

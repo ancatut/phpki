@@ -26,7 +26,7 @@ Edit if you know what you're doing.<br><br>
 <textarea id="openvpn_client_basecnf_text" name="cnf_textarea" cols="40" rows="20" style="background:#DEE3EC" readonly><?php print htvar($openvpn_client_basecnf_text) ?></textarea>
 <br><br>
 <button class="btn" value="Edit" onclick="return hitEdit('openvpn_client_basecnf_text');">Edit</button>
-<input type="submit" class="btn" name="submit" value="Save" onclick="return hitSave('openvpn_client_cnf_text');">
+<input type="submit" class="btn" name="submit" value="Save" >
 </form>
 </span>
 <span>
@@ -45,12 +45,10 @@ function hitEdit(id) {
 	document.getElementById(id).style.background = "white";
 	return false;
 }
-function hitSave(id) {
-	document.getElementById(id).readOnly = true;
-	//document.getElementById(id).style.background = "lightgrey";
-	//document.getElementById(id).value = <?php echo json_encode($openvpn_client_basecnf_text) ?>;
-	return true;	
-}
+//function hitSave(id) {
+//	document.getElementById(id).readOnly = true;
+//	return true;	
+//}
 $(document).ready(function() {
 	$('#openvpn_edit_settings').submit(function() { // catch the form's submit event
 	    var request = $.ajax({ // create an AJAX call...
@@ -62,10 +60,13 @@ $(document).ready(function() {
 	    	//window.location.reload();  // Reload to prevent form resubmission
 	        alert("File saved."); // Alert success
 		});
-		request.fail(function( jqXHR, textStatus ) {
- 			alert("An error has occurred."); // Alert failure
+		request.fail(function(jqXHR, textStatus, errorThrown) {
+ 			alert("An error has occurred, try again.\n Error: " + errorThrown); // Alert failure
 		});
-	    //return false; // cancel original event to prevent form submitting
+		$(document.activeElement).blur(); // unfocus all active elements
+		document.getElementById("openvpn_client_basecnf_text").readOnly = true; // set textarea to readonly
+		document.getElementById("openvpn_client_basecnf_text").style.background = "#DEE3EC";			 
+	    return false; // cancel original event to prevent form submitting
 	});
 });
 </script>
