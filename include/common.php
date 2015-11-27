@@ -24,6 +24,10 @@ $PHP_SELF = $_SERVER['PHP_SELF'];
 function printHeader($withmenu="default") {
 	global $config;
 	$title = (isset($config['header_title']) ? $config['header_title'] : 'PHPki Certificate Authority');
+
+	$logout = gpvar('logout');
+	$submit = gpvar('submit');
+	
 	switch ($withmenu) {
 	case 'public':
 	case 'about':
@@ -107,7 +111,7 @@ function printHeader($withmenu="default") {
 		print "<div class=".$menuclass.">";
 
 		if (DEMO)  {
-			print "<a href='../index.php'>Public</a>";
+			print "<a href='../index.php'><button class='btn'>Public</button></a>";
 			print "<a href='../ca/index.php'><button class='btn'>Manage CA</button></a>";
 		}
 		else {
@@ -128,7 +132,8 @@ function printHeader($withmenu="default") {
 		
 		<span style="display:inline">
 		<form id="logout_btn" method="post" style="display:inline" action="">
-		<button class='btn' name="logout" type="submit" style="background: #FF8566">Log Out</button>
+		<input class='btn' name="logout" type="submit" style="background: #FF8566" value="Logout" onclick="logoutUser();">
+		<!--  <button class='btn' name="logout" type="submit" style="background: #FF8566" >Log Out</button>-->
 		</form>
 		</span>
 		
@@ -145,7 +150,7 @@ function printFooter() {
 	<br>
 	<hr width="99%" align="left" color="#99caff">
 	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Based on PHPki <a href="http://sourceforge.net/projects/phpki/">v<?=PHPKI_VERSION?></a> - Copyright 2003 - William E. Roadcap</p>
-	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.15">v0.15</a></p>
+	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.15.1">v0.15.1</a></p>
 	</body>
 	</html>
 	<?php
@@ -155,6 +160,11 @@ function printFooter() {
 <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 
 <script>
+
+/**
+ * Implementation of logout for HTTP Basic Auth
+ */
+ 
 $(document).ready(function() {
 	$('#logout_btn').submit(function() { // catch the form's submit event
 	    var request = $.ajax({ // create an AJAX call...
@@ -164,20 +174,24 @@ $(document).ready(function() {
 		    // Therefore, this acts like logging out a user previously logged in with Basic Auth.
 	        type: "POST", // GET or POST	        
             async: false,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('WWW-Authenticate', 'Restricted Access');
+            },
             username: "logmeout",
             password: "12345",
-            headers: { "Authorization": "Basic xxx" },
+            headers: { "Authorization": "Basic " + btoa("logmeout" + ":" + "12345") },
 	        url: "../ca/logout.php", // the file to call with false credentials        
 	        });
 	    request.done(function() {	  
 	        alert("Logging out error, try again."); // Alert success	       
 		});
-		request.fail(function( jqXHR, textStatus ) {
-			location.assign("../index.php"); // Redirect user to public page
-			alert("You have been successfully logged out.");  // This indicates we got a 401 header,
-			// which means successful logout.
+		request.fail(function( jqXHR, textStatus ) {		
+			// Failure indicates we got a 401 header, which actually means successful logout.	
+			alert("You have been successfully logged out.");  
 		});
+		location.assign("../index.php"); // Redirect user to public page
 	    return false; // cancel original event to prevent form submitting
 	});
 });
+	  
 </script>

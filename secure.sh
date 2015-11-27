@@ -50,13 +50,16 @@ echo -n "Enter the user ID your web server runs as (apache, www-data etc.) [www-
 echo
 echo -n "Enter the group ID your web server runs as (apache, www-data etc.) [www-data]: " ; read -r z
 echo
-echo "Enter the IP or subnet address [192.168.0.0/16] which will be allowed access"
-echo -n "to the user admin module in under ./admin: " ; read -r y
+echo "Enter the IP(s) or subnet address which will be allowed access"
+echo -n "to the user admin module in under ./admin [192.168.0.0/16]: " ; read -r y
+
+echo "If you'd like to allow access to the other private folders based on IP or subnet, please enter the permitted address(es); otherwise leave empty: " ; read -r w
 
 user=${x:-"www-data"}
 group=${z:-"www-data"}
-subnet=${y:-'192.168.0.0/16'}
-subnet="${subnet} 127.0.0.1"
+subnet_admin=${y:-'192.168.0.0/16'}
+subnet_admin="${subnet_admin} 127.0.0.1"
+subnet_general=${w:-''}
 
 echo
 echo "Writing htaccess files..."
@@ -80,10 +83,22 @@ AuthType Basic
 AuthUserFile "$passwd_file"
 require valid-user
 SSLRequireSSL
-Order Allow,Deny
-Allow from $subnet
+Require ip $subnet_admin
 
 EOS
+
+cat <<EOS > ./openvpn/.htaccess
+AuthName "Restricted Area"
+AuthType Basic
+AuthUserFile "$passwd_file"
+require valid-user
+SSLRequireSSL
+
+EOS
+
+if [[ "$subnet_general" != "" ]]; then
+echo "Require ip ${subnet_general}" >> ./ca/.htaccess
+echo "Require ip ${subnet_general}" >> ./openvpn/.htaccess
 
 echo
 echo "Writing permissions to PHPki web directory..."

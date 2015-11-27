@@ -37,7 +37,8 @@ Unpack the PHPki tarball onto your web server. For example:
 	cd /var/www/html
 	tar -xzvf /var/tmp/phpki.tar.gz
 
-Install Composer by running from the installation folder:
+Install Composer by running from the installation folder (this is required
+for project dependencies):
 	
 	php composer.phar install
 
@@ -59,11 +60,14 @@ menu if you have secured the application using the secure.sh script.
 
 
 SECURITY & USERS:
-From a root user shell prompt, run the "secure.sh" shell script in this
-directory to set more restrictive Unix file permissions, and to create 
-the Apache .htaccess files which are necessary to force SSL access, HTTP 
-authentication, and directory access restrictions.  If you don't do this
-you will likely be extremely screwed!  Don't say you weren't warned.
+From a root user shell prompt, run the 
+
+	sudo bash secure.sh
+	
+in this directory to set more restrictive Unix file permissions, 
+and to create the Apache .htaccess files which are necessary to force SSL access, 
+HTTP authentication, and directory access restrictions. If you don't do this
+you will likely be extremely screwed! Don't say you weren't warned.
 
 The secure.sh script will attempt to create a file for your user list
 and passwords.  If it fails in that attempt, you will have to use Apache's
@@ -106,4 +110,3 @@ Post all correspondence to the PHPki project page
 http://sourceforge.net/projects/phpki/
 
 ---END OF FILE---
-# phpki

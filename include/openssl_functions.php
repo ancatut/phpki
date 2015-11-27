@@ -3,8 +3,7 @@
 /**
  * Creates a temporary openssl config file specific to given parameters.
  * 
- * The file is placed in ./tmp with a random name. It lingers unless
- * removed manually.
+ * The file is placed in ./tmp with a random name. It lingers unless removed manually.
  */
 function CA_create_cnf($country='',$province='',$locality='',$organization='',$unit='',$common_name='',$email='',$keysize=2048) {
 	global $config, $PHPki_user;
@@ -12,35 +11,35 @@ function CA_create_cnf($country='',$province='',$locality='',$organization='',$u
 	$issuer = $PHPki_user;
 	
 	$cnf_contents = "
-HOME 					= ".$config['home_dir']."
-RANDFILE 				= ".$config['random']."
-dir						= ".$config['ca_dir']."
-certs 					= ".$config['cert_dir']."
-crl_dir					= ".$config['crl_dir']."
-database 				= ".$config['index']."
-new_certs_dir 			= ".$config['new_certs_dir']."
-private_dir 			= ".$config['private_dir']."
-serial 					= ".$config['serial']."
-certificate 			= ".$config['cacert_pem']."
-crl 					= ".$config['cacrl_pem']."
-private_key 			= ".$config['cakey']."
-crl_extentions 			= crl_ext
-default_days 			= 365
+HOME             		= ".$config['home_dir']."
+RANDFILE         		= ".$config['random']."
+dir	             		= ".$config['ca_dir']."
+certs            		= ".$config['cert_dir']."
+crl_dir	         		= ".$config['crl_dir']."
+database         		= ".$config['index']."
+new_certs_dir    		= ".$config['new_certs_dir']."
+private_dir      		= ".$config['private_dir']."
+serial           		= ".$config['serial']."
+certificate      		= ".$config['cacert_pem']."
+crl              		= ".$config['cacrl_pem']."
+private_key      		= ".$config['cakey']."
+crl_extentions	 		= crl_ext
+default_days     		= 365
 default_crl_days 		= 30
-preserve 				= no
-default_md 				= ".$config['default_md']."
+preserve         		= no
+default_md       		= ".$config['default_md']."
 
 [ req ]
-default_bits 			= $keysize
-string_mask 			= nombstr
-prompt 					= no
-distinguished_name 		= req_name
-req_extensions 			= req_ext
+default_bits        	= $keysize
+string_mask         	= nombstr
+prompt              	= no
+distinguished_name  	= req_name
+req_extensions      	= req_ext
 
 [ req_name ]
-C 						= $country
-ST 						= $province
-L 						= $locality
+C						= $country
+ST						= $province
+L						= $locality
 0.O						= $organization
 1.O						= '$issuer'
 OU						= $unit
@@ -250,10 +249,10 @@ function CAdb_to_array($search = '.*') {
 }
 
 
-//
-// Returns an array containing the index record for
-// certificate $serial.
-// 
+/**
+ * Returns an array containing the index record for
+ * certificate $serial.
+ */ 
 function CAdb_get_entry($serial) {
 	global $config;
 	$regexp = "^[VR]\t.*\t.*\t$serial\t.*\t.*$";
@@ -266,10 +265,10 @@ function CAdb_get_entry($serial) {
 }
 
 
-//
-// Returns the serial number of a VALID certificate matching 
-// $email and/or $name. Returns FALSE if no match is found.
-//
+/**
+ * Returns the serial number of a VALID certificate matching 
+ * $email and/or $name. Returns FALSE if no match is found.
+ */
 function CAdb_in($email="", $name="") {
 	global $config;
 	$regexp = "^[V].*CN=$name/(Email|emailAddress)=$email";
@@ -298,7 +297,7 @@ function CAdb_exists($email, $name='') {
 }
 
 /**
- * Returns the certificate 'issuer'
+ * Returns the certificate's 'issuer'
  */
 function CAdb_issuer($serial) {
 	global $config;
@@ -310,9 +309,7 @@ function CAdb_issuer($serial) {
  * Returns an array containing the respective fields given as
  * a raw line ($dbentry) from the certificate index.
  * Fields: serial, country, province locality, organization, 
- *        issuer, unit, common_name, email
- *        
- * @filesource 
+ *        issuer, unit, common_name, email   
  */
 function CAdb_explode_entry($dbentry) {
 	$a = explode("\t", $dbentry);
@@ -438,9 +435,9 @@ function CA_cert_startdate($serial) {
 	return(str_replace('notBefore=','',$x));
 }
 
-//
-// Returns the expiration date of a certificate.
-//
+/**
+ * Returns the expiration date of a certificate.
+ */
 function CA_cert_enddate($serial) {
 	global $config;
 	$certfile = $config['new_certs_dir'] . '/' . $serial . '.pem';
@@ -448,9 +445,9 @@ function CA_cert_enddate($serial) {
 	return(str_replace('notAfter=','',$x));
 }
 
-//
-// Revokes a specified certificate.
-//
+/**
+ * Revokes a specified certificate.
+ */
 function CA_revoke_cert($serial) {
 	global $config;
 
@@ -472,13 +469,13 @@ function CA_revoke_cert($serial) {
 	return array(($ret == true || $ret == 0 ? true : false), implode('<br>',$cmd_output));
 }
 
-//
-// Creates a new certificate request, and certificate in various formats
-// according to specified parameters.   PKCS12 bundle files contain the 
-// private key, certificate, and CA certificate.
-//
-// Returns an array containing the output of failed openssl commands.
-//
+/**
+ * Creates a new certificate request, and certificate in various formats
+ * according to specified parameters.   PKCS12 bundle files contain the 
+ * private key, certificate, and CA certificate.
+ *
+ * Returns an array containing the output of failed openssl commands.
+ */
 function CA_create_cert($cert_type='email',$country,$province,$locality,$organization,$unit,$common_name,$email,$expiry,$passwd,$keysize=2048) {
 	global $config;
 
@@ -536,10 +533,13 @@ function CA_create_cert($cert_type='email',$country,$province,$locality,$organiz
 		$cmd_output[] = "Creating PKCS12 format certifcate.";
 		if ($passwd) {
 			$cmd_output[] = "infile: $usercert   keyfile: $userkey   outfile: $userpfx  pass: $_passwd";
-			exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name -rand ".$config['random']." -passin pass:$_passwd -passout pass:$_passwd  2>&1", $cmd_output, $ret);
+			//exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name -rand ".$config['random']." -passin pass:$_passwd -passout pass:$_passwd  2>&1", $cmd_output, $ret);
+			exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name -passin pass:$_passwd -passout pass:$_passwd  2>&1", $cmd_output, $ret);
+			
 		}
 		else {
 			$cmd_output[] = "infile: $usercert   keyfile: $userkey   outfile: $userpfx";
+			//exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name -nodes -passout pass: 2>&1", $cmd_output, $ret);
 			exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name -nodes -passout pass: 2>&1", $cmd_output, $ret);
 		}
 	};
@@ -699,10 +699,10 @@ function CA_renew_cert($old_serial,$expiry,$passwd) {
 	}
 }
 
-//
-// Creates a new Certificate Revocation List and copies it the the approriate 
-// locations. Returns error messages from failed commands.
-//
+/**
+ * Creates a new Certificate Revocation List and copies it the the approriate 
+ * locations. Returns error messages from failed commands.
+ */
 function CA_generate_crl() {
 	global $config;
 
@@ -720,10 +720,10 @@ function CA_generate_crl() {
 	return array(($ret == 0 ? true : false), implode('<br>',$cmd_output));
 }
 
-//
-// Removes a specified certificate from the certificate index,
-// and all traces of it from the file system.
-//
+/**
+ * Removes a specified certificate from the certificate index,
+ * and all traces of it from the file system.
+ */
 function CA_remove_cert($serial) {
 	global $config;
 
@@ -755,10 +755,10 @@ function CA_remove_cert($serial) {
 	
 }
 
-//
-// Returns the likely intended use for a specified certificate 
-// (email, server, vpn).
-//
+/**
+ * Returns the likely intended use for a specified certificate 
+ * (email, server, vpn).
+ */
 function CA_cert_type($serial) {
 
 	$certtext = CA_cert_text($serial);
@@ -816,7 +816,10 @@ function CA_get_root_pem() {
 	global $config;
 	return(file_get_contents($config['cacert_pem']));
 }
-
+/** 
+ * Adds the user-specific pkcs12 name at the end of the openvpn config files 
+ * and bundles them with pkcs12 file into a .zip.
+ */
 function CA_create_openvpn_archive($serial, $username, $email) {
 	global $config;	
 	

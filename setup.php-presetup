@@ -330,7 +330,7 @@ EOS;
 	#
 	# Now create a temporary openssl.cnf for creating a self-signed
 	# CA root certificate, and create a generic openssl.cnf file 
-	# in the CA home
+	# in the CA home to use when creating regular certificates.
 	#
 	$config_txt1 = <<< EOS
 HOME					= ${config['home_dir']}
@@ -400,7 +400,7 @@ nsCertType             	= sslCA, emailCA, objCA
 subjectKeyIdentifier   	= hash
 subjectAltName         	= email:copy
 crlDistributionPoints  	= URI:${config['base_url']}index.php?stage=dl_crl
-nsComment              	= "PHPki/OpenSSL Generated Root Certificate Authority"
+nsComment              	= \"PHPki/OpenSSL Generated Root Certificate Authority\"
 #nsCaRevocationUrl	   	= ns_revoke_query.php?
 nsCaPolicyUrl          	= ${config['base_url']}policy.html
 
@@ -414,7 +414,7 @@ authorityKeyIdentifier 	= keyid:always, issuer:always
 subjectAltName         	= email:copy
 issuerAltName          	= issuer:copy
 crlDistributionPoints  	= URI:${config['base_url']}index.php?stage=dl_crl
-nsComment              	= "PHPki/OpenSSL Generated Personal Certificate"
+nsComment              	= \"PHPki/OpenSSL Generated Personal Certificate\"
 nsBaseUrl              	= ${config['base_url']}
 nsRevocationUrl	       	= ns_revoke_query.php?
 #nsRenewalUrl          	=
@@ -431,7 +431,7 @@ authorityKeyIdentifier 	= keyid:always, issuer:always
 subjectAltName         	= email:copy
 issuerAltName          	= issuer:copy
 crlDistributionPoints  	= URI:{$config['base_url']}index.php?stage=dl_crl
-nsComment              	= "PHPki/OpenSSL Generated Personal Certificate"
+nsComment              	= \"PHPki/OpenSSL Generated Personal Certificate\"
 nsBaseUrl              	= ${config['base_url']}
 nsRevocationUrl			= ns_revoke_query.php?
 #nsRenewalUrl			=
@@ -448,7 +448,7 @@ authorityKeyIdentifier  = keyid:always, issuer:always
 subjectAltName          = DNS:$common_name,email:copy
 issuerAltName           = issuer:copy
 crlDistributionPoints   = URI:${config['base_url']}index.php?stage=dl_crl
-nsComment               = "PHPki/OpenSSL Generated Secure Server Certificate"
+nsComment               = \"PHPki/OpenSSL Generated Secure Server Certificate\"
 nsBaseUrl		        = ${config['base_url']}
 nsRevocationUrl		    = ns_revoke_query.php?
 nsCaPolicyUrl           = ${config['base_url']}policy.html
@@ -510,7 +510,7 @@ distinguished_name		= req_name
 string_mask				= nombstr
 req_extensions			= req_ext
 
-[ req_name]
+[ req_name ]
 countryName				= Country Name (2 letter code)
 countryName_default		= US
 countryName_min			= 2
@@ -595,7 +595,6 @@ EOS;
 	# Convert expiry years to approximate days.
 	#
 	$days = $config['expiry'] * 365.25;
-
 
 	#
 	# Create a new self-signed CA certificate in PEM format.
@@ -950,7 +949,7 @@ comp-lzo no
 
 	<font color="red">* Required field</font>
 	
-	<div style="text-align:center"><input class="inputbox" type="submit" name="submit" value="Submit"></div>
+	<div style="text-align:center"><input class="btn" type="submit" name="submit" value="Submit"></div>
 	<input class="btn" type="hidden" name="stage" value="validate">
 	</form>
 
