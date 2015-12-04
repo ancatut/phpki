@@ -4,10 +4,10 @@ include('./config.php');
 include('./include/my_functions.php');
 include('./include/common.php');
 
-printHeader('setup');
+printHeader('about');
 print '<div style="text-align:center"><font color="red"><h1>READ ME</h1></font></div>';
-print '<pre>';
+print '<div style="text-align:left"><pre>';
 readfile('./README');
-print '</pre>';
+print '</pre></div>';
 printFooter();
 ?>

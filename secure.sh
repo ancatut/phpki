@@ -8,32 +8,77 @@ This application is designed to be an easy to use "certificate factory" requirin
 
 This application stores private keys within a sub-directory, making them potentially susceptible to compromise. Extra care has been taken in the design of this application to protect the security of your certificates, on the condition that you INSTALL IT AS THE ROOT USER.  However, no software is 100% secure.  
 
-Please run this script from INSIDE the application folder and AFTER running setup.php.
+Please run this script from INSIDE the application folder and AFTER running setup.php. Default values will be displayed inside [].
 
 EOM
 
-read -p "Enter the location of your PHPki password [/etc/phpkipasswd]: " passwd_file
-passwd_file=${passwd_file:-"/etc/phpkipasswd"}
+read -p "Enter the location of your PHPki password [/etc/.phpkipasswd]: " passwd_file
+passwd_file=${passwd_file:-"/etc/.phpkipasswd"}
+echo
 
-if [[ ! -f "$passwd_file" ]]
-then
-    echo "The file you specified does not yet exist."
+read -p "Enter the location of your PHPki groups file [/etc/.phpkigroups]: " groups_file
+groups_file=${groups_file:-"/etc/.phpkigroups"}
+
+if [[ ! -f "$passwd_file" ]]; then
+    echo
+    echo "The password file you specified does not yet exist."
     echo "Let's create it and add your first user."
     echo
     read -p "Enter a user id: " user_id
-
-    echo "Creating the $user_id user account..."
-
+    read -p "Choose a group for $user_id:
+    \"admin\" if you want to give the user full admin access,
+    [\"cert-manager\"] if the user can create and manage certs, but can't create/delete users under the admin panel and can't run PHPki setup. `echo $'\n> '`" user_group
+    user_group=${user_group:-cert-manager}
+    
+    echo "Creating the user account for $user_id..."
     htpasswd -c -m "$passwd_file" "$user_id" || exit
 
-    echo "Creating the administrator account..."
-	echo "See the README file for more information about the"
-	echo "'pkiadmin' user."
+    echo "Checking if user is in $groups_file, otherwise adding them..."
+    
+    temp=`cat $groups_file | grep $user_group:`
+    if [[ ${temp} == "" ]]; then
+        echo "$user_group: $user_id" >> $groups_file
+    else 
+        temp=`cat $groups_file | grep -E "${user_group}:.*${user_id}\s"`       
+        if [[ ${temp} == "" ]]; then
+            sed -i "/^${user_group}:/ s/$/ ${user_id}/" $groups_file
+        fi
+    fi
+
+    if [[ ${user_group} == "admin" ]]; then
+        temp=`cat $groups_file | grep cert-manager:`
+        if [[ ${temp} == "" ]]; then
+            echo "cert-manager: $user_id" >> $groups_file
+        else 
+            temp=`cat $groups_file | grep -E "cert-manager:.*${user_id}\s"`       
+            if [[ ${temp} == "" ]]; then
+                sed -i "/^cert-manager:/ s/$/ ${user_id}/" $groups_file
+            fi
+        fi
+    fi
+
+    echo
+    echo "Creating the administrator account and adding it to $groups_file..."
+	echo "See the README file for more information about the 'pkiadmin' user."
+
+    temp=`cat $groups_file | grep admin:`
+    if [[ ${temp} == "" ]]; then
+        echo "admin: pkiadmin" >> $groups_file
+    else
+        temp=`cat $groups_file | grep -E "admin:.*pkiadmin\s"`
+        if [[ ${temp} == "" ]]; then
+            sed -i '/^admin:/ s/$/ pkiadmin/' $groups_file
+        fi
+        temp=`cat $groups_file | grep -E "cert-manager:.*pkiadmin\s"`
+        if [[ ${temp} == "" ]]; then
+            sed -i '/^cert-manager:/ s/$/ pkiadmin/' $groups_file
+        fi
+    fi
+
     htpasswd -m "$passwd_file" 'pkiadmin' || exit
 fi
 
-if [[ ! "${owner}_" = "root_" ]]
-then
+if [[ ! "${owner}_" = "root_" ]]; then
 	cat <<EOM
 YOU ARE NOT LOGGED ON AS ROOT!
 
@@ -50,16 +95,20 @@ echo -n "Enter the user ID your web server runs as (apache, www-data etc.) [www-
 echo
 echo -n "Enter the group ID your web server runs as (apache, www-data etc.) [www-data]: " ; read -r z
 echo
-echo "Enter the IP(s) or subnet address which will be allowed access"
-echo -n "to the user admin module in under ./admin [192.168.0.0/16]: " ; read -r y
+echo -n "Enter the IP(s) or subnet address which will be allowed access to the user admin module in under ./admin [192.168.0.0/16]: " ; read -r y
 
-echo "If you'd like to allow access to the other private folders based on IP or subnet, please enter the permitted address(es); otherwise leave empty: " ; read -r w
+echo -n "If you'd like to allow access to the other private folders based on IP or subnet, please enter the permitted address(es); otherwise leave empty: `echo $'\n> '`" ; read -r w
 
 user=${x:-"www-data"}
 group=${z:-"www-data"}
 subnet_admin=${y:-'192.168.0.0/16'}
 subnet_admin="${subnet_admin} 127.0.0.1"
 subnet_general=${w:-''}
+
+
+echo "Setting read-write permissions for $group over $passwd_file and $groups_file..."
+chown $owner:$group $passwd_file $groups_file
+chmod 760 $passwd_file $groups_file
 
 echo
 echo "Writing htaccess files..."
@@ -68,38 +117,44 @@ for i in ./include; do
 	echo "Require all denied" >$i/.htaccess
 done 
 
-cat <<EOS >> ./ca/.htaccess
+cat <<EOS > ./ca/.htaccess
+SSLRequireSSL
 AuthName "Restricted Area"
 AuthType Basic
 AuthUserFile "$passwd_file"
-require valid-user
-SSLRequireSSL
+AuthGroupFile "$groups_file"
+Require valid-user
+Require group cert-manager
 
 EOS
 
 cat <<EOS > ./admin/.htaccess 
+SSLRequireSSL
 AuthName "Restricted Area"
 AuthType Basic
 AuthUserFile "$passwd_file"
-require valid-user
-SSLRequireSSL
+AuthGroupFile "$groups_file"
+Require valid-user
 Require ip $subnet_admin
+Require group admin
 
 EOS
 
 cat <<EOS > ./openvpn/.htaccess
+SSLRequireSSL
 AuthName "Restricted Area"
 AuthType Basic
 AuthUserFile "$passwd_file"
-require valid-user
-SSLRequireSSL
+AuthGroupFile "$groups_file"
+Require valid-user
+Require group cert-manager
 
 EOS
 
 if [[ "$subnet_general" != "" ]]; then
-echo "Require ip ${subnet_general}" >> ./ca/.htaccess
-echo "Require ip ${subnet_general}" >> ./openvpn/.htaccess
-
+    echo "Require ip ${subnet_general}" >> ./ca/.htaccess
+    echo "Require ip ${subnet_general}" >> ./openvpn/.htaccess
+fi
 echo
 echo "Writing permissions to PHPki web directory..."
 
@@ -113,7 +168,7 @@ find .   -type d -exec chmod 3750 {} \;
 # Display file list with new permissions
 
 list_files=`ls -la --color .`
-echo "$list_files"
+#echo "$list_files"
 
 echo
 echo "Now we will secure the storage directory."
@@ -127,11 +182,12 @@ storage_dir=${storage_dir:-"/var/www/phpki-store"}
 #if [[ $another_user ]]; then
 #    echo "Other members of ${group} group except $user: $another_user."
 #fi
-echo "Only the apache server will receive (read-write) permissions over the storage folder."
-find $storage_dir           -exec chown $user:$group {} \;
-find $storage_dir   -type l -exec chown -h $user:$group {} \;
-find $storage_dir ! -type d -exec chmod 600 {} \;
-find $storage_dir   -type d -exec chmod 700 {} \;
+echo "Only the apache server and root will receive (read-write) permissions over the storage folder."
+# Directories have sticky bits set.
+find $storage_dir           -exec chown $owner:$group {} \;
+find $storage_dir   -type l -exec chown -h $owner:$group {} \;
+find $storage_dir ! -type d -exec chmod 660 {} \;
+find $storage_dir   -type d -exec chmod 3770 {} \;
 
 echo
 echo "Writing permissions to PHPki storage directory..."
@@ -139,6 +195,11 @@ echo
 
 # Display file list with new permissions
 list_files=`ls -lahR ${storage_dir}`
-echo "$list_files"
+#echo "$list_files"
+
+echo "Enabling Apache's authz_groupfile module..."
+a2enmod authz_groupfile
+echo "Restarting Apache..."
+service apache2 restart
 echo
 echo "All done."
