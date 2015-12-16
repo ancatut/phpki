@@ -23,7 +23,7 @@ case 'display_root':
 	<pre><?php print CA_get_root_pem() ?></pre>
 	<p>
 	<form action="<?php print $PHP_SELF ?>" method="post">
-		<input type="submit" name="submit" value="Back to Menu">
+		<input class="btn" type="submit" name="submit" value="Back to Menu">
 	</form>
 	<?php
 	break;

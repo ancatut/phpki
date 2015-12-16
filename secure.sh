@@ -4,7 +4,7 @@ owner="`id -nu`"
 
 cat <<EOM
 
-This application is designed to be an easy to use "certificate factory" requiring minimum human intervention to administer. It is intended for use within a trusted INTRAnet for the creation and management of x.509 e-mail digital certificates by departmental managers. IT IS NOT INTENDED FOR USE OVER THE INTERNET.
+PHPki is designed to be an easy to use "certificate factory" requiring minimum human intervention to administer. It is intended for use within a trusted INTRAnet for the creation and management of x.509 e-mail digital certificates by departmental managers. IT IS NOT INTENDED FOR USE OVER THE INTERNET.
 
 This application stores private keys within a sub-directory, making them potentially susceptible to compromise. Extra care has been taken in the design of this application to protect the security of your certificates, on the condition that you INSTALL IT AS THE ROOT USER.  However, no software is 100% secure.  
 
@@ -19,6 +19,16 @@ echo
 read -p "Enter the location of your PHPki groups file [/etc/.phpkigroups]: " groups_file
 groups_file=${groups_file:-"/etc/.phpkigroups"}
 
+if [[ ! -f "$groups_file" ]]; then
+	echo
+	echo "The user groups file does not yet exist, attempting to create empty file at specified location."
+	` > $groups_file`
+	#echo > $groups_file
+	echo
+	echo "If you already have a htpasswd file, please manually add the users in it to the htgroups file."
+   	
+fi
+
 if [[ ! -f "$passwd_file" ]]; then
     echo
     echo "The password file you specified does not yet exist."
@@ -26,14 +36,18 @@ if [[ ! -f "$passwd_file" ]]; then
     echo
     read -p "Enter a user id: " user_id
     read -p "Choose a group for $user_id:
-    \"admin\" if you want to give the user full admin access,
-    [\"cert-manager\"] if the user can create and manage certs, but can't create/delete users under the admin panel and can't run PHPki setup. `echo $'\n> '`" user_group
+    [\"cert-manager\"] if the user can create and manage certs, but can't create/delete users under the admin panel and can't run PHPki setup,
+    \"admin\" if you want to give the user full admin access (this user will be written to both admin and cert-manager groups). `echo $'\n> '`" user_group
     user_group=${user_group:-cert-manager}
     
     echo "Creating the user account for $user_id..."
     htpasswd -c -m "$passwd_file" "$user_id" || exit
 
     echo "Checking if user is in $groups_file, otherwise adding them..."
+    
+    # Removing empty lines from file
+    # sed '/^$/d' $groups_file > $groups_file.out
+  	# mv  $groups_file.out $groups_file
     
     temp=`cat $groups_file | grep $user_group:`
     if [[ ${temp} == "" ]]; then
@@ -105,7 +119,6 @@ subnet_admin=${y:-'192.168.0.0/16'}
 subnet_admin="${subnet_admin} 127.0.0.1"
 subnet_general=${w:-''}
 
-
 echo "Setting read-write permissions for $group over $passwd_file and $groups_file..."
 chown $owner:$group $passwd_file $groups_file
 chmod 760 $passwd_file $groups_file
@@ -123,7 +136,6 @@ AuthName "Restricted Area"
 AuthType Basic
 AuthUserFile "$passwd_file"
 AuthGroupFile "$groups_file"
-Require valid-user
 Require group cert-manager
 
 EOS
@@ -134,7 +146,6 @@ AuthName "Restricted Area"
 AuthType Basic
 AuthUserFile "$passwd_file"
 AuthGroupFile "$groups_file"
-Require valid-user
 Require ip $subnet_admin
 Require group admin
 
@@ -146,7 +157,6 @@ AuthName "Restricted Area"
 AuthType Basic
 AuthUserFile "$passwd_file"
 AuthGroupFile "$groups_file"
-Require valid-user
 Require group cert-manager
 
 EOS
@@ -182,12 +192,13 @@ storage_dir=${storage_dir:-"/var/www/phpki-store"}
 #if [[ $another_user ]]; then
 #    echo "Other members of ${group} group except $user: $another_user."
 #fi
-echo "Only the apache server and root will receive (read-write) permissions over the storage folder."
+echo
+echo "Only the apache user will receive (read-write) permissions over the storage folder."
 # Directories have sticky bits set.
-find $storage_dir           -exec chown $owner:$group {} \;
-find $storage_dir   -type l -exec chown -h $owner:$group {} \;
-find $storage_dir ! -type d -exec chmod 660 {} \;
-find $storage_dir   -type d -exec chmod 3770 {} \;
+find $storage_dir           -exec chown $user:$group {} \;
+find $storage_dir   -type l -exec chown -h $user:$group {} \;
+find $storage_dir ! -type d -exec chmod 600 {} \;
+find $storage_dir   -type d -exec chmod 3700 {} \;
 
 echo
 echo "Writing permissions to PHPki storage directory..."

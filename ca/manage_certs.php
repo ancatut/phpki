@@ -38,6 +38,8 @@ $email_subject = gpvar('email_subject');
 $email_text    = gpvar('email_text');
 $to_addr       = gpvar('to_addr'); 
 
+$email_attachment = gpvar('email_attachment');
+
 # Prevent handling certs that don't belong to user
 if ($serial && CAdb_issuer($serial) != $PHPki_user && ! in_array($PHPki_user, $PHPki_admins)) { 
 	$stage = 'goaway';
@@ -74,7 +76,7 @@ case 'display':
 	if ($revoke_date = CAdb_is_revoked($serial))
 		print '<div style="text-align:center"><h2 style="color:red">REVOKED '.$revoke_date.'</h2></div>';
 
-    print '<pre>'.CA_cert_text($serial).'</pre>'; # Added htvar() to sanitize against htmlentities
+    print '<pre>'.CA_cert_text($serial).'</pre>';
 	break;
 
 case 'dl-confirm':
@@ -350,8 +352,8 @@ case 'request-send-email':
 	$status 	  = $rec['status'];
 
 	# Set some default values for sender
-	if (!isset($sender_addr) || $sender_addr == '') $sender_addr = gethostname();
-	if (!isset($sender_alias) || $sender_alias == '') $sender_alias = gethostname();
+	if (!isset($sender_addr) || $sender_addr == '') $sender_addr = $config['contact']; # or eg. gethostname();
+	if (!isset($sender_alias) || $sender_alias == '') $sender_alias = $config['contact']; # or eg. gethostname();
 	if (!isset($email_text) || $email_text == '') $email_text = " ";
 	if (!isset($to_addr) || $to_addr == "") $to_addr = $email;
 	?>
@@ -402,10 +404,12 @@ case 'request-send-email':
 		<input class="inputbox" type="text" name="email_subject" value="'. $email_subject .'" style="width:400px"><br>'.
 		'Email Message:<br>
 		<textarea class="inputbox" name="email_text" rows="7" style="width:400px">'. $email_text .'</textarea><br>'.
-		'Attachment:<br> <input type="checkbox" checked disabled><i><span style="color:red">' . $rec["common_name"] . ' (' . $rec["email"] . ').zip</i></span>';
+		'Attachment:<br> 
+		<select class="inputbox" name="email_attachment">
+			<option value="ovpn_zip">OpenVPN Zip Bundle</option>
+			<option value="ovpn_tblk">OpenVPN Tunnelblick Bundle</option>
+		</select>';
 	?>
-
-      
     
 	<h4>Are you sure?</h4>
        	<p>
@@ -414,7 +418,6 @@ case 'request-send-email':
 	    <input class="btn" type="submit" name="submit" value="Send email" >
        	<input class="btn" type="submit" name="submit" value="Cancel">
        	</form>
-       	</div>
 <?php
 
 	break;
@@ -425,14 +428,22 @@ case 'send-email':
 
 		#print $sender_alias;
 		$rec = CAdb_get_entry($serial);
-		$attachment = $config['openvpn_archives_dir']."/".$rec["common_name"] . " (" . $rec["email"] . ").zip";
-		if (! file_exists($attachment)) {
-	    	CA_create_openvpn_archive($serial, $rec['common_name'], $rec['email']);
+		if ($email_attachment == "ovpn_zip") {
+			$attachment = $config['openvpn_archives_dir']."/".$rec["common_name"] . " (" . $rec["email"] . ").zip";
+			if (! file_exists($attachment)) {
+				CA_create_openvpn_archive($serial, $rec['common_name'], $rec['email']);
+			}
+		}
+		else if ($email_attachment == "ovpn_tblk") {
+			$attachment = $config['openvpn_archives_dir']."/".$rec["common_name"] . " (" . $rec["email"] . ").tblk.zip";
+			if (! file_exists($attachment)) {
+				CA_create_Tunnelblick_zip($serial, $rec['common_name'], $rec['email']);
+			}
 		}
 		
 		if (! send_email($sender_addr, $sender_alias, $to_addr, $email_subject, $email_text, $attachment))
 		
-		# This method makes the page flicker because it refreshes it, might want to implement an ajax call instead
+		# This method may make the page flicker because it refreshes it, might want to implement an ajax call instead
 			echo "<script type='text/javascript'>
 			alert('Error: Email was not sent, check for missing or incorrect fields.');
 			window.location.href = '${PHP_SELF}?stage=request-send-email&serial=$serial';
@@ -442,7 +453,6 @@ case 'send-email':
 			window.location.href = '${PHP_SELF}?$qstr_sort&$qstr_filter';
 			</script>";	
 	}
-	
 
 default:
 

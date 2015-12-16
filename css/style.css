@@ -2,18 +2,24 @@ h1 {
 	font-size: 32px;
 	display : block;
 	margin : 0.5em 0 0.5em 0;
+	word-wrap:break-word;
+    white-space:normal;
 }
 
 h2 {
 	font-size: 24px;
 	display : block;
 	margin : 0.5em 0 0.5em 0;
+	word-wrap:break-word;
+    white-space:normal;
 }
 
 h3 {
 	font-size: 18px;
 	display : block;
 	margin : 0.5em 0 0.5em 0;
+	word-wrap:break-word;
+    white-space:normal;
 }
 
 body {
@@ -24,6 +30,7 @@ body {
 	background: #FAFAFA;	
 	font-family: Arial, Verdana, Helvetica, sans-serif;
 	font-size: 12px;
+		min-width: 500px;
 }
 
 img {
@@ -79,6 +86,7 @@ table {
 	color: #212121;  
 	font-size: 12px;
 	margin: 0.4em 0.2em 0.4em 0.2em;
+	width: 100%;
 }
 
 th {
@@ -148,12 +156,14 @@ td {
 	text-align: right;
 	margin-right: 0.1in;
 	margin-top: -0.20in;
+	min-width: 500px;
 }
 
 .headermenu-konq {
 	text-align: right;
 	margin-right: 0.1in;
 	margin-top: -0.25in;
+	min-width: 500px;
 }
 
 .logo-ie {
@@ -209,6 +219,7 @@ pre {
 	white-space: -moz-pre-wrap;
 	white-space: -o-pre-wrap;
 	word-wrap: break-word;
+	text-align: left;
 }
 
 .btn {

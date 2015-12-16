@@ -1,5 +1,10 @@
-#AuthType Basic
-#AuthUserFile "/etc/phpkipasswd"
-#Require valid-user
-#Order allow,deny
-
+Options FollowSymLinks
+php_flag allow_url_fopen off
+php_flag register_globals off
+php_flag register_long_arrays on
+php_flag magic_quotes_gpc off
+AddType application/x-x509-ca-cert .crt  .pem
+AddType application/pkix-crl    .crl
+AddType application/pkix-cert   .cer .der
+AddType application/x-pkcs12    .p12 .pfx
+SSLRequireSSL

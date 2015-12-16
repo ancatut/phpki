@@ -21,9 +21,11 @@ Your web server must be configured with "AllowOverride All" effective
 in the directory where PHPki is installed.  If you don't know what this
 means, then go Googling.
 
-With PHP 5, make sure register_long_arrays in turn on in php.ini or .htaccess.
-Otherwise, you may get an error similar to "method=post was not found on this se
-rver.
+The .htaccess file sets some default settings for compatibility with older versions
+of PHP but it's not guaranteed if this program will work well with PHP 5.3 or older.
+
+With PHP 5 (< PHP 5.4), make sure register_long_arrays is turned on in php.ini or .htaccess.
+Otherwise, you may get an error similar to "method=post was not found on this server. 
 
 INSTALLATION:
 Make sure "AllowOverride All" is set in your Apache configuration file.
@@ -87,6 +89,9 @@ You may add additional users and change passwords using your browser after
 you have successfully installed PHPki and created your phpkipasswd file with
 at least one user. Point your browser to http://www.domain.com/phpki/admin/.  
 
+To apply correct permissions to the storage directory, run
+
+	sudo bash secure-storedir.sh
 
 UPGRADING:
 Install and configure as if it were a first time installation (see above).

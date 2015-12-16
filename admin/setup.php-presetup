@@ -37,7 +37,7 @@ $pwdinfo      = posix_getpwuid($uid);
 $uname        = $pwdinfo['name'];
 
 # Permissions on the file store.
-$store_perms  = 0700;
+$store_perms  = 0600;
 
 # Where are we?
 $here         = dirname($_SERVER['SCRIPT_FILENAME']);
@@ -59,6 +59,7 @@ $keysize      = gpvar('keysize');
 $base_url     = gpvar('base_url');
 $openssl_bin  = gpvar('openssl_bin');
 $passwd_file  = gpvar('passwd_file');
+$groups_file  = gpvar('groups_file');
 $getting_help = gpvar('getting_help');
 $ca_prefix    = gpvar('ca_prefix');
 $header_title = gpvar('header_title');
@@ -90,6 +91,7 @@ $hidden_fields = '
     <input class="btn" type="hidden" name="ca_prefix" value="' . htvar($ca_prefix) . '">
     <input class="btn" type="hidden" name="header_title" value="' . htvar($header_title) . '">
     <input class="btn" type="hidden" name="passwd_file" value="' . htvar($passwd_file) . '">
+    <input class="btn" type="hidden" name="groups_file" value="' . htvar($groups_file) . '">
     <input class="btn" type="hidden" name="store_dir" value="' . htvar($store_dir) . '">
     
     <input class="btn" type="hidden" name="openvpn_client_basecnf_text" value="' . htvar($openvpn_client_basecnf_text) . '">
@@ -113,7 +115,8 @@ case 'validate':
 	if (! $passwd)       $er .= 'Missing Certificate Password<br>';
 	if (! $passwdv)      $er .= 'Missing Certificate Password Verification "Again"<br>';
 	if (! $header_title) $er .= 'Missing Header Title<br>';
-	if (! $passwd_file)  $er .= 'Missing User Password File Location';
+	if (! $passwd_file)  $er .= 'Missing User Password File Location<br>';
+	if (! $groups_file)  $er .= 'Missing User Groups File Location<br>';
 	if (! $store_dir)    $er .= 'Missing Storage Directory<br>';
 	
 	#if (! $openvpn_cnf_dir) $er .= 'Missing location for OpenVPN configuration<br>'; 
@@ -194,15 +197,6 @@ case 'write':
 	if (! file_exists("$store_dir/CA/crl")) mkdir("$store_dir/CA/crl",$store_perms);
 	if (! file_exists("$store_dir/CA/private/pfx")) mkdir("$store_dir/CA/private/pfx",$store_perms);
 
-	#if (! file_exists("$openvpn_cnf_dir")) mkdir("$openvpn_cnf_dir",$store_perms);
-	
-	#if (! file_exists("$openvpn_client_cnf_dir")) mkdir("$openvpn_client_cnf_dir",$store_perms);	
-	#if (! file_exists("$openvpn_archives_dir")) mkdir("$openvpn_archives_dir",$store_perms);
-
-	#$openvpn_client_cnf = gpvar('openvpn_client_cnf');
-	#$openvpn_cnf_dir = gpvar('openvpn_cnf_dir');
-	#$openvpn_archives_dir = gpvar('openvpn_archives_dir');
-
 	#
 	# Create the PHPki CA configuration.
 	#
@@ -228,11 +222,11 @@ case 'write':
 # Location HTTP Password File
 \$config['passwd_file']		= '$passwd_file';
 
+# Location HTTP Groups File
+\$config['groups_file']		= '$groups_file';
+
 # Password for CA root certificate.
 \$config['ca_pwd'] 			= '$passwd';
-
-# Password hash for CA root certificate.
-\$config['ca_pwd_hash'] 	= '$passwd_hash';
 
 # Number of years the root certificate is good.
 \$config['expiry'] 			= '$expiry';
@@ -254,7 +248,7 @@ case 'write':
 
 # Who users should contact if they have technical difficulty with
 # your certificate authority site.
-\$config['getting_help'] = '$getting_help';
+\$config['getting_help']    = '$getting_help';
 
 #
 # You shouldn't change anything below this line.  If you do, don't
@@ -399,10 +393,11 @@ emailAddress           	= supplied
 
 [ root_ext ]
 basicConstraints       	= CA:true
-keyUsage               	= cRLSign, keyCertSign
+keyUsage               	= critical, cRLSign, keyCertSign, digitalSignature, keyEncipherment
 nsCertType             	= sslCA, emailCA, objCA
 subjectKeyIdentifier   	= hash
 subjectAltName         	= email:copy
+authorityKeyIdentifier 	= keyid:always, issuer:always
 crlDistributionPoints  	= URI:${config['base_url']}index.php?stage=dl_crl
 nsComment              	= "PHPki/OpenSSL Generated Root Certificate Authority"
 #nsCaRevocationUrl	   	= ns_revoke_query.php?
@@ -547,7 +542,7 @@ EOS;
 
 	$config_txt3 = <<<EOS
 [ req ]
-default_bits			= 2048
+default_bits			= 4096
 default_keyfile			= privkey.pem
 distinguished_name		= req_name
 string_mask				= nombstr
@@ -658,11 +653,7 @@ EOS;
 	#
 	# Write out the general OpenVPN config file
 	# This is the base config file and later extra client info is appended 
-	# The final config file is used by the client in order to connect to an OpenVPN server	
-	#exec('tee '.$config['openvpn_cnf_dir'].'/clients/general_client.conf');
-	#$fd = fopen($config['openvpn_cnf_dir']."/clients/general_client.conf", 'wb');
-	#fwrite($fd, $openvpn_client_basecnf_text);
-	#fclose($fd);
+	# The final config file is used by the client in order to connect to an OpenVPN server
 	
 	file_put_contents($config['openvpn_cnf_dir']."/clients/client_basecnf.conf", 
 			$openvpn_client_basecnf_text);
@@ -670,9 +661,6 @@ EOS;
 	#
 	# Step aside and let the users in (create index.php files).  
 	#
-	echo realpath('../index.php') . "-----";
-	echo realpath('../ca/index.php') . "-----";
-	echo realpath(__ROOT__.'/ca/main.php') . "-----";
 	
 	if (! unlink('../index.php')) print "Can't unlink index.php";
 	#if (! unlink('setup.php')) print "Can't unlink setup.php";
@@ -735,8 +723,13 @@ E-mail: <a href=mailto:someone@somewhere.com>someone@somewhere.com</a>&nbsp;&nbs
 	if (! $openssl_bin) $openssl_bin = '/usr/bin/openssl';
 
 	if (! $passwd_file) $passwd_file = $config['passwd_file'];
-	if (! $passwd_file) $passwd_file = dirname($_SERVER['DOCUMENT_ROOT']).'/phpkipasswd';
-
+	#if (! $passwd_file) $passwd_file = dirname($_SERVER['DOCUMENT_ROOT']).'/.phpkipasswd';
+	if (! $passwd_file) $passwd_file = '/etc/.phpkipasswd';
+	
+	if (! $groups_file) $groups_file = $config['groups_file'];
+	#if (! $groups_file) $groups_file = dirname($_SERVER['DOCUMENT_ROOT']).'/.phpkigroups';
+	if (! $groups_file) $groups_file = '/etc/.phpkigroups';
+	
 	if (! $openvpn_client_basecnf_text) $openvpn_client_basecnf_text = '
 #
 # common settings for all users
@@ -900,6 +893,16 @@ comp-lzo no
 	</td>
 	<td>
 	<input class="inputbox" type="text" name="passwd_file" value="<?php print htvar($passwd_file) ?>" size="50">
+	</td>
+	</tr>
+	
+	<tr>
+	<td style="width:35%">
+	<strong>Location of HTTP user groups file<font color="red">*</font></strong><br>
+	Enter the location of your PHPki user groups file. The default is usually ok.
+	</td>
+	<td>
+	<input class="inputbox" type="text" name="groups_file" value="<?php print htvar($groups_file) ?>" size="50">
 	</td>
 	</tr>
 

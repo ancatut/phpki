@@ -1,6 +1,6 @@
 HOME			= /var/www/phpki-store
 RANDFILE		= /var/www/phpki-store/CA/.rnd
-dir			= /var/www/phpki-store/CA
+dir				= /var/www/phpki-store/CA
 certs			= /var/www/phpki-store/CA/certs
 crl_dir			= /var/www/phpki-store/CA/crl
 database		= /var/www/phpki-store/CA/index.txt
@@ -8,13 +8,13 @@ new_certs_dir		= /var/www/phpki-store/CA/newcerts
 private_dir		= /var/www/phpki-store/CA/private
 serial			= /var/www/phpki-store/CA/serial
 certificate		= /var/www/phpki-store/CA/certs/cacert.pem
-crl			= /var/www/phpki-store/CA/crl/cacrl.pem
+crl				= /var/www/phpki-store/CA/crl/cacrl.pem
 private_key		= /var/www/phpki-store/CA/private/cakey.pem
 crl_extensions		= crl_ext
 default_days		= 365
 default_crl_days	= 30
-preserve	 	= no
-default_md	 	= md5
+preserve	 		= no
+default_md	 		= sha512
 
 [ ca ]
 default_ca		= email_cert
@@ -109,10 +109,10 @@ subjectKeyIdentifier    = hash
 authorityKeyIdentifier  = keyid:always, issuer:always
 subjectAltName          = email:copy
 issuerAltName           = issuer:copy
-crlDistributionPoints  = URI:http://www.somewhere.com/phpki/index.php?stage=dl_crl
-nsComment		= "PHPki/OpenSSL Generated Secure Server Certificate"
-nsBaseUrl		= http://www.somewhere.com/phpki/
-nsRevocationUrl		= ns_revoke_query.php?
+crlDistributionPoints   = URI:http://www.somewhere.com/phpki/index.php?stage=dl_crl
+nsComment				= "PHPki/OpenSSL Generated Secure Server Certificate"
+nsBaseUrl				= http://www.somewhere.com/phpki/
+nsRevocationUrl			= ns_revoke_query.php?
 nsCaPolicyUrl           = http://www.somewhere.com/phpki/policy.html
 
 [ vpn_client_ext ]

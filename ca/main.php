@@ -21,14 +21,14 @@ case 'dl_crl':
 case 'gen_crl':
         list($ret,$errtxt) = CA_generate_crl();
 
-        printHeader(false);
+        printHeader('ca');
 
         if ($ret) {
                 ?>
                 <div style="text-align:center"><h2>Certificate Revocation List Updated</h2></div>
                 <p>
                 <form action="<?php echo $PHP_SELF?>" method="post">
-                <input type="submit" name="submit" value="Back to Menu">
+                <input class="btn" type="submit" name="submit" value="Back to Menu">
                 </form>
                 <?php
                 print '<pre>'.CA_crl_text().'</pre>';
@@ -65,7 +65,7 @@ default:
 	by clicking the "<strong>Go Back</strong>" button after each certificate is created.</td></tr>
 
 	<tr><td style="text-align: center; vertical-align: middle; font-weight: bold;">
-	<a href=manage_certs.php>Manage Certificates</a></td>
+	<a href="manage_certs.php">Manage Certificates</a></td>
 	<td>Conveniently view, download, revoke, and renew your existing certificates using the
 	<strong><cite>Certificate Management Control Panel</cite></strong>.</td></tr>
 

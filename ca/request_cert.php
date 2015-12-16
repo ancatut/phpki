@@ -8,50 +8,20 @@ include('../include/openssl_functions.php') ;
 # User's preferences file
 $user_cnf = $config['home_dir']."/config/user-".strtr($PHPki_user,'/\\','|#').'.php';
 
-# Retrieve GET/POST values
-// $form_stage	= gpvar('form_stage'); 
-// $submit = ""; 
-// $country = "";
-// $province = "";
-// $locality = "";
-// $organization = "";
-// $unit = "";
-// $common_name = "";
-// $email = "";
-// $passwd = "";
-// $passwdv = "";
-// $expiry = "";
-// $keysize = "";
-// $cert_type = "";
-#if (isset($_GET['form_stage']) || isset($_POST['form_stage']))
 	$form_stage	= gpvar('form_stage');
-#if (isset($_GET['submit']) || isset($_POST['submit']))	
 	$submit	= gpvar('submit');
-#if (isset($_GET['country']) || isset($_POST['country']))	
 	$country = gpvar('country');
-#if (isset($_GET['province']) || isset($_POST['province']))	
 	$province	= gpvar('province');
-#if (isset($_GET['locality']) || isset($_POST['locality']))	
 	$locality	= gpvar('locality');
-#if (isset($_GET['organization']) || isset($_POST['organization']))	
 	$organization	= gpvar('organization');
-#if (isset($_GET['unit']) || isset($_POST['unit']))	
 	$unit = gpvar('unit');
-#if (isset($_GET['common_name']) || isset($_POST['common_name']))	
 	$common_name	= gpvar('common_name');
-#if (isset($_GET['email']) || isset($_POST['email']))	
 	$email	= gpvar('email');
-#if (isset($_GET['passwd']) || isset($_POST['passwd']))	
 	$passwd	= gpvar('passwd');
-#if (isset($_GET['passwdv']) || isset($_POST['passwdv']))	
 	$passwdv	= gpvar('passwdv');
-#if (isset($_GET['expiry']) || isset($_POST['expiry']))	
 	$expiry	= gpvar('expiry');
-#if (isset($_GET['keysize']) || isset($_POST['keysize']))	
-	$keysize	= gpvar('keysize');
-#if (isset($_GET['cert_type']) || isset($_POST['cert_type']))	
+	$keysize	= gpvar('keysize');	
 	$cert_type	= gpvar('cert_type');
-
 
 # To repopulate the fields in the form after error.
 $hidden_fields = '
@@ -108,7 +78,7 @@ case 'validate':
 		$er = '<h2>ERROR(S) IN FORM:</h2><h4><blockquote>' . $er . '</blockquote></h4>';
 
 
-	if ($email && ($serial = CAdb_in($email,$common_name))) { 	
+	if ($email && ($serial = CAdb_has_valid($email,$common_name))) { 	
 		$er = '';
 		$certtext = CA_cert_text($serial);
 		$er .= '<h2>A valid certificate already exists for ' . htvar("$common_name  <$email>") . '</h2>';
@@ -216,7 +186,7 @@ case 'confirm':
 
 case 'final':
 	if ($submit == "Yes! Create and Download") {
-		if (! $serial = CAdb_in($email, $common_name)) {
+		if (! $serial = CAdb_has_valid($email, $common_name)) {
 			list($ret,$errtxt) = CA_create_cert($cert_type, $country, $province, $locality, $organization, $unit, $common_name, $email, $expiry, $passwd, $keysize);
 
 			if (! $ret) {

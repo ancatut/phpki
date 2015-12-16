@@ -2,13 +2,6 @@
 
 umask(0007);
 
-# session_start();
-
-#if (! isset($_SERVER['PHP_AUTH_USER']) && ! isset($_SERVER['PHP_AUTH_PW'])) {
-#	header('WWW-Authenticate: Basic realm="Restricted Access"');
-#	header('HTTP/1.0 401 Unauthorized');
-#}
-
 if (isset($_SERVER['PHP_AUTH_USER'])) {
 	$PHPki_user = md5($_SERVER['PHP_AUTH_USER']);
 }
@@ -19,23 +12,13 @@ else {
 
 $PHP_SELF = $_SERVER['PHP_SELF'];
 
-##### echo "<p>You entered {$_SERVER['PHP_AUTH_PW']} as your password.</p>"; <--
-
 function printHeader($withmenu="default") {
 	global $config;
 	$title = (isset($config['header_title']) ? $config['header_title'] : 'PHPki Certificate Authority');
 
 	$logout = gpvar('logout');
 	$submit = gpvar('submit');
-	
-//	if ($logout == "Logout" || $submit == "Logout") {
-		//$_SERVER['PHP_AUTH_USER']  = "";
-//		header('HTTP/1.1 401 Unauthorized');
-//	header('WWW-Authenticate: Basic realm="Restricted Access"');
-		//header('Location: ../index.php');
-		
-//		exit;
-//	}
+
 	switch ($withmenu) {
 	case 'public':
 	case 'about':	
@@ -119,7 +102,6 @@ function printHeader($withmenu="default") {
 		break;
 	
 	case 'admin':
-		
 		print "<div class=".$menuclass.">";
 		
 		if (DEMO)  {
@@ -194,9 +176,9 @@ function printHeader($withmenu="default") {
 function printFooter() {
 	?>
 	<br>
-	<hr width="99%" align="left" color="#99caff">
+	<hr width="100%" align="left" color="#99caff">
 	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Based on PHPki <a href="http://sourceforge.net/projects/phpki/">v<?=PHPKI_VERSION?></a> - Copyright 2003 - William E. Roadcap</p>
-	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.16">v0.16</a></p>
+	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.17">v0.17</a></p>
 	</body>
 	</html>
 	<?php
@@ -207,47 +189,9 @@ function printFooter() {
 
 <script>
 
-/*
- function logoutUser() {
-	  setTimeout('location.reload(true)', 1000);
-	  xmlhttp = GetXmlHttpObject();
-	  if (xmlhttp==null) {
-	  return;
-	   }
-	  //alert(xmlhttp);
-	  var url = "logout.php";
-
-	  xmlhttp.open("GET", url, true, "dummy_user", "dummy_password");
-
-	  xmlhttp.setRequestHeader( "If-Modified-Since", "Sat, 1 Jan 2000 00:00:00 GMT" );
-	  xmlhttp.setRequestHeader( 'Accept', 'message/x-formresult' );   
-	  xmlhttp.setRequestHeader( "HTTP/1.1", "401 Unauthorized" );
-	  xmlhttp.send(null);
-	  xhttp.onreadystatechange = function() {
-		  if (xhttp.readyState == 4 && xhttp.status == 200) {
-			  location.assign("../index.php"); 
-		  }
-		};
-	  }
-function GetXmlHttpObject()
-	   {
-	  if (window.XMLHttpRequest)
-	   {
-	   // code for IE7+, Firefox, Chrome, Opera, Safari
-	   return new XMLHttpRequest();
-	   }
-	   if (window.ActiveXObject)
-	  {
-	   // code for IE6, IE5
-	   return new ActiveXObject("Microsoft.XMLHTTP");
-	    }
-	   return null;
-	    }
-	    */
-
 /**
  * Implementation of logout for HTTP Basic Auth
-  
+ *
  */
 $(document).ready(function() {
 	$('#logout_btn').submit(function() { // catch the form's submit event
@@ -277,7 +221,5 @@ $(document).ready(function() {
 	    return false; // cancel original event to prevent form submitting
 	});
 });
-
-
 
 </script>

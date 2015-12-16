@@ -1,6 +1,7 @@
+SSLRequireSSL
 AuthName "Restricted Area"
 AuthType Basic
-AuthUserFile "/etc/phpkipasswd"
-require valid-user
-#SSLRequireSSL
-php_flag magic_quotes_gpc Off
+AuthUserFile "/etc/.phpkipasswd"
+AuthGroupFile "/etc/.phpkigroups"
+Require group cert-manager
+

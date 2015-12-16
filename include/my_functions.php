@@ -259,6 +259,22 @@ function my_file_get_contents($f) {
 	return implode('', file($f));
 }
 
+/**
+ * Checks if the file name contains only numbers, letters
+ * and the characters "-" "_" "." "@" and that the name 
+ * is not longer than 250 characters.
+ */
+function check_uploaded_filename ($filename)
+{
+	if (preg_match("%^[-0-9A-Z@_\.]+$%i",$filename))
+		if (mb_strlen($filename,"UTF-8"))			
+			return (mb_strlen($filename,"UTF-8") < 250);
+		else return false;
+	else return false;
+}
+
+
+
 /** 
  * Returns the previous page the user was on if not the same as the current page, for navigation
  */

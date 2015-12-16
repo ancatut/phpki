@@ -102,6 +102,7 @@ keyUsage				= cRLSign, keyCertSign
 nsCertType				= sslCA, emailCA, objCA
 subjectKeyIdentifier	= hash
 subjectAltName			= email:copy
+authorityKeyIdentifier	= keyid:always, issuer:always
 crlDistributionPoints	= URI:".$config['base_url']."index.php?stage=dl_crl
 nsComment				= \"PHPki/OpenSSL Generated Root Certificate\"
 #nsCaRevocationUrl		= ns_revoke_query.php?
@@ -203,6 +204,95 @@ subjectAltName			= DNS:$common_name,email:copy
 }
 
 /**
+ * Generates OpenSSL config file for the CA. This file is
+ * also placed in ./tmp with a random name and lingers until manually deleted. 
+ */
+function CA_generate_CAcert_cnf() {
+	global $config, $PHPki_user;
+	
+	$issuer = $PHPki_user;
+	$cnf_contents =<<<EOS
+	HOME					= ${config['home_dir']}
+	RANDFILE				= ${config['random']}
+	dir						= ${config['ca_dir']}
+	certs					= ${config['cert_dir']}
+	crl_dir					= ${config['crl_dir']}
+	database				= ${config['index']}
+	new_certs_dir			= ${config['new_certs_dir']}
+	private_dir				= ${config['private_dir']}
+	serial					= ${config['serial']}
+	certificate				= ${config['cacert_pem']}
+	crl						= ${config['cacrl_pem']}
+	private_key				= ${config['cakey']}
+	crl_extensions			= crl_ext
+	default_days			= 365
+	default_crl_days		= 30
+	preserve	 			= no
+	default_md	 			= ${config['default_md']}
+	
+	[ ca ]
+	default_ca				= root_cert
+	
+	[ root_cert ]
+	x509_extensions        	= root_ext
+	default_days           	= 3650
+	policy                 	= policy_supplied
+	
+	[ policy_supplied ]
+	countryName            	= supplied
+	stateOrProvinceName    	= supplied
+	localityName           	= supplied
+	organizationName       	= supplied
+	organizationalUnitName 	= supplied
+	commonName             	= supplied
+	emailAddress           	= supplied
+	
+	[ root_ext ]
+	basicConstraints       	= CA:true
+	keyUsage               	= critical, cRLSign, keyCertSign, digitalSignature, keyEncipherment
+	nsCertType             	= sslCA, emailCA, objCA
+	subjectKeyIdentifier   	= hash
+	subjectAltName         	= email:copy
+	authorityKeyIdentifier	= keyid:always, issuer:always
+	crlDistributionPoints  	= URI:${config['base_url']}index.php?stage=dl_crl
+	nsComment              	= "PHPki/OpenSSL Generated Root Certificate Authority"
+	#nsCaRevocationUrl	   	= ns_revoke_query.php?
+	nsCaPolicyUrl          	= ${config['base_url']}policy.html
+	
+	[ req ]
+	default_bits			= 4096
+	default_keyfile			= privkey.pem
+	distinguished_name		= req_name
+	string_mask				= nombstr
+	req_extensions			= req_ext
+	prompt					= no
+		
+	[ req_name ]
+	C						= ${config['country']}
+	ST						= ${config['province']}
+	L						= ${config['locality']}
+	O						= ${config['organization']}
+	OU						= ${config['unit']}
+	CN						= ${config['common_name']}
+	emailAddress			= ${config['contact']}
+		
+	[ req_ext ]
+	basicConstraints 		= critical, CA:true
+	
+	
+EOS;
+	
+	# Write out the config file.
+	$location = $config['ca_dir']."/tmp";
+	$cnf_file  = tempnam($location, 'cacert-cnf-');
+	$handle = fopen($cnf_file,"w");
+	fwrite($handle, $cnf_contents);
+	fclose($handle);
+	
+	return($cnf_file);
+}
+
+/**
  * Search the certificate index and return resulting
  * records in array[cert_serial_number][field_name].
  * Fields: serial, country, province, locality, organization, 
@@ -269,7 +359,7 @@ function CAdb_get_entry($serial) {
  * Returns the serial number of a VALID certificate matching 
  * $email and/or $name. Returns FALSE if no match is found.
  */
-function CAdb_in($email="", $name="") {
+function CAdb_has_valid($email="", $name="") {
 	global $config;
 	$regexp = "^[V].*CN=$name/(Email|emailAddress)=$email";
         $x = exec('egrep '.escshellarg($regexp).' '.$config['index']);
@@ -283,17 +373,17 @@ function CAdb_in($email="", $name="") {
 }
 
 /**
- * Alias for CAdb_in()
+ * Alias for CAdb_has_valid()
  */
 function CAdb_serial($email, $name='') {
-	return CAdb_in($email, $name='');
+	return CAdb_has_valid($email, $name='');
 }
 
 /**
- * Alias for CAdb_in()
+ * Alias for CAdb_has_valid()
  */
 function CAdb_exists($email, $name='') {
-	return CAdb_in($email, $name='');
+	return CAdb_has_valid($email, $name='');
 }
 
 /**
@@ -533,13 +623,12 @@ function CA_create_cert($cert_type='email',$country,$province,$locality,$organiz
 		$cmd_output[] = "Creating PKCS12 format certifcate.";
 		if ($passwd) {
 			$cmd_output[] = "infile: $usercert   keyfile: $userkey   outfile: $userpfx  pass: $_passwd";
-			//exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name -rand ".$config['random']." -passin pass:$_passwd -passout pass:$_passwd  2>&1", $cmd_output, $ret);
-			exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name -passin pass:$_passwd -passout pass:$_passwd  2>&1", $cmd_output, $ret);
+			exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name -rand ".$config['random']." -passin pass:$_passwd -passout pass:$_passwd  2>&1", $cmd_output, $ret);
+			//exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name -passin pass:$_passwd -passout pass:$_passwd  2>&1", $cmd_output, $ret);
 			
 		}
 		else {
 			$cmd_output[] = "infile: $usercert   keyfile: $userkey   outfile: $userpfx";
-			//exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name -nodes -passout pass: 2>&1", $cmd_output, $ret);
 			exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name -nodes -passout pass: 2>&1", $cmd_output, $ret);
 		}
 	};
@@ -584,7 +673,7 @@ function CA_renew_cert($old_serial,$expiry,$passwd) {
 	# Don't renew a revoked certificate if a valid one exists for this
 	# URL.  Find and renew the valid certificate instead.
 	if (CAdb_is_revoked($old_serial)) {
-		$ret = CAdb_in(CA_cert_email($old_serial),CA_cert_cname($old_serial));
+		$ret = CAdb_has_valid(CA_cert_email($old_serial),CA_cert_cname($old_serial));
 		if ($ret && $old_serial != $ret) $old_serial = $ret;
 	}
 
@@ -842,6 +931,96 @@ function CA_create_openvpn_archive($serial, $username, $email) {
 		$archive_target = $config["private_dir"]."/openvpn-archives/'" . $username . " (" . $email . ").zip'";
 		exec("zip -j ". $archive_target . " " . $user_conf . " " . $user_ovpn . " " . $pkcs12);		
 	}
+	else echo "Missing base OpenVPN config file.";
+}
+/**
+ * Adds the user-specific pkcs12 name at the end of the openvpn config files
+ * and bundles them with pkcs12 file into a file with the extension .tblk.zip, 
+ * which can be unzipped and used with Macs.
+ */
+function CA_create_Tunnelblick_zip($serial, $username, $email) {
+	global $config;
+
+	$base_cnf_file = $config["openvpn_client_cnf_dir"]."/client_basecnf.conf";
+
+	$user_conf = $config['openvpn_client_cnf_dir'] . "/'" . $username . " (". $email . ").conf'";
+	$user_ovpn = $config['openvpn_client_cnf_dir'] . "/'" . $username . " (". $email . ").ovpn'";
+
+	if (file_exists($base_cnf_file))
+	{
+		$contents = file_get_contents($base_cnf_file);
+		$added_cnf_line = "pkcs12 " . $username . " (" . $email . ").p12";
+		exec("echo '" . $contents . "' > " . $user_conf);
+		exec("echo '" . $added_cnf_line . "' >> " . $user_conf);
+		exec("cp " . $user_conf . " " . $user_ovpn);
+
+		$pkcs12 = $config["pfx_dir"]."/" . $serial . ".pfx";
+		exec("cp " . $pkcs12 . " " . $config["private_dir"]."/tmp/'".$username . " (" . $email . ").p12'");
+		$pkcs12 = $config["private_dir"]."/tmp/'" . $username . " (" . $email . ").p12'";
+		$archive_target = $config["private_dir"]."/openvpn-archives/'" . $username . " (" . $email . ").tblk.zip'";
+		exec("zip -j ". $archive_target . " " . $user_conf . " " . $user_ovpn . " " . $pkcs12);
+	}
+	else echo "Missing base OpenVPN config file.";
 }
 
+function CA_renew_CAcert($new_expiry) {
+	global $config;
+	
+	$cakey   = $config['cakey'];
+	$careq   = $config['req_dir'].'/ca-newreq.pem';
+	$cacert  = $config['cacert_pem'];
+	
+	$CA_cnf_file = CA_generate_CAcert_cnf();
+	putenv("RANDFILE=".$config['random']);
+	
+	unset($cmd_output);
+	$ret = 0;
+	
+	$cmd_output[] = 'Backing up the old CA certificate as <i>./cacert.pem-old</i>...<br>';
+	exec("cp ".$cacert." ".$cacert."-old");
+
+	$expiry_days = round($new_expiry * 365.25, 0);
+	$cmd_output[] = "Generating a temporary CA OpenSSL configuration file with identical information...<br>";
+	$cmd_output[] = 'Signing cert request and generating the new CA cert... <br>';
+	# Extract serial number from old cert and use it with the new one. This ensures that the new CA cert can still validate user certs
+	# signed with the old CA cert, otherwise incompatibilities will arise.
+	$serial_cmd = exec(X509." -in ".$cacert."-old -noout -serial");
+	$serial = str_replace("serial=", "", $serial_cmd);
+	//echo $serial."<br>";
+	exec(REQ . " -config ".$CA_cnf_file." -extensions root_ext -key ".$cakey." -passin pass:".$config['ca_pwd']." -new -x509 -set_serial 0x".$serial." -days ".$expiry_days." -out ".$config['cacert_pem']." 2>&1", $cmd_output, $ret);
+	$cmd_string = implode("<br>", $cmd_output);
+	echo $cmd_string;
+	# Remove temporary CA OpenSSL config file
+	unlink($CA_cnf_file);
+	
+	if ($ret == 0) {
+		echo "<br>Completed with no errors.<br>";
+		exec("chmod 660 ".$cacert);
+		unset($cmd_output);
+		list($ret, $cmd_output[]) = CA_generate_crl();
+		$cmd_output[] = "<br>All done.";
+	}		
+	
+	$cmd_string = implode("<br>", $cmd_output);
+	echo "<br>".$cmd_string;
+	
+	return $ret;
+}
+
+#function import_CA() {
+	# Upload private key
+	# Upload certificate
+	# Enter password for CA key -> config['ca_pwd']
+	# Copy key and cert in the appropriate locations
+	# Read and replace information into config.php
+	
+#}
+
+#function extend_CA() {
+	
+#}
+
+#function renew_CA() {
+	
+#}
 ?>
