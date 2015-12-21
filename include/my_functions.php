@@ -273,15 +273,13 @@ function check_uploaded_filename ($filename)
 	else return false;
 }
 
-
-
 /** 
  * Returns the previous page the user was on if not the same as the current page, for navigation
  */
 function back_link() {
 	if (isset($_SERVER['HTTP_REFERER']) && ($_SERVER['HTTP_REFERER'] != $_SERVER['REQUEST_URI']))
 		return $_SERVER['HTTP_REFERER'];
-	else return "";
+	else return "index.php";
 }
 
 ?>

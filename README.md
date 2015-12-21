@@ -25,7 +25,9 @@ The .htaccess file sets some default settings for compatibility with older versi
 of PHP but it's not guaranteed if this program will work well with PHP 5.3 or older.
 
 With PHP 5 (< PHP 5.4), make sure register_long_arrays is turned on in php.ini or .htaccess.
-Otherwise, you may get an error similar to "method=post was not found on this server. 
+Otherwise, you may get an error similar to "method=post was not found on this server."
+
+The updates to PHPki were done on PHP version 5.6 and Apache version 2.4.
 
 INSTALLATION:
 Make sure "AllowOverride All" is set in your Apache configuration file.
@@ -88,10 +90,6 @@ config/config.php under your certificate store directory.
 You may add additional users and change passwords using your browser after
 you have successfully installed PHPki and created your phpkipasswd file with
 at least one user. Point your browser to http://www.domain.com/phpki/admin/.  
-
-To apply correct permissions to the storage directory, run
-
-	sudo bash secure-storedir.sh
 
 UPGRADING:
 Install and configure as if it were a first time installation (see above).

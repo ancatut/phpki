@@ -2,9 +2,8 @@
 include('../config.php');
 include('../include/my_functions.php');
 include('../include/common.php');
-global $config; # It's unclear why the $config array wasn't already included 
+global $config; 
 
-# Flushes a 
 function flush_exec($command, $line_length=200) {
         $handle = popen("$command 2>&1",'r');
 

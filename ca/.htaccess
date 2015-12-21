@@ -3,5 +3,5 @@ AuthName "Restricted Area"
 AuthType Basic
 AuthUserFile "/etc/.phpkipasswd"
 AuthGroupFile "/etc/.phpkigroups"
-Require group cert-manager
+Require group admin cert-manager regular-user
 

@@ -36,9 +36,10 @@ if [[ ! -f "$passwd_file" ]]; then
     echo
     read -p "Enter a user id: " user_id
     read -p "Choose a group for $user_id:
-    [\"cert-manager\"] if the user can create and manage certs, but can't create/delete users under the admin panel and can't run PHPki setup,
-    \"admin\" if you want to give the user full admin access (this user will be written to both admin and cert-manager groups). `echo $'\n> '`" user_group
-    user_group=${user_group:-cert-manager}
+    \"admin\" if you want to give the user full access,
+    \"cert-manager\" if the user can create and manage certs, but can't create/delete users under the admin panel and can't run PHPki setup,
+    [\"regular-user\"] for users who can only manage the certificates they have created themselves and can't access the admin panel or edit OpenVPN settings. `echo $'\n> '`" user_group
+    user_group=${user_group:-regular-user}
     
     echo "Creating the user account for $user_id..."
     htpasswd -c -m "$passwd_file" "$user_id" || exit
@@ -46,29 +47,30 @@ if [[ ! -f "$passwd_file" ]]; then
     echo "Checking if user is in $groups_file, otherwise adding them..."
     
     # Removing empty lines from file
-    # sed '/^$/d' $groups_file > $groups_file.out
-  	# mv  $groups_file.out $groups_file
+    sed '/^$/d' $groups_file > $groups_file.out
+  	mv  $groups_file.out $groups_file
     
-    temp=`cat $groups_file | grep $user_group:`
-    if [[ ${temp} == "" ]]; then
-        echo "$user_group: $user_id" >> $groups_file
-    else 
-        temp=`cat $groups_file | grep -E "${user_group}:.*${user_id}\s"`       
-        if [[ ${temp} == "" ]]; then
-            sed -i "/^${user_group}:/ s/$/ ${user_id}/" $groups_file
-        fi
-    fi
-
-    if [[ ${user_group} == "admin" ]]; then
-        temp=`cat $groups_file | grep cert-manager:`
-        if [[ ${temp} == "" ]]; then
-            echo "cert-manager: $user_id" >> $groups_file
-        else 
-            temp=`cat $groups_file | grep -E "cert-manager:.*${user_id}\s"`       
-            if [[ ${temp} == "" ]]; then
-                sed -i "/^cert-manager:/ s/$/ ${user_id}/" $groups_file
-            fi
-        fi
+    if [[ ${user_group} == "cert-manager" || ${user_group} == "regular-user" ||  ${user_group} == "admin" ]]; then
+    	temp=`cat $groups_file | grep $user_group:`
+	    if [[ ${temp} == "" ]]; then
+	        echo "$user_group: $user_id" >> $groups_file
+	    else 
+	        temp=`cat $groups_file | grep -E "${user_group}:.*${user_id}\s"`       
+	        if [[ ${temp} == "" ]]; then
+	            sed -i "/^${user_group}:/ s/$/ ${user_id}/" $groups_file
+	        fi
+	    fi
+   # elif [[ ${user_group} == "admin" ]]; then
+   #     temp=`cat $groups_file | grep cert-manager:`
+   #     if [[ ${temp} == "" ]]; then
+   #         echo "cert-manager: $user_id" >> $groups_file
+   #     else 
+   #         temp=`cat $groups_file | grep -E "cert-manager:.*${user_id}\s"`       
+   #        if [[ ${temp} == "" ]]; then
+   #             sed -i "/^cert-manager:/ s/$/ ${user_id}/" $groups_file
+   #         fi
+   #     fi
+    else echo "Error: Wrong user group entered, skipping. Please add user to the appropriate group(s) manually or re-run this script."
     fi
 
     echo
@@ -136,7 +138,7 @@ AuthName "Restricted Area"
 AuthType Basic
 AuthUserFile "$passwd_file"
 AuthGroupFile "$groups_file"
-Require group cert-manager
+Require group admin cert-manager regular-user
 
 EOS
 
@@ -157,7 +159,7 @@ AuthName "Restricted Area"
 AuthType Basic
 AuthUserFile "$passwd_file"
 AuthGroupFile "$groups_file"
-Require group cert-manager
+Require group admin cert-manager
 
 EOS
 

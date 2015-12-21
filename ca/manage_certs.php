@@ -66,8 +66,9 @@ case 'goaway':
 	break;
 
 case 'display':
-	printHeader(false);
-
+	printHeader('ca');
+	print "<div style='float:left; position: absolute'><a href='manage_certs.php'><button class='btn'>Back to Menu</button></a></div>";
+	
 	?>
     <div style="text-align:center"><h2>Certificate Details</h2></div>
 	<div style="text-align:center"><h3 style="color:#0000AA">(#<?php echo $serial ?>)<br><?php echo htvar(CA_cert_cname($serial).' <'.CA_cert_email($serial).'>') ?> </h3></div>
@@ -75,7 +76,8 @@ case 'display':
 
 	if ($revoke_date = CAdb_is_revoked($serial))
 		print '<div style="text-align:center"><h2 style="color:red">REVOKED '.$revoke_date.'</h2></div>';
-
+	
+		
     print '<pre>'.CA_cert_text($serial).'</pre>';
 	break;
 
@@ -189,7 +191,7 @@ case 'revoke':
 
 		print '<form action="$PHP_SELF?stage=revoke-form&serial=$serial&$qstr_sort&$qstr_filter" method="post">';
 		?>
-		<h2 style="color:#ff0000">There was an error revoking your certificate.</h2><br>
+		<h2 style="color:#ff0000">There was an error revoking your certificate.</h2>
 		<blockquote>
 		<h3>Debug Info:</h3>
 		<pre><?php echo $errtxt ?></pre>
@@ -535,7 +537,7 @@ default:
 			 <td>'.htvar($rec['organization']).'</td>
 			 <td>'.htvar($rec['unit']).'</td>
 			 <td>'.htvar($rec['locality']).'</td>
-			 <td><a href="'.$PHP_SELF.'?stage=display&serial='.$rec['serial'].'" target="_certdisp">'.
+			 <td><a href="'.$PHP_SELF.'?stage=display&serial='.$rec['serial'].'">'.
 			 '<img src="../images/display.png" alt="Display" title="Display complete certificate details."></a>';
 
 		if ($rec['status'] == 'Valid') {
