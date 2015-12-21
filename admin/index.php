@@ -12,7 +12,6 @@ $passwd  = gpvar('passwd');
 $passwdv = gpvar('passwdv');
 $expiry  = gpvar('expiry');
 $submit	 = gpvar('submit');
-
 $user_group = gpvar('user_group');
 
 switch($stage) {
@@ -26,7 +25,6 @@ case 'list_users':
         print '</pre>';
 
 	?>
-	</pre>
 	<form action="<?php echo $PHP_SELF?>" method="post">
 	<input class="btn" type="submit" name="submit" value="Back to Menu">
 	</form>
@@ -39,7 +37,7 @@ case 'add_user_form':
 	?>
 	<body onLoad="self.focus();document.form.user_id.focus()">
 	<form action="<?php echo $PHP_SELF?>" method="post" name="form">
-	<table>	
+	<table>
 	<tr><th colspan="2"><h3>Add User or Update Existing User's Password or User Group</h3></th></tr>
 	<tr><td>User ID</td><td><input type="text" name="user_id" value="<?php echo htvar($user_id)?>" maxlength=15 size=15></td></tr>
 	<tr>
@@ -48,10 +46,11 @@ case 'add_user_form':
 		<select class="inputbox" name="user_group">
 			<option value="admin">admin</option>
 			<option value="cert-manager">cert-manager</option>
+			<option value="regular-user">regular-user</option>
 			</select>
 		</td>
 	</tr>
-	<tr><td>Password (min. 8 characters long) (to be updated to the new value if user already exists)</td><td><input type="password" name="passwd" value='' size="20"></td></tr>
+	<tr><td>Password (min. 8 characters long) (updates to the new value if user already exists)</td><td><input type="password" name="passwd" value='' size="20"></td></tr>
 	<tr><td>Verify Password </td><td><input type="password" name="passwdv" value='' size="20"></td></tr>
 	</table>
 	<input type="hidden" name="stage" value="add_user">
@@ -89,37 +88,62 @@ case 'add_user':
 		# Extract non-empty lines from file without line ending			
 		$admins_line = preg_grep('/^admin:\s.*?/', $contents_array);	
 		$cert_managers_line = preg_grep('/^cert-manager:\s.*?/', $contents_array);
-			
+		$regular_users_line = preg_grep('/^regular-user:\s.*?/', $contents_array);
+		
 		# Preg_grep maintains key values from original array, so we can't do $admins_line[0]
 		foreach($admins_line as $match)
 			$admins = array_filter(explode(" ", substr($match, strpos($match, ": ") + 2)));
 		foreach($cert_managers_line as $match)
 			$cert_managers = array_filter(explode(" ", substr($match, strpos($match, ": ") + 2)));
+		foreach($regular_users_line as $match)
+			$regular_users = array_filter(explode(" ", substr($match, strpos($match, ": ") + 2)));
 		
 		if ($user_group == "admin") {
 			$admins[] = $user_id;
-			$cert_managers = $admins;
+			$cert_managers = array_diff($cert_managers, array($user_id));
+			$regular_users = array_diff($regular_users, array($user_id));
 		}
 		else if ($user_group == "cert-manager") {
 			$admins = array_diff($admins, array($user_id));
-			$cert_managers = $admins;
 			$cert_managers[] = $user_id;
+			$regular_users = array_diff($regular_users, array($user_id));
 		}
-					
+		else if ($user_group == "regular-user") {
+			$admins = array_diff($admins, array($user_id));
+			$cert_managers = array_diff($cert_managers, array($user_id));
+			$regular_users[] = $user_id;
+		}
+			
 		$admins = array_unique($admins);
 		sort($admins);
 		$cert_managers = array_unique($cert_managers);
 		sort($cert_managers);
+		$regular_users = array_unique($regular_users);
+		sort($regular_users);
+		
+		$PHPki_admins = array_map(function($val) {
+			return "md5('".$val."')";
+			}, array_merge($admins, $cert_managers));
+				
+		$data = file($config['store_dir']."/config/config.php"); // reads an array of lines
+		
+		$matches = preg_grep('/^\$PHPki_admins.*$/', $data);
+		$matches_string = implode(', ', $PHPki_admins);
+		$ret = preg_match('/^\$PHPki_admins.*$/', $data);
+		$data = preg_replace('/^\$PHPki_admins.*$/', "\$PHPki_admins = Array(".$matches_string.");\n", $data);
+
+		file_put_contents($config['store_dir']."/config/config.php", implode('', $data));
 		
 		unset($groups_file_contents);			
 		$groups_file_contents .= "admin: ".implode(' ', $admins)."\n";
 		$groups_file_contents .= "cert-manager: ".implode(' ', $cert_managers)."\n";
+		$groups_file_contents .= "regular-user: ".implode(' ', $regular_users)."\n";
 		
 		file_put_contents($groups_file, $groups_file_contents);
 		
 		$pwdfile = escapeshellarg($config['passwd_file']);
 		$user_id = escapeshellarg($user_id);
-		$passwd = escapeshellarg($passwd);
+		$passwd  = escapeshellarg($passwd);
 		
 		print 'Writing user password. Results of htpasswd command:<br>';
 		system("htpasswd -bm $pwdfile $user_id $passwd 2>&1");

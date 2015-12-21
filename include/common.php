@@ -66,18 +66,17 @@ function printHeader($withmenu="default") {
 	switch ($withmenu) {
 	case false:
 	case 'about':
-		print "<div class=".$menuclass.">
-		<a href='help.php'><button class='btn'>Help</button></a>
-		<a href='about.php'><button class='btn'>About</button></a>";
+		print "<div class=".$menuclass.">";
+		print "<a href='index.php'><button class='btn'>Public Menu</button></a>";
+		print "<a href='help.php'><button class='btn'>Help</button></a>";
+		print "<a href='about.php'><button class='btn'>About</button></a></div>";
 		break;
 	case 'setup':
-	?>
-		<div class="<?php echo $menuclass?>">
-			<a href="../readme.php"><button class="btn">ReadMe</button></a>
-			<a href="../admin/setup.php"><button class="btn">Setup</button></a>
-			<a href="../about.php"><button class="btn">About</button></a>
-		</div>
-		<?php
+	
+		print "<div class=".$menuclass.">";
+		print "<a href='../readme.php'><button class='btn'>ReadMe</button></a>";
+		print "<a href='../admin/setup.php'><button class='btn'>Setup</button></a>";
+		print "<a href='../about.php'><button class='btn'>About</button></a></div>";
 		break;
 	case 'public':
 		print "<div class=".$menuclass.">";
@@ -94,11 +93,10 @@ function printHeader($withmenu="default") {
 		if (file_exists('policy.html')) {
 			print "<a style='color: red' href='policy.html' target='help'><button class='btn'>Policy</button></a>";
 		}
-		?>		
-		<a href="help.php"><button class="btn">Help</button></a>
-		<a href="about.php"><button class="btn">About</button></a>
-		</div>
-		<?php
+			
+		print "<a href='help.php'><button class='btn'>Help</button></a>";
+		print "<a href='about.php'><button class='btn'>About</button></a></div>";
+		
 		break;
 	
 	case 'admin':
@@ -109,26 +107,23 @@ function printHeader($withmenu="default") {
 			print "<a href='../ca/index.php'><button class='btn'>Manage CA</button></a>";
 		}
 		else {
+			print "<a href='../index.php'><button class='btn'>Public Menu</button></a>";
 			print "<a href='setup.php'><button class='btn'>Re-run CA Setup</button></a>";
 			print "<a href='../ca/index.php'><button class='btn'>Manage CA</button></a>";
 		}
-		?>
-				<a href="../openvpn/change_openvpn_settings.php"><button class="btn">Edit OpenVPN Config</button></a>
-				<a href="../admin/index.php"><button class="btn">Admin Panel</button></a>
+				print "<a href='../openvpn/change_openvpn_settings.php'><button class='btn'>Edit OpenVPN Config</button></a>";
+				print "<a href='../admin/index.php'><button class='btn'>Admin Panel</button></a>";
 						
-				<?php
 				if (file_exists('../policy.html')) {
 					print "<a style='color: red' href='../policy.html'><button class='btn'>Policy</button></a>";
 				}
-				?>
 		
-				<a href='../help.php'><button class="btn">Help</button></a>
-				<a href='../about.php'><button class="btn">About</button></a>
-				
+				print "<a href='../help.php'><button class='btn'>Help</button></a>";
+				print "<a href='../about.php'><button class='btn'>About</button></a>";
+				?>
 				<span style="display:inline">
 				<form id="logout_btn" method="post" style="display:inline" action="">
 				<input class='btn' name="logout" type="submit" style="background: #FF8566" value="Logout" onclick="logoutUser();">
-				<!--  <button class='btn' name="logout" type="submit" style="background: #FF8566" >Log Out</button>-->
 				</form>
 				</span>
 		</div>
@@ -143,21 +138,22 @@ function printHeader($withmenu="default") {
 			print "<a href='../ca/index.php'><button class='btn'>Manage CA</button></a>";
 		}
 		else {
+			print "<a href='../index.php'><button class='btn'>Public Menu</button></a>";
 			print "<a href='../ca/index.php'><button class='btn'>Manage CA</button></a>";
 		}
-		?>
-		<a href="../openvpn/change_openvpn_settings.php"><button class="btn">Edit OpenVPN Config</button></a>
-		<a href="../admin/index.php"><button class="btn">Admin Panel</button></a>
+		
+		print '<a href="../openvpn/change_openvpn_settings.php"><button class="btn">Edit OpenVPN Config</button></a>';
+		print '<a href="../admin/index.php"><button class="btn">Admin Panel</button></a>';
 				
-		<?php
+		
 		if (file_exists('../policy.html')) {
 			print "<a style='color: red' href='../policy.html'><button class='btn'>Policy</button></a>";
 		}
+		
+		print "<a href='../help.php'><button class='btn'>Help</button></a>";
+		print "<a href='../about.php'><button class='btn'>About</button></a>";
 		?>
 
-		<a href='../help.php'><button class="btn">Help</button></a>
-		<a href='../about.php'><button class="btn">About</button></a>
-		
 		<span style="display:inline">
 		<form id="logout_btn" method="post" style="display:inline" action="">
 		<input class='btn' name="logout" type="submit" style="background: #FF8566" value="Logout" onclick="logoutUser();">

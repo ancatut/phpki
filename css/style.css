@@ -242,7 +242,7 @@ pre {
 	border: solid #1f628d 0px;
 	outline: none;
 	text-decoration: none;
-	margin: 0.4em 0.2em 0.4em 0.2em;
+	margin: 0.4em 0.25em 0.4em 0.25em;
 	font-size: 12px;
 }
 .btn:hover {
@@ -284,7 +284,7 @@ pre {
 	border: solid #fff 0px;
 	outline: none;
 	text-decoration: none;
-	margin: 0.4em 0.2em 0.4em 0.2em;
+	margin: 0.4em 0.25em 0.4em 0.25em;
 }
 .inputbox:hover {
 	background: #7A88A0;

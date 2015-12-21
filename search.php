@@ -23,7 +23,8 @@ if ( !($show_valid.$show_revoked.$show_expired) ) $show_valid = 'V';
 switch ($stage):
 case 'display':
 	printHeader('about');
-
+	print "<div style='float:left; position: absolute'><a href='search.php'><button class='btn'>Back to Menu</button></a></div>";
+	
 	print '
 	<div style="text-align:center"><h2>Certificate Details</h2></div>
 	<div style="text-align:center"><font color=#0000AA><h3>(#'.htvar($serial).')<br>'.htvar(CA_cert_cname($serial).' <'.CA_cert_email($serial).'>').'</h3></font></div>';
@@ -113,7 +114,7 @@ case 'search':
 	</table>
 
 	<form action="<?php print $PHP_SELF ?>" method="post" name="form">
-	<input type="submit" name="submit" value="Another Search">
+	<input class="btn" type="submit" name="submit" value="Another Search">
 	<input type="hidden" name="search" value="<?php print htvar($search) ?>">
 	<input type="hidden" name="show_valid" value="<?php print htvar($show_valid) ?>">
 	<input type="hidden" name="show_revoked" value="<?php print htvar($show_revoked) ?>">
