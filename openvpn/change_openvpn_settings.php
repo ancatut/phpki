@@ -1,5 +1,4 @@
 <?php
-include_once('../history.php');
 include('../config.php');
 include(STORE_DIR.'/config/config.php');
 include('../include/my_functions.php');

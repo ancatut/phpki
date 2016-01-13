@@ -350,7 +350,7 @@ default:
 	<br>
 	<br>
 	<div style="text-align:center">
-	<table class="menu"><tr><th><h3>SYSADMIN MENU</h3></th></tr>
+	<table class="menu"><tr><th style="font-size: 24px">SYSADMIN MENU</th></tr>
 	<tr><td><a href="<?php echo $PHP_SELF?>?stage=add_user_form"><strong>Add User or Update Existing User's Password or Group</strong></a></td></tr>
 	<tr><td><a href="<?php echo $PHP_SELF?>?stage=del_user_form"><strong>Remove User</strong></a></td></tr>
 	<tr><td><a href="<?php echo $PHP_SELF?>?stage=list_users"><strong>List Password File and User Groups File Contents</strong></a></td></tr>

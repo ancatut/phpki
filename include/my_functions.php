@@ -282,4 +282,10 @@ function back_link() {
 	else return "index.php";
 }
 
+function clear_session() {
+	session_start();
+	session_destroy();
+	header("Location: ".__ROOT__."/index.php");
+}
+
 ?>

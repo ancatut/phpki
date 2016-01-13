@@ -8,6 +8,8 @@ include('./include/openssl_functions.php');
 
 $stage = gpvar('stage');
 
+printHeader('public');
+
 switch($stage) {
 
 case 'dl_root':
@@ -15,7 +17,6 @@ case 'dl_root':
 	break;
 
 case 'display_root':
-	printHeader('public');
 
 	?>
 	<div style="text-align:center"><h2>Root Certificate (PEM Encoded)</h2></div>
@@ -33,7 +34,6 @@ case 'dl_crl':
 	break;
 
 default:
-	printHeader('public');
 
 	?>
 	<br>

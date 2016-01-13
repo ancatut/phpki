@@ -5,7 +5,7 @@ include(STORE_DIR.'/config/config.php');
 include('../include/my_functions.php');
 include('../include/common.php');
 
-printHeader(false);
+printHeader('ca');
 
 ?>
 <p>
@@ -13,7 +13,7 @@ printHeader(false);
 <table class="menu" width="100%">
 
 <tr><th class="menu" style="font-size: 24px;">PHPki HELP FILE<br>TABLE OF CONTENTS</th><tr>
-<td class="menu" style="padding: 1em;">
+<td class="menu" style="padding: 1em;font-weight:bold">
 <a href="#WHY">Why PHPki</a><br>
 <a href="#OVERVIEW">Overview</a><br>
 <a href="#MAIN-MENU">Main Menu</a><br>
