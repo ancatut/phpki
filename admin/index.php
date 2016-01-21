@@ -47,7 +47,7 @@ case 'add_user_form':
 		<select class="inputbox" name="user_group">
 			<option value="admin">admin</option>
 			<option value="cert-manager">cert-manager</option>
-			<option value="regular-user">regular-user</option>
+			<!--<option value="regular-user">regular-user</option>-->
 			</select>
 		</td>
 	</tr>
@@ -56,14 +56,18 @@ case 'add_user_form':
 	</table>
 	<input type="hidden" name="stage" value="add_user">
 	<input class="btn" type="submit" name="submit" value='Submit'>
+	<input class="btn" type="submit" name="submit" value='Back to Menu'>
 	</form>
 	<?php
 	break;
 
 case 'add_user':
 	printHeader('admin');
-	if (! $passwd || ! $passwdv || $passwd != $passwdv || strlen($passwd) < 8) {
-		print '<div style="text-align:center"><h2 style="font-color:red">Missing or invalid password or password and password verification do not match.</h2></div>';
+	if ($submit == "Back to Menu")
+		header("Location: index.php");
+	else {
+	if (! $passwd || ! $passwdv || $passwd != $passwdv || strlen($passwd) < 8 || $user_id == "") {
+		print '<div style="text-align:center"><h2 style="font-color:red">Error: You have supplied incomplete or invalid information.</h2></div>';
 
 		?>
 		<p><div style="text-align: center">
@@ -79,48 +83,48 @@ case 'add_user':
 		print '<div style="text-align:center"><h2 style="font-color:red">Invalid characters in username.</h2></div>';
 	}
 	else 
-	{		
-		echo "Checking if user is in $groups_file under $user_group, otherwise adding them...<br><br>";
-		
+	{	
 		$groups_file = $config['groups_file'];
 		$groups_file_contents = file_get_contents($groups_file);
 		$contents_array = array_filter(explode("\n", $groups_file_contents));
-	
+		
+		echo "Checking if user is in $groups_file under $user_group, otherwise adding them...<br><br>";
+			
 		# Extract non-empty lines from file without line ending			
 		$admins_line = preg_grep('/^admin:\s.*?/', $contents_array);	
 		$cert_managers_line = preg_grep('/^cert-manager:\s.*?/', $contents_array);
-		$regular_users_line = preg_grep('/^regular-user:\s.*?/', $contents_array);
+		#$regular_users_line = preg_grep('/^regular-user:\s.*?/', $contents_array);
 		
 		# Preg_grep maintains key values from original array, so we can't do $admins_line[0]
 		foreach($admins_line as $match)
 			$admins = array_filter(explode(" ", substr($match, strpos($match, ": ") + 2)));
 		foreach($cert_managers_line as $match)
 			$cert_managers = array_filter(explode(" ", substr($match, strpos($match, ": ") + 2)));
-		foreach($regular_users_line as $match)
-			$regular_users = array_filter(explode(" ", substr($match, strpos($match, ": ") + 2)));
+		#foreach($regular_users_line as $match)
+		#	$regular_users = array_filter(explode(" ", substr($match, strpos($match, ": ") + 2)));
 		
 		if ($user_group == "admin") {
 			$admins[] = $user_id;
 			$cert_managers = array_diff($cert_managers, array($user_id));
-			$regular_users = array_diff($regular_users, array($user_id));
+		#	$regular_users = array_diff($regular_users, array($user_id));
 		}
 		else if ($user_group == "cert-manager") {
 			$admins = array_diff($admins, array($user_id));
 			$cert_managers[] = $user_id;
-			$regular_users = array_diff($regular_users, array($user_id));
+		#	$regular_users = array_diff($regular_users, array($user_id));
 		}
 		else if ($user_group == "regular-user") {
 			$admins = array_diff($admins, array($user_id));
 			$cert_managers = array_diff($cert_managers, array($user_id));
-			$regular_users[] = $user_id;
+		#	$regular_users[] = $user_id;
 		}
 			
 		$admins = array_unique($admins);
 		sort($admins);
 		$cert_managers = array_unique($cert_managers);
 		sort($cert_managers);
-		$regular_users = array_unique($regular_users);
-		sort($regular_users);
+		#$regular_users = array_unique($regular_users);
+		#sort($regular_users);
 		
 		$PHPki_admins = array_map(
 			'md5_for_config', 
@@ -137,9 +141,9 @@ case 'add_user':
 		file_put_contents($config['store_dir']."/config/config.php", implode('', $data));
 		
 		unset($groups_file_contents);			
-		$groups_file_contents .= "admin: ".implode(' ', $admins)."\n";
+		$groups_file_contents = "admin: ".implode(' ', $admins)."\n";
 		$groups_file_contents .= "cert-manager: ".implode(' ', $cert_managers)."\n";
-		$groups_file_contents .= "regular-user: ".implode(' ', $regular_users)."\n";
+		#$groups_file_contents .= "regular-user: ".implode(' ', $regular_users)."\n";
 		
 		file_put_contents($groups_file, $groups_file_contents);
 		
@@ -161,6 +165,7 @@ case 'add_user':
 		</form>
 		<?php
 	}
+	}
 	printFooter();
 	break;
 
@@ -175,33 +180,47 @@ case 'del_user_form':
 	</table>
 	<input type="hidden" name="stage" value="del_user">
 	<input class="btn" type="submit" name="submit" value='Submit'>
+	<input class="btn" type="submit" name="submit" value="Back to Menu">
 	</form>
 	<?php
 	printFooter();
 	break;
 case 'del_user':
 	printHeader('admin');
+	 
+	if ($user_id != "") {
+		$groups_file = $config['groups_file'];
+		$groups_file_contents = file_get_contents($groups_file);
+		$groups_file_contents = preg_replace("/\s".$user_id."/", "", $groups_file_contents);
+		file_put_contents($groups_file, $groups_file_contents);
+		print "Removing user from groups file.<br><br>";
+		$pwdfile = escapeshellarg($config['passwd_file']);
+		$user_id = escapeshellarg($user_id);
 	
-	$groups_file = $config['groups_file'];
-	$groups_file_contents = file_get_contents($groups_file);
-	$groups_file_contents = preg_replace("/\s".$user_id."/", "", $groups_file_contents);
-	file_put_contents($groups_file, $groups_file_contents);
-	print "Removing user from groups file.<br><br>";
-	$pwdfile = escapeshellarg($config['passwd_file']);
-	$user_id = escapeshellarg($user_id);
-
-	print 'Results of htpasswd command:<br>';
-	system("htpasswd -D $pwdfile $user_id 2>&1");
+		print 'Results of htpasswd command:<br>';
+		system("htpasswd -D $pwdfile $user_id 2>&1");
+		?>
+			<p>
+			<form action="<?php echo $PHP_SELF?>" method="post">
+			<input class="btn" type="submit" name="submit" value="Back to Menu">
+			</form>
+		<?php 
+	}
+	else if ($user_id == "" && $submit == "Submit") { 
+		print "Error: Please enter a username.";
 	?>
-	<p>
-	<form action="<?php echo $PHP_SELF?>" method="post">
-	<input class="btn" type="submit" name="submit" value="Back to Menu">
-	</form>
+		<p>
+		<form action="<?php echo $PHP_SELF?>?stage=del_user_form" method="post">
+		<input class="btn" type="submit" name="submit" value="Back">
+		</form>			 
 	<?php
+	}
+	else header("Location: index.php");
+	
 	printFooter();
 	break;
 
-/*
+/* Work in progress:
 case 'import_CA_confirm':
 	break;
 case 'import_CA':

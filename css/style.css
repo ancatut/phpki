@@ -167,6 +167,7 @@ td {
 }
 .headermenu-ie .btn {
 	font-size: 0.95em;
+	padding: 3px 7px 3px 7px;
 }
 .logo-ie {
 	font-family: 'impact', sans-serif;
@@ -182,18 +183,18 @@ td {
 
 .title-ie {
 	font-family: 'impact', sans-serif;
-	font-size: 22pt;
+	font-size: 20pt;
 	font-weight: bold;
 	font-style: italic;
 	margin-right: 0.4in;
-	margin-top: -0.52in;
+	margin-top: -0.50in;
 	margin-bottom: 0;
 	text-align: left;
 	text-shadow: 0px 1px 1px #8a8a8f;
 }
 
 .logged-in {
-	margin-top: -0.52in;
+	margin-top: -0.50in;
 	margin-bottom: 0;
 	text-align: left;
 	text-shadow: 0px 1px 1px #8a8a8f;

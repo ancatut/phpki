@@ -41,9 +41,9 @@ $to_addr       = gpvar('to_addr');
 $email_attachment = gpvar('email_attachment');
 
 # Prevent handling certs that don't belong to user
-if ($serial && CAdb_issuer($serial) != $PHPki_user && ! in_array($PHPki_user, $PHPki_admins)) { 
-	$stage = 'goaway';
-}
+#if ($serial && CAdb_issuer($serial) != $PHPki_user && ! in_array($PHPki_user, $PHPki_admins)) { 
+#	$stage = 'goaway';
+#}
 
 if ( !($show_valid.$show_revoked.$show_expired) ) {
 	$show_valid   = 'V';
@@ -189,7 +189,7 @@ case 'revoke':
 	if (! $ret) {
 		printHeader('ca');
 
-		print '<form action="$PHP_SELF?stage=revoke-form&serial=$serial&$qstr_sort&$qstr_filter" method="post">';
+		print "<form action=$PHP_SELF?stage=revoke-form&serial=$serial&$qstr_sort&$qstr_filter method=post>";
 		?>
 		<h2 style="color:#ff0000">There was an error revoking your certificate.</h2>
 		<blockquote>
@@ -197,7 +197,7 @@ case 'revoke':
 		<pre><?php echo $errtxt ?></pre>
 		</blockquote>
 		<p>
-		<input type="submit" name="submit" value="Back">
+		<input class="btn" type="submit" name="submit" value="Back">
 		<p>
 		</form>
 		<?php
@@ -317,7 +317,7 @@ case 'renew':
 	if (! $ret) {
 		printHeader('ca');
 
-		print '<form action="$PHP_SELF?stage=renew-form&serial=$serial&$qstr_sort&$qstr_filter" method="post">';
+		print "<form action=$PHP_SELF?stage=renew-form&serial=$serial&$qstr_sort&$qstr_filter method=post>";
 		?>
 		<h2 style="color:#ff0000">There was an error creating your certificate.</h2><br>
 		<blockquote>
@@ -325,7 +325,7 @@ case 'renew':
 		<pre><?php echo $errtxt?></pre>
 		</blockquote>
 		<p>
-		<input type="submit" name="submit" value="Back">
+		<input class="btn" type="submit" name="submit" value="Back">
 		<p>
 		</form>
 		<?php
@@ -517,9 +517,9 @@ default:
 	if (in_array($PHPki_user, $PHPki_admins)) {
 		$x = "$x.*$search";
 	}
-	else {
-		$x = "$x.*$search.*$PHPki_user|$x.*$PHPki_user.*$search";
-	}
+	#else {
+	#	$x = "$x.*$search.*$PHPki_user|$x.*$PHPki_user.*$search";
+	#}
 	
     $db = csort(CAdb_to_array($x), $sortfield, ($ascdec=='A'?SORT_ASC:SORT_DESC));
  

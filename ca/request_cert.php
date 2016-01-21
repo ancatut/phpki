@@ -8,20 +8,20 @@ include('../include/openssl_functions.php') ;
 # User's preferences file
 $user_cnf = $config['home_dir']."/config/user-".strtr($PHPki_user,'/\\','|#').'.php';
 
-	$form_stage	= gpvar('form_stage');
-	$submit	= gpvar('submit');
-	$country = gpvar('country');
-	$province	= gpvar('province');
-	$locality	= gpvar('locality');
-	$organization	= gpvar('organization');
-	$unit = gpvar('unit');
-	$common_name	= gpvar('common_name');
-	$email	= gpvar('email');
-	$passwd	= gpvar('passwd');
-	$passwdv	= gpvar('passwdv');
-	$expiry	= gpvar('expiry');
-	$keysize	= gpvar('keysize');	
-	$cert_type	= gpvar('cert_type');
+$form_stage	  = gpvar('form_stage');
+$submit		  = gpvar('submit');
+$country 	  = gpvar('country');
+$province	  = gpvar('province');
+$locality	  = gpvar('locality');
+$organization = gpvar('organization');
+$unit 		  = gpvar('unit');
+$common_name  = gpvar('common_name');
+$email		  = gpvar('email');
+$passwd		  = gpvar('passwd');
+$passwdv	  = gpvar('passwdv');
+$expiry		  = gpvar('expiry');
+$keysize	  = gpvar('keysize');	
+$cert_type	  = gpvar('cert_type');
 
 # To repopulate the fields in the form after error.
 $hidden_fields = '
@@ -188,9 +188,8 @@ case 'final':
 	if ($submit == "Yes! Create and Download") {
 		if (! $serial = CAdb_has_valid($email, $common_name)) {
 			list($ret,$errtxt) = CA_create_cert($cert_type, $country, $province, $locality, $organization, $unit, $common_name, $email, $expiry, $passwd, $keysize);
-
 			if (! $ret) {
-	                	printHeader();
+	            printHeader();
 
 				?>
 				<form action="<?php print $PHP_SELF?>" method="post">
@@ -210,7 +209,8 @@ case 'final':
 				break;
         		}
         		else {
-				$serial = $errtxt;
+					$serial = $errtxt;
+					#log_password_entry($config['passwd_log'], $serial, $passwd);
         		}
 		}
 

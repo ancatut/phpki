@@ -41,7 +41,7 @@ C						= $country
 ST						= $province
 L						= $locality
 0.O						= $organization
-1.O						= '$issuer'
+#1.O					= '$issuer'
 OU						= $unit
 CN						= $common_name
 emailAddress			= $email
@@ -296,7 +296,7 @@ EOS;
  * Search the certificate index and return resulting
  * records in array[cert_serial_number][field_name].
  * Fields: serial, country, province, locality, organization, 
- * issuer, unit, common_name, email
+ * -issuer, unit, common_name, email
 */
 function CAdb_to_array($search = '.*') {
 	global $config;
@@ -399,7 +399,7 @@ function CAdb_issuer($serial) {
  * Returns an array containing the respective fields given as
  * a raw line ($dbentry) from the certificate index.
  * Fields: serial, country, province locality, organization, 
- *        issuer, unit, common_name, email   
+ *        -issuer, unit, common_name, email   
  */
 function CAdb_explode_entry($dbentry) {
 	$a = explode("\t", $dbentry);
@@ -428,10 +428,13 @@ function CAdb_explode_entry($dbentry) {
 	$db['province']     = $b[2];
 	$db['locality']     = $b[3];
 	$db['organization'] = $b[4];
-	$db['issuer']       = $b[5];
-	$db['unit']         = $b[6];
-	$db['common_name']  = $b[7];
-	$db['email']        = $b[8];
+	#$db['issuer']       = $b[5];
+	#$db['unit']         = $b[6];
+	#$db['common_name']  = $b[7];
+	#$db['email']        = $b[8];
+	$db['unit']         = $b[5];
+	$db['common_name']  = $b[6];
+	$db['email']        = $b[7];
 
 	return $db;
 }
@@ -501,7 +504,6 @@ function CA_cert_subject($serial) {
 function CA_cert_cname($serial) {
 	global $config;
 	#return(ereg_replace('^.*/CN=(.*)/.*','\\1',CA_cert_subject($serial)));
-	#return(preg_replace('/^.*/CN=(.*)/.*/','\\1',CA_cert_subject($serial)));
 	return(preg_replace('/^.*\/CN=(.*)\/.*/','${1}',CA_cert_subject($serial)));
 }
 
@@ -855,7 +857,7 @@ function CA_cert_type($serial) {
 	#if (ereg('OpenSSL.* (E.?mail|Personal) .*Certificate', $certtext) && ereg('Code Signing', $certtest)) {
 	#	$cert_type = 'email_signing';
 	#}
-	if (preg_match('/OpenSSL.* (E.?mail|Personal) .*Certificate/', $certtext) && preg_match('/Code Signing/', $certtest)) {
+	if (preg_match('/OpenSSL.* (E.?mail|Personal) .*Certificate/', $certtext) && preg_match('/Code Signing/', $certtext)) {
 		$cert_type = 'email_signing';
 	}
 	#if (ereg('OpenSSL.* (E.?mail|Personal) .*Certificate', $certtext)) {

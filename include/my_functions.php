@@ -288,4 +288,9 @@ function clear_session() {
 	header("Location: ".__ROOT__."/index.php");
 }
 
+#function log_password_entry($log_file, $serial, $passwd, $separator="\t") {
+#	$myfile = fopen($log_file, "ab");
+#	fwrite($myfile, $serial.$separator.$passwd."\n");
+#	fclose($myfile);
+#}
 ?>

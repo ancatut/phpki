@@ -10,6 +10,8 @@ This application stores private keys within a sub-directory, making them potenti
 
 Please run this script from INSIDE the application folder and AFTER running setup.php. Default values will be displayed inside [].
 
+Also please note that Apache mod_ssl configuration is REQUIRED (as requested by the SSLRequireSSL directive).
+
 EOM
 
 read -p "Enter the location of your PHPki password [/etc/.phpkipasswd]: " passwd_file
@@ -38,8 +40,8 @@ if [[ ! -f "$passwd_file" ]]; then
     read -p "Choose a group for $user_id:
     \"admin\" if you want to give the user full access,
     \"cert-manager\" if the user can create and manage certs, but can't create/delete users under the admin panel and can't run PHPki setup,
-    [\"regular-user\"] for users who can only manage the certificates they have created themselves and can't access the admin panel or edit OpenVPN settings. `echo $'\n> '`" user_group
-    user_group=${user_group:-regular-user}
+#   [\"regular-user\"] for users who can only manage the certificates they have created themselves and can't access the admin panel or edit OpenVPN settings. `echo $'\n> '`" user_group
+    user_group=${user_group:-"cert-manager"}
     
     echo "Creating the user account for $user_id..."
     htpasswd -c -m "$passwd_file" "$user_id" || exit
@@ -50,7 +52,8 @@ if [[ ! -f "$passwd_file" ]]; then
     sed '/^$/d' $groups_file > $groups_file.out
   	mv  $groups_file.out $groups_file
     
-    if [[ ${user_group} == "cert-manager" || ${user_group} == "regular-user" ||  ${user_group} == "admin" ]]; then
+    #if [[ ${user_group} == "cert-manager" || ${user_group} == "regular-user" ||  ${user_group} == "admin" ]]; then
+    if [[ ${user_group} == "cert-manager" ||  ${user_group} == "admin" ]]; then
     	temp=`cat $groups_file | grep $user_group:`
 	    if [[ ${temp} == "" ]]; then
 	        echo "$user_group: $user_id" >> $groups_file
@@ -138,7 +141,7 @@ AuthName "Restricted Area"
 AuthType Basic
 AuthUserFile "$passwd_file"
 AuthGroupFile "$groups_file"
-Require group admin cert-manager regular-user
+Require group admin cert-manager
 
 EOS
 

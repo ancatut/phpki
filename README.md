@@ -49,7 +49,7 @@ for project dependencies):
 To configure the certificate authority and create your root certificate,
 point your browser to where you unpacked PHPki. For example:
 
-	http://www.domain.com/phpki/
+	http://www.domain.com/phpki/admin/setup.php
 
 Enter all the requested information into the web form and click the Submit 
 button.  If all goes well, you should see a page telling you that your
