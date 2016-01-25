@@ -6,20 +6,21 @@ include ('./include/common.php');
 printHeader('about');
 ?>
 
-<div style="text-align:center">
-<table class="menu" style="width:100%">
-<tr><th class="menu" style="font-size: 26px;">PHPki HELP FILES</th>
+<div style="text-align:center"><br><br>
+<table class="menu" style="width:70%">
+<tr><th class="menu"><h2>PHPki HELP FILES</h2></th>
 <tr><td class="menu" style="padding: 1em;">
 <h3><a href="<?php print $config['base_url'] ?>help/PKI_basics.html">
-	PKI and E-mail Encryption - A Brief Explanation</a></h3>
-<h3><a href="<?php print $config['base_url'] ?>help/cacert_install_ie.html">Installing
+	&raquo; PKI and E-mail Encryption - A Brief Explanation</a></h3>
+<h3><a href="<?php print $config['base_url'] ?>help/cacert_install_ie.html">&raquo; Installing
 	Our Root Certificate For Use With Outlook and Outlook Express</a></h3>
-<h3><a href="<?php print $config['base_url'] ?>help/usercert_install_ie.html">Installing
+<h3><a href="<?php print $config['base_url'] ?>help/usercert_install_ie.html">&raquo; Installing
 	Your Personal E-mail Certificate For Use With Outlook and Outlook
 	Express</a></h3>
-<h3><a href="<?php print $config['base_url'] ?>help/glossary.html">Glossary</a></h3>
+<h3><a href="<?php print $config['base_url'] ?>help/glossary.html">&raquo; Glossary</a></h3>
 </td></tr>
 </table>
+<br><br>
 </div>
 
 <?php

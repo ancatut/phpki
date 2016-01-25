@@ -10,27 +10,28 @@ printHeader('ca');
 ?>
 <p>
 <div style="text-align:center">
-<table class="menu" width="100%">
+<br>
 
-<tr><th class="menu" style="font-size: 24px;">PHPki HELP FILE<br>TABLE OF CONTENTS</th><tr>
+<table class="menu" style="width:60%">
+<tr><th class="menu"><h2>PHPki HELP FILE<br>TABLE OF CONTENTS</h2></th><tr>
 <td class="menu" style="padding: 1em;font-weight:bold">
-<a href="#WHY">Why PHPki</a><br>
-<a href="#OVERVIEW">Overview</a><br>
-<a href="#MAIN-MENU">Main Menu</a><br>
-<a href="#REQUEST-FORM">Requesting a New Certificate</a><br>
-<a href="#MANAGE">Managing Your Certificate With The Control Panel</a><br>
-<a href="#REVOKE">Revoking a Certificate</a><br>
-<a href="#DISPLAY">Displaying Certificate Details</a><br>
-<a href="#RENEW">Renewing a Cettificate</a><br>
-<a href="#DOWNLOAD">Downloading a Certificate</a><br>
-<a href="../help.php" target="help">End User Help Documents</a><br>
-<a href="#GLOSSARY">The PHPki Glossary of Terms</a><br>
-<a href="#GETTING-HELP">Getting Additional Help</a><br>
+<a href="#WHY">&raquo; Why PHPki</a><br>
+<a href="#OVERVIEW">&raquo; Overview</a><br>
+<a href="#MAIN-MENU">&raquo; Main Menu</a><br>
+<a href="#REQUEST-FORM">&raquo; Requesting a New Certificate</a><br>
+<a href="#MANAGE">&raquo; Managing Your Certificate With The Control Panel</a><br>
+<a href="#REVOKE">&raquo; Revoking a Certificate</a><br>
+<a href="#DISPLAY">&raquo; Displaying Certificate Details</a><br>
+<a href="#RENEW">&raquo; Renewing a Cettificate</a><br>
+<a href="#DOWNLOAD">&raquo; Downloading a Certificate</a><br>
+<a href="../help.php" target="help">&raquo; End User Help Documents</a><br>
+<a href="#GLOSSARY">&raquo; The PHPki Glossary of Terms</a><br>
+<a href="#GETTING-HELP">&raquo; Getting Additional Help</a><br>
 </td></tr>
 </table>
 </div>
 
-<br><br><br>
+<br><br>
 
 <p>
 <h2><a id="WHY">WHY PHPki</a></h2>
@@ -163,33 +164,33 @@ This form is used to collect the minimum necessary information required to
 issued a new digital certificate. All fields must be completed.
 <blockquote><ul>
 <li>
-<u>E-mail User's Full Name:</u> Enter the full name of the user for which the certificate will be issued.  
+<b>E-mail User's Full Name:</b> Enter the full name of the user for which the certificate will be issued.  
 </li>
 <p><li>
-<u>E-mail Address:</u> Enter the e-mail address of the user for which the certificate is to be issued.  This field will be checked for proper e-mail address
+<b>E-mail Address:</b> Enter the e-mail address of the user for which the certificate is to be issued.  This field will be checked for proper e-mail address
 format, but the e-mail address is not verified otherwise.
 </li>
 <p><li>
-<u>Organization:</u> Enter the full name of your organization (i.e. ACME Shoe Repair).
+<b>Organization:</b> Enter the full name of your organization (i.e. ACME Shoe Repair).
 </li>
 <p><li>
-<u>Department/Unit:</u> Enter the name of the department or unit in which the 
+<b>Department/Unit:</b> Enter the name of the department or unit in which the 
 user works. (i.e. Accounting Department).
 </li>
 <p><li>
-<u>Locality:</u> Enter the name of the City or County in which the organization
+<b>Locality:</b> Enter the name of the City or County in which the organization
 is located.
 </li>
 <p><li>
-<u>State/Province:</u> Enter the name of the State or Province in which the organization
+<b>State/Province:</b> Enter the name of the State or Province in which the organization
 is located.
 </li>
 <p><li>
-<u>Country:</u> Enter the name of the Country in which the organization
+<b>Country:</b> Enter the name of the Country in which the organization
 is located.
 </li>
 <p><li>
-<u>Certificate Password:</u> Enter a password to protect the certificate.  
+<b>Certificate Password:</b> Enter a password to protect the certificate.  
 If you enter a password, it must ben enter twice for verification.  
 This password will be used to encrypt the private key which will be packaged
 with the completed certificate.  It may also be required when installing a PKCS#12
@@ -199,19 +200,19 @@ any circumstance.</strong> If this password is lost, you must immediately
 revoke the certificate and request/create a new certificate for the user.
 </li>
 <p><li>
-<u>Certificate Life:</u> Select the number of years you want the certificate to
+<b>Certificate Life:</b> Select the number of years you want the certificate to
 be valid.  Although it is common practice to issue certificates which are valid
 for only one year, the option to issue certificates for a longer period is 
 available should you wish to be rebel. The certificate may be revoked or
 renewed at any point during its life.
 </li>
 <p><li>
-<u>Key Size:</u> Select this size of your private key in bits.  Larger
+<b>Key Size:</b> Select this size of your private key in bits.  Larger
 keys are considered more secure.  However, certain VPN applications may
 have difficulty with keys larger than 1024 bits.
 </li>
 <p><li>
-<u>Certificate Use:</u> Select the purpose for which the certificate will
+<b>Certificate Use:</b> Select the purpose for which the certificate will
 be use.  E-mail certifcates have different attributes from SSL server
 certifcates and may not be interchangeable.  Some IPSEC/VPN applications 
 may be sensitive to large certificates, so those certificates contain less

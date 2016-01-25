@@ -1,8 +1,10 @@
-SSLRequireSSL
-AuthName "Restricted Area"
-AuthType Basic
-AuthUserFile "/etc/.phpkipasswd"
-AuthGroupFile "/etc/.phpkigroups"
-Require ip 192.168.0.0/16 127.0.0.1
-Require group admin
+<RequireAll>
+	SSLRequireSSL
+	AuthName "Restricted Area"
+	AuthType Basic
+	AuthUserFile "/etc/.phpkipasswd"
+	AuthGroupFile "/etc/.phpkigroups"
+	Require ip 192.168.0.0/16 127.0.0.1 ::1
+	Require group admin
+</RequireAll>
 

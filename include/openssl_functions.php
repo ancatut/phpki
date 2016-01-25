@@ -10,27 +10,27 @@ function CA_create_cnf($country='',$province='',$locality='',$organization='',$u
 
 	$issuer = $PHPki_user;
 	
-	$cnf_contents = "
-HOME             		= ".$config['home_dir']."
-RANDFILE         		= ".$config['random']."
-dir	             		= ".$config['ca_dir']."
-certs            		= ".$config['cert_dir']."
-crl_dir	         		= ".$config['crl_dir']."
-database         		= ".$config['index']."
-new_certs_dir    		= ".$config['new_certs_dir']."
-private_dir      		= ".$config['private_dir']."
-serial           		= ".$config['serial']."
-certificate      		= ".$config['cacert_pem']."
-crl              		= ".$config['cacrl_pem']."
-private_key      		= ".$config['cakey']."
-crl_extentions	 		= crl_ext
-default_days     		= 365
-default_crl_days 		= 30
-preserve         		= no
-default_md       		= ".$config['default_md']."
+	$cnf_contents = <<<EOS
+HOME				= ${config['home_dir']}
+RANDFILE			= ${config['random']}
+dir					= ${config['ca_dir']}
+certs				= ${config['cert_dir']}
+crl_dir				= ${config['crl_dir']}
+database			= ${config['index']}
+new_certs_dir		= ${config['new_certs_dir']}
+private_dir			= ${config['private_dir']}
+serial				= ${config['serial']}
+certificate			= ${config['cacert_pem']}
+crl					= ${config['cacrl_pem']}
+private_key			= ${config['cakey']}
+crl_extensions		= crl_ext
+default_days		= 365
+default_crl_days	= 30
+preserve	 		= no
+default_md	 		= ${config['default_md']}
 
 [ req ]
-default_bits        	= $keysize
+default_bits        	= 4096
 string_mask         	= nombstr
 prompt              	= no
 distinguished_name  	= req_name
@@ -103,10 +103,10 @@ nsCertType				= sslCA, emailCA, objCA
 subjectKeyIdentifier	= hash
 subjectAltName			= email:copy
 authorityKeyIdentifier	= keyid:always, issuer:always
-crlDistributionPoints	= URI:".$config['base_url']."index.php?stage=dl_crl
-nsComment				= \"PHPki/OpenSSL Generated Root Certificate\"
+crlDistributionPoints	= URI:".${config['base_url']}."index.php?stage=dl_crl
+nsComment				= "PHPki/OpenSSL Generated Root Certificate"
 #nsCaRevocationUrl		= ns_revoke_query.php?
-nsCaPolicyUrl			= ".$config['base_url']."policy.html
+nsCaPolicyUrl			= ${config['base_url']}policy.html
 
 [ email_ext ]
 basicConstraints		= critical, CA:false
@@ -117,11 +117,11 @@ subjectKeyIdentifier	= hash
 authorityKeyIdentifier	= keyid:always, issuer:always
 subjectAltName			= email:copy
 issuerAltName			= issuer:copy
-crlDistributionPoints	= URI:".$config['base_url']."index.php?stage=dl_crl
-nsComment				= \"PHPki/OpenSSL Generated Personal Certificate\"
-nsBaseUrl				= ".$config['base_url']."
+crlDistributionPoints	= URI:${config['base_url']}index.php?stage=dl_crl
+nsComment				= "PHPki/OpenSSL Generated Personal Certificate"
+nsBaseUrl				= ${config['base_url']}
 nsRevocationUrl			= ns_revoke_query.php?
-nsCaPolicyUrl			= ".$config['base_url']."policy.html
+nsCaPolicyUrl			= ${config['base_url']}policy.html
 
 [ email_signing_ext ]
 basicConstraints		= critical, CA:false
@@ -132,11 +132,11 @@ subjectKeyIdentifier	= hash
 authorityKeyIdentifier	= keyid:always, issuer:always
 subjectAltName			= email:copy
 issuerAltName			= issuer:copy
-crlDistributionPoints	= URI:".$config['base_url']."index.php?stage=dl_crl
-nsComment				= \"PHPki/OpenSSL Generated Personal Certificate\"
-nsBaseUrl				= ".$config['base_url']."
+crlDistributionPoints  	= URI:{$config['base_url']}index.php?stage=dl_crl
+nsComment              	= "PHPki/OpenSSL Generated Personal Certificate"
+nsBaseUrl              	= ${config['base_url']}
 nsRevocationUrl			= ns_revoke_query.php?
-nsCaPolicyUrl			= ".$config['base_url']."policy.html
+nsCaPolicyUrl			= ${config['base_url']}policy.html
 
 [ server_ext ]
 basicConstraints		= critical, CA:false
@@ -147,11 +147,11 @@ subjectKeyIdentifier	= hash
 authorityKeyIdentifier	= keyid:always, issuer:always
 subjectAltName			= DNS:$common_name,email:copy
 issuerAltName			= issuer:copy
-crlDistributionPoints	= URI:".$config['base_url']."index.php?stage=dl_crl
-nsComment				= \"PHPki/OpenSSL Generated Server Certificate\"
-nsBaseUrl				= ".$config['base_url']."
+crlDistributionPoints	= URI:${config['base_url']}index.php?stage=dl_crl
+nsComment				= "PHPki/OpenSSL Generated Server Certificate"
+nsBaseUrl				= ${config['base_url']}
 nsRevocationUrl			= ns_revoke_query.php?
-nsCaPolicyUrl			= ".$config['base_url']."policy.html
+nsCaPolicyUrl			= ${config['base_url']}policy.html
 
 [ time_stamping_ext ]
 basicConstraints		= CA:false
@@ -161,9 +161,9 @@ subjectKeyIdentifier	= hash
 authorityKeyIdentifier	= keyid:always, issuer:always
 subjectAltName			= DNS:$common_name,email:copy
 issuerAltName			= issuer:copy
-crlDistributionPoints	= URI:".$config['base_url']."index.php?stage=dl_crl
-nsComment				= \"PHPki/OpenSSL Generated Time Stamping Certificate\"
-nsBaseUrl				= ".$config['base_url']."
+crlDistributionPoints	= URI:${config['base_url']}index.php?stage=dl_crl
+nsComment				= "PHPki/OpenSSL Generated Time Stamping Certificate"
+nsBaseUrl				= ${config['base_url']}
 nsRevocationUrl			= ns_revoke_query.php?
 
 [ vpn_client_ext ]
@@ -192,7 +192,8 @@ nsCertType				= critical, server, client
 subjectKeyIdentifier	= hash
 authorityKeyIdentifier	= keyid:always, issuer:always
 subjectAltName			= DNS:$common_name,email:copy
-";
+
+EOS;
 
 	# Write out the config file.
 	$cnf_file  = tempnam('./tmp','cnf-');
@@ -261,7 +262,7 @@ function CA_generate_CAcert_cnf() {
 	
 	[ req ]
 	default_bits			= 4096
-	default_keyfile			= privkey.pem
+	#default_keyfile		= privkey.pem
 	distinguished_name		= req_name
 	string_mask				= nombstr
 	req_extensions			= req_ext
@@ -781,7 +782,7 @@ function CA_renew_cert($old_serial,$expiry,$passwd) {
 		# Not successful, so clean up before exiting.
 		CA_remove_cert($serial);
 
-		if (eregi_array('/.*private key.*/',$cmd_output))
+		if (preg_match_array('/.*private key.*/', $cmd_output))
 			$cmd_output[] = '<strong>This was likely caused by entering the wrong certificate password.</strong>';
 		else
 			$cmd_output[] = '<strong>Click on the "Help" link above for information on how to report this problem.</strong>';
@@ -823,7 +824,6 @@ function CA_remove_cert($serial) {
 	$usercert = $config['new_certs_dir'].'/'.$serial.'.pem';
 	$userder  = $config['cert_dir'].'/'.$serial.'.der';
 	$userpfx  = $config['pfx_dir'].'/'.$serial.'.pfx';
-	
 
 	# Wait here if another user has the database locked.
 	$fd = fopen($config['index'],'a');
@@ -968,10 +968,10 @@ function CA_create_Tunnelblick_zip($serial, $username, $email) {
 function CA_renew_CAcert($new_expiry) {
 	global $config;
 	
-	$cakey   = $config['cakey'];
-	$careq   = $config['req_dir'].'/ca-newreq.pem';
-	$cacert  = $config['cacert_pem'];
-	
+	$cakey   	= $config['cakey'];
+	$careq   	= $config['req_dir'].'/ca-newreq.pem';
+	$cacert		= $config['cacert_pem'];
+		
 	$CA_cnf_file = CA_generate_CAcert_cnf();
 	putenv("RANDFILE=".$config['random']);
 	
@@ -980,16 +980,15 @@ function CA_renew_CAcert($new_expiry) {
 	
 	$cmd_output[] = 'Backing up the old CA certificate as <i>./cacert.pem-old</i>...<br>';
 	exec("cp ".$cacert." ".$cacert."-old");
-
 	$expiry_days = round($new_expiry * 365.25, 0);
-	$cmd_output[] = "Generating a temporary CA OpenSSL configuration file with identical information...<br>";
+	$cmd_output[] = "Generating a temporary CA OpenSSL configuration file with identical information as the old CA...<br>";
 	$cmd_output[] = 'Signing cert request and generating the new CA cert... <br>';
 	# Extract serial number from old cert and use it with the new one. This ensures that the new CA cert can still validate user certs
 	# signed with the old CA cert, otherwise incompatibilities will arise.
 	$serial_cmd = exec(X509." -in ".$cacert."-old -noout -serial");
 	$serial = str_replace("serial=", "", $serial_cmd);
 	//echo $serial."<br>";
-	exec(REQ . " -config ".$CA_cnf_file." -extensions root_ext -key ".$cakey." -passin pass:".$config['ca_pwd']." -new -x509 -set_serial 0x".$serial." -days ".$expiry_days." -out ".$config['cacert_pem']." 2>&1", $cmd_output, $ret);
+	exec(REQ . " -config ".$CA_cnf_file." -extensions root_ext -key ".$cakey." -passin pass:".$config['ca_pwd']." -new -x509 -set_serial 0x".$serial." -days ".$expiry_days." -out ".$cacert." 2>&1", $cmd_output, $ret);
 	$cmd_string = implode("<br>", $cmd_output);
 	echo $cmd_string;
 	# Remove temporary CA OpenSSL config file
@@ -1000,6 +999,7 @@ function CA_renew_CAcert($new_expiry) {
 		exec("chmod 660 ".$cacert);
 		unset($cmd_output);
 		list($ret, $cmd_output[]) = CA_generate_crl();
+		#exec(X509." -outform der -in ". $cacert ." -out ". $cacert_crt);
 		$cmd_output[] = "<br>All done.";
 	}		
 	

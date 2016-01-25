@@ -239,7 +239,7 @@ function is_email($v) {
 * Checks regexp in every element of an array, returns TRUE as soon
 * as a match is found.
 */
-function eregi_array($regexp, $arr) {
+function preg_match_array($regexp, $arr) {
 
 	foreach ($arr as $elem) {
 ##		if (eregi($regexp,$elem))
@@ -282,15 +282,96 @@ function back_link() {
 	else return "index.php";
 }
 
+/**
+ * Clear PHP session
+ */
 function clear_session() {
 	session_start();
 	session_destroy();
 	header("Location: ".__ROOT__."/index.php");
 }
 
-#function log_password_entry($log_file, $serial, $passwd, $separator="\t") {
-#	$myfile = fopen($log_file, "ab");
-#	fwrite($myfile, $serial.$separator.$passwd."\n");
-#	fclose($myfile);
-#}
+/**
+ * Writes username, email and clear password into a given log file, using a specified separator.
+ */
+function log_password_entry($log_file, $username, $email, $passwd, $separator="\t") {
+	$myfile = fopen($log_file, "ab");
+	fwrite($myfile, $username.$separator.$email.$separator.$passwd."\n");
+	fclose($myfile);
+}
+
+/**
+ * This function checks the contents of the htgroups file and updates by adding/removing 
+ * the given user. Commented out are the updates to the $PHPki_admins array and config.php.
+ */
+function update_groupfile($user_id, $user_group, $action) {
+	global $config;
+	
+	$groups_file = $config['groups_file'];
+	$groups_file_contents = file_get_contents($groups_file);
+	$contents_array = array_filter(explode("\n", $groups_file_contents), 'strlen');
+		
+	# Extract non-empty lines from file without line ending			
+	$admins_line = preg_grep('/^admin:\s.*?/', $contents_array);	
+	$cert_managers_line = preg_grep('/^cert-manager:\s.*?/', $contents_array);
+	#$regular_users_line = preg_grep('/^regular-user:\s.*?/', $contents_array);
+	
+	# Preg_grep maintains key values from original array, so we can't do $admins_line[0]
+	foreach($admins_line as $match)
+		$admins = array_filter(explode(" ", substr($match, strpos($match, ": ") + 2)), 'strlen');
+	foreach($cert_managers_line as $match)
+		$cert_managers = array_filter(explode(" ", substr($match, strpos($match, ": ") + 2)), 'strlen');
+	#foreach($regular_users_line as $match)
+	#	$regular_users = array_filter(explode(" ", substr($match, strpos($match, ": ") + 2)));
+	if ($action == "add_user") {
+		if ($user_group == "admin") {
+			$admins[] = $user_id;
+			$cert_managers = array_diff($cert_managers, array($user_id));
+		#	$regular_users = array_diff($regular_users, array($user_id));
+		}
+		else if ($user_group == "cert-manager") {
+			$admins = array_diff($admins, array($user_id));
+			$cert_managers[] = $user_id;
+		#	$regular_users = array_diff($regular_users, array($user_id));
+		}
+	}
+	else if ($action == "del_user")
+	{
+		$admins = array_diff($admins, array($user_id));
+		$cert_managers = array_diff($cert_managers, array($user_id));
+	}
+	#else if ($user_group == "regular-user") {
+	#	$admins = array_diff($admins, array($user_id));
+	#	$cert_managers = array_diff($cert_managers, array($user_id));
+	#	$regular_users[] = $user_id;
+	#}
+		
+	$admins = array_unique($admins);
+	sort($admins);
+	$cert_managers = array_unique($cert_managers);
+	sort($cert_managers);
+	#$regular_users = array_unique($regular_users);
+	#sort($regular_users);
+	
+	#$PHPki_admins = array_map(
+	#	'md5_for_config', 
+	#	array_merge($admins, $cert_managers)
+	#);
+			
+	#$data = file($config['store_dir']."/config/config.php"); // reads an array of lines
+	
+	#$matches = preg_grep('/^\$PHPki_admins.*$/', $data);
+	#$matches_string = implode(', ', $PHPki_admins);
+	#$ret = preg_match('/^\$PHPki_admins.*$/', $data);
+	#$data = preg_replace('/^\$PHPki_admins.*$/', "\$PHPki_admins = Array(".$matches_string.");", $data);
+
+	#file_put_contents($config['store_dir']."/config/config.php", implode('', $data));
+	
+	unset($groups_file_contents);			
+	$groups_file_contents = "admin: ".implode(' ', $admins)."\n";
+	$groups_file_contents .= "cert-manager: ".implode(' ', $cert_managers)."\n";
+	#$groups_file_contents .= "regular-user: ".implode(' ', $regular_users)."\n";
+	
+	file_put_contents($groups_file, $groups_file_contents);
+}
 ?>

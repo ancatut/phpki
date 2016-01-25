@@ -55,7 +55,7 @@ case 'search':
 		<input type="hidden" name="show_valid" value="<?php print htvar($show_valid)?>">
 		<input type="hidden" name="show_revoked" value="<?php print htvar($show_revoked)?>">
 		<input type="hidden" name="show_expired" value="<?php print htvar($show_expired)?>">
-		<input type="submit" name="submit" value="Go Back">
+		<input class="btn" type="submit" name="submit" value="Go Back">
 		</form>
 		</div>
 		<?php
@@ -133,8 +133,8 @@ default:
 	<body onLoad="self.focus();document.search.search.focus()">
 	<div style="text-align:center"><h2>Certificate Search</h2>
 	<form action="<?php print $PHP_SELF?>" method="post" name="search">
-	<input type="text" name="search" value="<?php print htvar($search)?>" maxlength="60" size="40">
-	<input type="submit" name="submit" value="Find It!"><br>
+	<input class="inputbox" type="text" name="search" value="<?php print htvar($search)?>" maxlength="60" size="40">
+	<input class="btn" type="submit" name="submit" value="Find It!"><br>
 	<input type="checkbox" name="show_valid" value="V" <?php print ($show_valid?'checked':'')?>>Valid
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="show_revoked" value="R" <?php print ($show_revoked?'checked':'')?>>Revoked
 	&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="show_expired" value="E" <?php print ($show_expired?'checked':'')?>>Expired

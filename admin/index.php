@@ -40,7 +40,7 @@ case 'add_user_form':
 	<form action="<?php echo $PHP_SELF?>" method="post" name="form">
 	<table>
 	<tr><th colspan="2"><h3>Add User or Update Existing User's Password or User Group</h3></th></tr>
-	<tr><td>User ID</td><td><input type="text" name="user_id" value="<?php echo htvar($user_id)?>" maxlength=15 size=15></td></tr>
+	<tr><td>User ID</td><td><input class="inputbox" type="text" name="user_id" value="<?php echo htvar($user_id)?>" maxlength=15 size=15></td></tr>
 	<tr>
 		<td>User Group (if the user already exists, it will update to this value)</td>
 		<td>
@@ -51,14 +51,15 @@ case 'add_user_form':
 			</select>
 		</td>
 	</tr>
-	<tr><td>Password (min. 8 characters long) (updates to the new value if user already exists)</td><td><input type="password" name="passwd" value='' size="20"></td></tr>
-	<tr><td>Verify Password </td><td><input type="password" name="passwdv" value='' size="20"></td></tr>
+	<tr><td>Password (min. 8 characters long) (updates to the new value if user already exists)</td><td><input class="inputbox" type="password" name="passwd" value='' size="25"></td></tr>
+	<tr><td>Verify Password </td><td><input class="inputbox" type="password" name="passwdv" value='' size="25"></td></tr>
 	</table>
-	<input type="hidden" name="stage" value="add_user">
+	<input class="inputbox" type="hidden" name="stage" value="add_user">
 	<input class="btn" type="submit" name="submit" value='Submit'>
 	<input class="btn" type="submit" name="submit" value='Back to Menu'>
 	</form>
 	<?php
+	printFooter();
 	break;
 
 case 'add_user':
@@ -85,67 +86,9 @@ case 'add_user':
 	else 
 	{	
 		$groups_file = $config['groups_file'];
-		$groups_file_contents = file_get_contents($groups_file);
-		$contents_array = array_filter(explode("\n", $groups_file_contents));
-		
 		echo "Checking if user is in $groups_file under $user_group, otherwise adding them...<br><br>";
 			
-		# Extract non-empty lines from file without line ending			
-		$admins_line = preg_grep('/^admin:\s.*?/', $contents_array);	
-		$cert_managers_line = preg_grep('/^cert-manager:\s.*?/', $contents_array);
-		#$regular_users_line = preg_grep('/^regular-user:\s.*?/', $contents_array);
-		
-		# Preg_grep maintains key values from original array, so we can't do $admins_line[0]
-		foreach($admins_line as $match)
-			$admins = array_filter(explode(" ", substr($match, strpos($match, ": ") + 2)));
-		foreach($cert_managers_line as $match)
-			$cert_managers = array_filter(explode(" ", substr($match, strpos($match, ": ") + 2)));
-		#foreach($regular_users_line as $match)
-		#	$regular_users = array_filter(explode(" ", substr($match, strpos($match, ": ") + 2)));
-		
-		if ($user_group == "admin") {
-			$admins[] = $user_id;
-			$cert_managers = array_diff($cert_managers, array($user_id));
-		#	$regular_users = array_diff($regular_users, array($user_id));
-		}
-		else if ($user_group == "cert-manager") {
-			$admins = array_diff($admins, array($user_id));
-			$cert_managers[] = $user_id;
-		#	$regular_users = array_diff($regular_users, array($user_id));
-		}
-		else if ($user_group == "regular-user") {
-			$admins = array_diff($admins, array($user_id));
-			$cert_managers = array_diff($cert_managers, array($user_id));
-		#	$regular_users[] = $user_id;
-		}
-			
-		$admins = array_unique($admins);
-		sort($admins);
-		$cert_managers = array_unique($cert_managers);
-		sort($cert_managers);
-		#$regular_users = array_unique($regular_users);
-		#sort($regular_users);
-		
-		$PHPki_admins = array_map(
-			'md5_for_config', 
-			array_merge($admins, $cert_managers)
-		);
-				
-		$data = file($config['store_dir']."/config/config.php"); // reads an array of lines
-		
-		$matches = preg_grep('/^\$PHPki_admins.*$/', $data);
-		$matches_string = implode(', ', $PHPki_admins);
-		$ret = preg_match('/^\$PHPki_admins.*$/', $data);
-		$data = preg_replace('/^\$PHPki_admins.*$/', "\$PHPki_admins = Array(".$matches_string.");\n", $data);
-
-		file_put_contents($config['store_dir']."/config/config.php", implode('', $data));
-		
-		unset($groups_file_contents);			
-		$groups_file_contents = "admin: ".implode(' ', $admins)."\n";
-		$groups_file_contents .= "cert-manager: ".implode(' ', $cert_managers)."\n";
-		#$groups_file_contents .= "regular-user: ".implode(' ', $regular_users)."\n";
-		
-		file_put_contents($groups_file, $groups_file_contents);
+		update_groupfile($user_id, $user_group, "add_user");
 		
 		$pwdfile = escapeshellarg($config['passwd_file']);
 		$user_id = escapeshellarg($user_id);
@@ -172,15 +115,26 @@ case 'add_user':
 case 'del_user_form':
 	printHeader('admin');
 	?>
+	<br><br>
 	<body onLoad="self.focus();document.form.login.focus()">
 	<form action="<?php echo $PHP_SELF?>" method="post" name="form">
-	<table>	
+	<table class="menu" style="width:40%">	
 	<tr><th colspan="2"><h3>Remove User</h3></th></tr>
-	<tr><td>User ID</td><td><input type="text" name="user_id" value="<?php echo htvar($user_id)?>" maxlength="15" size="15"></td></tr>
+	<tr><td colspan="2">
+	<?php
+	print '<b>Contents of htgroups file:</b><pre>';
+        readfile($config['groups_file']);
+        print '</pre>';
+        ?>
+    </td></tr>
+	<tr><td><b>User to Remove:</b></td><td><input class="inputbox" type="text" name="user_id" value="<?php echo htvar($user_id)?>" maxlength="15" size="15"></td></tr>
 	</table>
+	<br>
+	<div style="text-align:center">
 	<input type="hidden" name="stage" value="del_user">
 	<input class="btn" type="submit" name="submit" value='Submit'>
 	<input class="btn" type="submit" name="submit" value="Back to Menu">
+	</div>
 	</form>
 	<?php
 	printFooter();
@@ -189,10 +143,8 @@ case 'del_user':
 	printHeader('admin');
 	 
 	if ($user_id != "") {
-		$groups_file = $config['groups_file'];
-		$groups_file_contents = file_get_contents($groups_file);
-		$groups_file_contents = preg_replace("/\s".$user_id."/", "", $groups_file_contents);
-		file_put_contents($groups_file, $groups_file_contents);
+		update_groupfile($user_id, $user_group, "del_user");
+				
 		print "Removing user from groups file.<br><br>";
 		$pwdfile = escapeshellarg($config['passwd_file']);
 		$user_id = escapeshellarg($user_id);
@@ -369,7 +321,7 @@ default:
 	<br>
 	<br>
 	<div style="text-align:center">
-	<table class="menu"><tr><th style="font-size: 24px">SYSADMIN MENU</th></tr>
+	<table class="menu" style="width:50%"><tr><th style="font-size: 24px"><h2>SYSADMIN MENU</h2></th></tr>
 	<tr><td><a href="<?php echo $PHP_SELF?>?stage=add_user_form"><strong>Add User or Update Existing User's Password or Group</strong></a></td></tr>
 	<tr><td><a href="<?php echo $PHP_SELF?>?stage=del_user_form"><strong>Remove User</strong></a></td></tr>
 	<tr><td><a href="<?php echo $PHP_SELF?>?stage=list_users"><strong>List Password File and User Groups File Contents</strong></a></td></tr>

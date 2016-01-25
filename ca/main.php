@@ -41,7 +41,7 @@ case 'gen_crl':
                 </blockquote>
                 <form action="<?php echo $PHP_SELF?>" method="post">
                 <p>
-                <input type="submit" name="submit" value="Back to Menu">
+                <input class="btn" type="submit" name="submit" value="Back to Menu">
                 <p>
                 </form>
                 <?php

@@ -25,7 +25,7 @@ Edit if you know what you're doing.<br><br>
 <textarea id="openvpn_client_basecnf_text" name="cnf_textarea" cols="40" rows="20" style="background:#DEE3EC" readonly><?php print htvar($openvpn_client_basecnf_text) ?></textarea>
 <br><br>
 <button class="btn" value="Edit" onclick="return hitEdit('openvpn_client_basecnf_text');">Edit</button>
-<input type="submit" class="btn" name="submit" value="Save" >
+<input class="btn" type="submit" name="submit" value="Save" >
 </form>
 </span>
 <span>

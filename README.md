@@ -84,8 +84,7 @@ Normal users may only manage the certificates they create.  Administrators
 can manage all certificates.  The default administrator account is 
 "pkiadmin".  The secure.sh script will attempt to add this user to your 
 phpkipasswd file when it is first created.  Other users can be made 
-administrators by carefully editing the $PHPki_admins assignment in 
-config/config.php under your certificate store directory.
+administrators by updating their group via the SysAdmin Panel.
 
 You may add additional users and change passwords using your browser after
 you have successfully installed PHPki and created your phpkipasswd file with

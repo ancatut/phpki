@@ -93,7 +93,7 @@ case 'validate':
 		<form action="<?php print $PHP_SELF ?>" method="post">
 		<input class="btn" type="submit" name="submit" value='Go Back'>
 		<font color=#ff0000><?php print $er ?></font>
-		<br><input type="submit" name="submit" value='Go Back'>
+		<br><input class="btn" type="submit" name="submit" value='Go Back'>
 		
 		<?php
 		print $hidden_fields;
@@ -151,18 +151,17 @@ case 'confirm':
 	
 		print htvar($keysize). ' bits<br>';
 		print htvar($cert_type). '<br>';
-	/* print htvar($expiry). ' Year'.($expiry == 1 ? '' : 's').'<br>'; */
 	?>
     	</td>
-
   	</tr></table>
 
 	<h4>Are you sure?</h4>
 	<p><form action="<?php print $PHP_SELF?>" method="post">
 	<?php print $hidden_fields ?>
 	<input type="hidden" name="form_stage" value="final">
-  	<input type="submit" name="submit" value='Yes! Create and Download' >&nbsp;
-  	<input type="submit" name="submit" value='Go Back'>
+  	<input class="btn" type="submit" name="submit" value='Yes! Create and Download'>
+  	<input class="btn" type="submit" name="submit" value='Edit Details'>
+  	<input class="btn" type="submit" name="submit" value='Cancel'>
 	</form>
 
 	<?php
@@ -210,7 +209,7 @@ case 'final':
         		}
         		else {
 					$serial = $errtxt;
-					#log_password_entry($config['passwd_log'], $serial, $passwd);
+					log_password_entry($config['passwd_log'], $common_name, $email, $passwd);					
         		}
 		}
 
@@ -230,7 +229,8 @@ case 'final':
 
 		break;
 	}	
-	
+	else if ($submit == "Cancel")
+		header("Location: index.php");
 default:
 	if ($form_stage == 'clear') {
 	#
@@ -308,7 +308,7 @@ default:
 
 	<tr>
 	<td>Certificate Password </td>
-	<td><input type="password" class="inputbox" name="passwd" value="<?php print  htvar($passwd) ?>" size="30">&nbsp;&nbsp; Again: <input class="inputbox" type=password name=passwdv  value="<?php print  htvar($passwdv) ?>" size=30></td>
+	<td><input class="inputbox" type="password" name="passwd" value="<?php print  htvar($passwd) ?>" size="30">&nbsp;&nbsp; Again: <input class="inputbox" type=password name=passwdv  value="<?php print  htvar($passwdv) ?>" size=30></td>
 	</tr>
 
 	<tr>

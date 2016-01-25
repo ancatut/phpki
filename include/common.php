@@ -146,7 +146,7 @@ function printHeader($withmenu="default") {
 				print "<a style='color: red' href='../policy.html'><button class='btn'>Policy</button></a>";
 			}
 	
-			print "<a href='../ca/help.php'><button class='btn'>Help</button></a>";
+			print "<a href='../ca/help.php'><button class='btn'>CA Help</button></a>";
 			print "<a href='../about.php'><button class='btn'>About</button></a>";
 			?>
 			<span style="display:inline">
@@ -178,7 +178,7 @@ function printHeader($withmenu="default") {
 			print "<a style='color: red' href='../policy.html'><button class='btn'>Policy</button></a>";
 		}
 		
-		print "<a href='../ca/help.php'><button class='btn'>Help</button></a>";
+		print "<a href='../ca/help.php'><button class='btn'>CA Help</button></a>";
 		print "<a href='../about.php'><button class='btn'>About</button></a>";
 		?>
 
@@ -190,9 +190,9 @@ function printHeader($withmenu="default") {
 		</span>
 		
 		</div>
-		<?php
+	<?php
 	}
-		?>
+	?>
 	<hr width="100%" align="left" color="#99caff">
 	<?php
 }
@@ -202,7 +202,7 @@ function printFooter() {
 	<br>
 	<hr width="100%" align="left" color="#99caff">
 	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Based on PHPki <a href="http://sourceforge.net/projects/phpki/">v<?=PHPKI_VERSION?></a> - Copyright 2003 - William E. Roadcap</p>
-	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.19">v0.19</a></p>
+	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.20">v0.20</a></p>
 	</body>
 	</html>
 	<?php

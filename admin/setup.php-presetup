@@ -98,7 +98,6 @@ switch ($stage) {
 case 'validate':
 	$er = '';
 
-
 	if (! $country)      $er .= 'Missing Country<br>';
 	if (! $province)     $er .= 'Missing State/Province<br>';
 	if (! $locality)     $er .= 'Missing Locality<br>';
@@ -171,7 +170,6 @@ case 'write':
 	#
 	#Create the file store directory structure.
 	#
-
 	print '<strong>Creating PHPki file store...</strong><br>';
 	flush();
 
@@ -276,7 +274,7 @@ case 'write':
 \$config['openvpn_client_cnf_dir'] = \$config['openvpn_cnf_dir'] . '/clients';
 \$config['openvpn_archives_dir'] = \$config['private_dir'].'/openvpn-archives';
     		
-\$PHPki_admins = Array(md5('pkiadmin'));
+#\$PHPki_admins = Array(md5('pkiadmin'));
 
 define('OPENSSL', \$config['openssl_bin'].' ');
 define('X509', OPENSSL . ' x509 ');
@@ -326,23 +324,23 @@ EOS;
 	# in the CA home to use when creating regular certificates.
 	#
 	$config_txt1 = <<< EOS
-HOME					= ${config['home_dir']}
-RANDFILE				= ${config['random']}
-dir						= ${config['ca_dir']}
-certs					= ${config['cert_dir']}
-crl_dir					= ${config['crl_dir']}
-database				= ${config['index']}
-new_certs_dir			= ${config['new_certs_dir']}
-private_dir				= ${config['private_dir']}
-serial					= ${config['serial']}
-certificate				= ${config['cacert_pem']}
-crl						= ${config['cacrl_pem']}
-private_key				= ${config['cakey']}
-crl_extensions			= crl_ext
-default_days			= 365
-default_crl_days		= 30
-preserve	 			= no
-default_md	 			= ${config['default_md']}
+HOME				= ${config['home_dir']}
+RANDFILE			= ${config['random']}
+dir					= ${config['ca_dir']}
+certs				= ${config['cert_dir']}
+crl_dir				= ${config['crl_dir']}
+database			= ${config['index']}
+new_certs_dir		= ${config['new_certs_dir']}
+private_dir			= ${config['private_dir']}
+serial				= ${config['serial']}
+certificate			= ${config['cacert_pem']}
+crl					= ${config['cacrl_pem']}
+private_key			= ${config['cakey']}
+crl_extensions		= crl_ext
+default_days		= 365
+default_crl_days	= 30
+preserve	 		= no
+default_md	 		= ${config['default_md']}
 
 [ ca ]
 default_ca				= email_cert
@@ -395,7 +393,7 @@ subjectAltName         	= email:copy
 authorityKeyIdentifier 	= keyid:always, issuer:always
 crlDistributionPoints  	= URI:${config['base_url']}index.php?stage=dl_crl
 nsComment              	= "PHPki/OpenSSL Generated Root Certificate Authority"
-#nsCaRevocationUrl	   	= ns_revoke_query.php?
+#nsCaRevocationUrl	   = ns_revoke_query.php?
 nsCaPolicyUrl          	= ${config['base_url']}policy.html
 
 [ email_ext ]
@@ -439,12 +437,12 @@ nsCertType              = critical, server
 extendedKeyUsage        = critical, serverAuth, 1.3.6.1.5.5.7.3.1
 subjectKeyIdentifier    = hash
 authorityKeyIdentifier  = keyid:always, issuer:always
-subjectAltName          = DNS:$common_name,email:copy
-issuerAltName           = issuer:copy
+subjectAltName			= DNS:$common_name,email:copy
+issuerAltName			= issuer:copy
 crlDistributionPoints   = URI:${config['base_url']}index.php?stage=dl_crl
-nsComment               = "PHPki/OpenSSL Generated Secure Server Certificate"
-nsBaseUrl		        = ${config['base_url']}
-nsRevocationUrl		    = ns_revoke_query.php?
+nsComment				= "PHPki/OpenSSL Generated Secure Server Certificate"
+nsBaseUrl				= ${config['base_url']}
+nsRevocationUrl			= ns_revoke_query.php?
 nsCaPolicyUrl           = ${config['base_url']}policy.html
 
 [ time_stamping_ext ]
@@ -460,7 +458,6 @@ nsComment              	= "PHPki/OpenSSL Generated Time Stamping Certificate"
 nsBaseUrl              	= ${config['base_url']}
 nsRevocationUrl        	= ns_revoke_query.php?
 nsCaPolicyUrl          	= ${config['base_url']}policy.html
-
 
 [ vpn_client_ext ]
 basicConstraints        = critical, CA:false
@@ -490,15 +487,15 @@ authorityKeyIdentifier  = keyid:always, issuer:always
 subjectAltName          = DNS:$common_name,email:copy
 
 [ crl_ext ]
-issuerAltName=issuer:copy
-authorityKeyIdentifier=keyid:always,issuer:always
+issuerAltName			= issuer:copy
+authorityKeyIdentifier	= keyid:always,issuer:always
 
 
 EOS;
 
 	$config_txt2 = <<<EOS
 [ req ]
-default_bits			= 2048
+default_bits			= 4096
 default_keyfile			= privkey.pem
 distinguished_name		= req_name
 string_mask				= nombstr
@@ -530,7 +527,7 @@ commonName				= Common Name (eg, YOUR name)
 emailAddress			= Email Address or Web URL
 
 [ req_ext ]
-basicConstraints = critical, CA:false
+basicConstraints 		= critical, CA:false
 
 
 EOS;
@@ -621,11 +618,9 @@ EOS;
 	#
 	if (! unlink("$store_dir/tmp/openssl.cnf")) print "Can't unlink $store_dir/tmp/openssl.cnf";
 
-
 	#
 	# Create dhparam files for OpenVPN and others.
-	#
-	
+	#	
 	putenv("RANDFILE=".$config['random']);
 	
 	print '<br><strong>Creating 1024 bit Diffie-Hellman parameters used by OpenVPN.<br>';
@@ -649,14 +644,12 @@ EOS;
 	# Write out the general OpenVPN config file
 	# This is the base config file and later extra client info is appended 
 	# The final config file is used by the client in order to connect to an OpenVPN server
-	
-	file_put_contents($config['openvpn_cnf_dir']."/clients/client_basecnf.conf", 
+		file_put_contents($config['openvpn_cnf_dir']."/clients/client_basecnf.conf", 
 			$openvpn_client_basecnf_text);
 
 	#
 	# Step aside and let the users in (create index.php files).  
 	#
-	
 	if (! unlink('../index.php')) print "Can't unlink index.php";
 	#if (! unlink('setup.php')) print "Can't unlink setup.php";
 	if (! unlink('../ca/index.php')) print "Can't unlink ca/index.php";

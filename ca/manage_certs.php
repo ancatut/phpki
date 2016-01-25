@@ -51,7 +51,7 @@ if ( !($show_valid.$show_revoked.$show_expired) ) {
 	$show_expired = 'E';
 }
 
-$qstr_filter =	'search='.htvar($search).'&'.
+$qstr_filter = 'search='.htvar($search).'&'.
 		"show_valid=$show_valid&".
 		"show_revoked=$show_revoked&".
 		"show_expired=$show_expired&";
@@ -67,7 +67,7 @@ case 'goaway':
 
 case 'display':
 	printHeader('ca');
-	print "<div style='float:left; position: absolute'><a href='manage_certs.php'><button class='btn'>Back to Menu</button></a></div>";
+	print "<div style='float:left; position: absolute'><a href='manage_certs.php'><button class='btn'>Go Back</button></a></div>";
 	
 	?>
     <div style="text-align:center"><h2>Certificate Details</h2></div>
@@ -85,7 +85,6 @@ case 'dl-confirm':
 	printHeader('ca');
 
 	$rec = CAdb_get_entry($serial);
-
 	?>
 	<h3>You are about to download the <font color="red">PRIVATE</font> certificate key for <?php echo htvar($rec['common_name']).' &lt;'.htvar($rec['email']).'&gt; '?></h3>
 	<h3 style="color:red">DO NOT DISTRIBUTE THIS FILE TO THE PUBLIC!</h3>
@@ -93,19 +92,18 @@ case 'dl-confirm':
 	<strong>File type: </strong>
 	<select class="inputbox" name="dl_type">
 	<option value="PKCS#12">PKCS#12 Bundle</option>
-	<option value="PKCS#12-OPENVPN">Zipped PKCS#12 and OpenVPN config</option>
+	<option value="PKCS#12-OPENVPN-ZIP">Zipped PKCS#12 and OpenVPN config</option>
+	<option value="PKCS#12-OPENVPN-TBLK">Zipped Tunnelblick folder (PKCS#12 and OpenVPN config)</option>	
 	<option value="PEMCERT">PEM Certificate</option>
 	<option value="PEMKEY">PEM Key</option>
 	<option value="PEMBUNDLE">PEM Bundle</option>
 	<option value="PEMCABUNDLE">PEM Bundle w/Root</option>
 	</select>
-
 	<input class="btn" type="submit" name="submit" value="Download">
 	&nbsp; or &nbsp;
 	<input class="btn" type="submit" name="submit" value="Go Back">
 	</form>
 	<?php
-
 	break;
 
 case 'download':
@@ -117,10 +115,35 @@ case 'download':
 	case 'PKCS#12':
 		upload("$config[pfx_dir]/$serial.pfx", "$rec[common_name] ($rec[email]).p12", 'application/x-pkcs12');
 		break;
-	case 'PKCS#12-OPENVPN':
+	case 'PKCS#12-OPENVPN-ZIP':
 		CA_create_openvpn_archive($serial, $rec['common_name'], $rec['email']);
 		upload("$config[openvpn_archives_dir]/$rec[common_name] ($rec[email]).zip", "$rec[common_name] ($rec[email]).zip", 'application/zip');
 		break;
+	case 'PKCS#12-OPENVPN-TBLK':		
+		$attachment = $config['openvpn_archives_dir']."/".$rec["common_name"] . " (" . $rec["email"] . ").tblk.zip";
+		if (! file_exists($attachment)) {
+			CA_create_Tunnelblick_zip($serial, $rec['common_name'], $rec['email']);
+		}		
+	if (headers_sent()) {
+    	echo 'HTTP header already sent';
+	} else {
+	    if (!is_file($attachment)) {
+	        header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
+	        echo 'File not found';
+	    } else if (!is_readable($attachment)) {
+	        header($_SERVER['SERVER_PROTOCOL'].' 403 Forbidden');
+	        echo 'File not readable';
+	    } else {
+	        header($_SERVER['SERVER_PROTOCOL'].' 200 OK');
+	        header("Content-Type: application/zip");
+	        header("Content-Transfer-Encoding: Binary");
+	        header("Content-Length: ".filesize($attachment));
+	        header("Content-Disposition: attachment; filename=\"".basename($attachment)."\"");
+	        readfile($attachment);
+	        exit;
+	    }
+	}
+	break;
 	case 'PEMCERT':
 		upload("$config[new_certs_dir]/$serial.pem", "$rec[common_name] ($rec[email]).pem",'application/pkix-cert');
 		break;
@@ -197,7 +220,7 @@ case 'revoke':
 		<pre><?php echo $errtxt ?></pre>
 		</blockquote>
 		<p>
-		<input class="btn" type="submit" name="submit" value="Back">
+		<input class="btn" type="submit" name="submit" value="Go Back">
 		<p>
 		</form>
 		<?php
@@ -295,7 +318,7 @@ case 'renew-form':
 	<td>
 	<div style="text-align:center">
 	<input class="btn" type="submit" name="submit" value="Submit Request">
-	<input class="btn" type="submit" name="submit" value="Back"></div>
+	<input class="btn" type="submit" name="submit" value="Go Back"></div>
 	</td>
 	<td>
 	<input type="hidden" name="stage" value="renew">
@@ -514,9 +537,9 @@ default:
 	
 	$x = "^[${show_valid}${show_revoked}${show_expired}]";
 
-	if (in_array($PHPki_user, $PHPki_admins)) {
+	#if (in_array($PHPki_user, $PHPki_admins)) {
 		$x = "$x.*$search";
-	}
+	#}
 	#else {
 	#	$x = "$x.*$search.*$PHPki_user|$x.*$PHPki_user.*$search";
 	#}
@@ -553,7 +576,6 @@ default:
 		print '
 		<a href="'.$PHP_SELF.'?stage=renew-form&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
 		'<img src="../images/view-refresh-th.png" alt="Renew" title="Renew the certificate by revoking it, if necessary, and creating a replacement with a new expiration date."></a></td></tr>';
-		
 	}
 ?>
 	</table>

@@ -30,7 +30,7 @@ body {
 	background: #FAFAFA;	
 	font-family: Arial, Verdana, Helvetica, sans-serif;
 	font-size: 12px;
-		min-width: 500px;
+	min-width: 500px;
 }
 
 img {
@@ -154,19 +154,19 @@ td {
 
 .headermenu-ie {
 	text-align: right;
-	margin-right: 0.1in;
+	margin-right: 0.01in;
 	margin-top: -0.20in;
 	min-width: 500px;
 }
 
 .headermenu-konq {
 	text-align: right;
-	margin-right: 0.1in;
+	margin-right: 0.01in;
 	margin-top: -0.25in;
 	min-width: 500px;
 }
 .headermenu-ie .btn {
-	font-size: 0.95em;
+	font-size: 11px;
 	padding: 3px 7px 3px 7px;
 }
 .logo-ie {
@@ -250,11 +250,11 @@ pre {
 	font-family: Arial, Verdana, Helvetica, sans-serif;
 	color: #212121;  
 	padding: 3px 10px 3px 10px;
-	border: solid #1f628d 0px;
+	border: solid #fff 0px;
 	outline: none;
 	text-decoration: none;
 	margin: 0.4em 0.25em 0.4em 0.25em;
-	font-size: 12px;
+	font-size: 13px;
 }
 .btn:hover {
 	background: #7A88A0;
@@ -295,7 +295,8 @@ pre {
 	border: solid #fff 0px;
 	outline: none;
 	text-decoration: none;
-	margin: 0.4em 0.25em 0.4em 0.25em;
+	margin: 0.5em 0.25em 0.5em 0.25em;
+	font-size: 13px;
 }
 .inputbox:hover {
 	background: #7A88A0;
@@ -329,7 +330,7 @@ pre {
 }
 
 hr {
-	margin-top: 10px;
+	margin-top: 8px;
 	margin-bottom: 15px;
 	box-shadow: 0px 1px 3px #666666;
 }

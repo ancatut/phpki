@@ -1,7 +1,9 @@
-SSLRequireSSL
-AuthName "Restricted Area"
-AuthType Basic
-AuthUserFile "/etc/.phpkipasswd"
-AuthGroupFile "/etc/.phpkigroups"
-Require group admin cert-manager regular-user
+<RequireAll>
+	SSLRequireSSL
+	AuthName "Restricted Area"
+	AuthType Basic
+	AuthUserFile "/etc/.phpkipasswd"
+	AuthGroupFile "/etc/.phpkigroups"
+	Require group admin cert-manager
+</RequireAll>
 
