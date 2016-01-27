@@ -10,7 +10,7 @@ else {
 	$PHPki_user = md5('default');
 }
 
-$PHP_SELF = $_SERVER['PHP_SELF'];
+$PHP_self = $_SERVER['PHP_SELF'];
 
 // Save & show username if a user is logged in 
 if (isset($_SERVER['PHP_AUTH_USER'])) {
@@ -71,7 +71,7 @@ function printHeader($withmenu="default") {
 	<div class="<?php echo $titleclass ?>"><?php echo $title ?></div>
 	<?php 
 	if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
- 		print "<div class='logged-in'><i>Logged in as ". $_SESSION['username'] . "</i></div>";
+ 		print "<div class='logged-in'><i>Logged in as ". htvar($_SESSION['username']) . "</i></div>";
  	}
  	
 
@@ -202,7 +202,7 @@ function printFooter() {
 	<br>
 	<hr width="100%" align="left" color="#99caff">
 	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Based on PHPki <a href="http://sourceforge.net/projects/phpki/">v<?=PHPKI_VERSION?></a> - Copyright 2003 - William E. Roadcap</p>
-	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.20.1">v0.20.1</a></p>
+	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.20.2">v0.20.2</a></p>
 	</body>
 	</html>
 	<?php

@@ -117,8 +117,7 @@ echo
 echo "Enter the IP(s) or subnet address required for users to be allowed access to folder ./admin. Your value will be appended to '127.0.0.1 ::1'."; 
 echo -n "Enter IP(s) (multiple values should be separated by space) [192.168.0.0/16]: "; read -r y
 echo
-echo -n "If you'd also like to restrict access to the ./ca and ./openvpn folders based on IP or subnet, please enter the permitted address(es) (y
-	our value will be appended to '127.0.0.1 ::1'.); otherwise leave empty: `echo $'\n'`" ; read -r w
+echo -n "If you'd also like to restrict access to the ./ca and ./openvpn folders based on IP or subnet, please enter the permitted address(es) (your value will be appended to '127.0.0.1 ::1'.); otherwise leave empty: `echo $'\n'`" ; read -r w
 
 user=${x:-"www-data"}
 group=${z:-"www-data"}
@@ -233,19 +232,18 @@ storage_dir=${storage_dir:-"/var/www/phpki-store"}
 
 # Check if other users are in the web server group
 #another_user=`egrep ^${group} '/etc/group' | awk -F':' '{print $4}'`
-#if [[ $another_user ]]; then
-#    echo "Other members of ${group} group except $user: $another_user."
-#fi
+apache_group=`getent group ${group}`
 echo
-echo "Only the apache user will receive (read-write) permissions over the storage folder."
+echo "Users in group ${group} will receive rw permissions on storage folder. Group contents: $apache_group"
+
 # Directories have sticky bits set.
 find $storage_dir           -exec chown $user:$group {} \;
 find $storage_dir   -type l -exec chown -h $user:$group {} \;
-find $storage_dir ! -type d -exec chmod 600 {} \;
-find $storage_dir   -type d -exec chmod 3700 {} \;
+find $storage_dir ! -type d -exec chmod 660 {} \;
+find $storage_dir   -type d -exec chmod 3770 {} \;
 
 echo
-echo "Writing permissions to PHPki storage directory..."
+echo "Setting PHPki storage directory to be owned by $user:$group and writing permissions... "
 echo
 
 # Display file list with new permissions
