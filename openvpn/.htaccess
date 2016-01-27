@@ -4,6 +4,7 @@
 	AuthType Basic
 	AuthUserFile "/etc/.phpkipasswd"
 	AuthGroupFile "/etc/.phpkigroups"
+	Require valid-user
 	Require group admin cert-manager
-</RequireAll>
+</RequireAll> 
 

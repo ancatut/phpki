@@ -114,16 +114,19 @@ echo -n "Enter the user ID your web server runs as (apache, www-data etc.) [www-
 echo
 echo -n "Enter the group ID your web server runs as (apache, www-data etc.) [www-data]: " ; read -r z
 echo
-echo -n "Enter the IP(s) or subnet address which will be allowed access to the user admin module in under ./admin [192.168.0.0/16]: " ; read -r y
-
-echo -n "If you'd like to allow access to the other private folders based on IP or subnet, please enter the permitted address(es); otherwise leave empty: `echo $'\n> '`" ; read -r w
+echo "Enter the IP(s) or subnet address required for users to be allowed access to folder ./admin. Your value will be appended to '127.0.0.1 ::1'."; 
+echo -n "Enter IP(s) (multiple values should be separated by space) [192.168.0.0/16]: "; read -r y
+echo
+echo -n "If you'd also like to restrict access to the ./ca and ./openvpn folders based on IP or subnet, please enter the permitted address(es) (y
+	our value will be appended to '127.0.0.1 ::1'.); otherwise leave empty: `echo $'\n'`" ; read -r w
 
 user=${x:-"www-data"}
 group=${z:-"www-data"}
 subnet_admin=${y:-'192.168.0.0/16'}
-subnet_admin="${subnet_admin} 127.0.0.1"
+subnet_admin="${subnet_admin} 127.0.0.1 ::1"
 subnet_general=${w:-''}
 
+echo
 echo "Setting read-write permissions for $group over $passwd_file and $groups_file..."
 chown $owner:$group $passwd_file $groups_file
 chmod 760 $passwd_file $groups_file
@@ -135,41 +138,77 @@ for i in ./include; do
 	echo "Require all denied" >$i/.htaccess
 done 
 
-cat <<EOS > ./ca/.htaccess
-SSLRequireSSL
-AuthName "Restricted Area"
-AuthType Basic
-AuthUserFile "$passwd_file"
-AuthGroupFile "$groups_file"
-Require group admin cert-manager
-
-EOS
-
 cat <<EOS > ./admin/.htaccess 
-SSLRequireSSL
-AuthName "Restricted Area"
-AuthType Basic
-AuthUserFile "$passwd_file"
-AuthGroupFile "$groups_file"
-Require ip $subnet_admin
-Require group admin
-
-EOS
-
-cat <<EOS > ./openvpn/.htaccess
-SSLRequireSSL
-AuthName "Restricted Area"
-AuthType Basic
-AuthUserFile "$passwd_file"
-AuthGroupFile "$groups_file"
-Require group admin cert-manager
+<RequireAll>
+	SSLRequireSSL
+	AuthName "Restricted Area"
+	AuthType Basic
+	AuthUserFile "$passwd_file"
+	AuthGroupFile "$groups_file"
+	Require valid-user
+	Require ip $subnet_admin
+	Require group admin
+</RequireAll>
 
 EOS
 
 if [[ "$subnet_general" != "" ]]; then
-    echo "Require ip ${subnet_general}" >> ./ca/.htaccess
-    echo "Require ip ${subnet_general}" >> ./openvpn/.htaccess
+cat <<EOS > ./ca/.htaccess
+<RequireAll>
+	SSLRequireSSL
+	AuthName "Restricted Area"
+	AuthType Basic
+	AuthUserFile "$passwd_file"
+	AuthGroupFile "$groups_file"
+	Require valid-user
+	Require group admin cert-manager
+	Require ip $subnet_general 127.0.0.1 ::1
+</RequireAll>
+
+EOS
+
+cat <<EOS > ./openvpn/.htaccess
+<RequireAll>
+	SSLRequireSSL
+	AuthName "Restricted Area"
+	AuthType Basic
+	AuthUserFile "$passwd_file"
+	AuthGroupFile "$groups_file"
+	Require valid-user
+	Require group admin cert-manager
+	Require ip $subnet_general 127.0.0.1 ::1
+</RequireAll>
+
+EOS
+
+else
+cat <<EOS > ./ca/.htaccess
+<RequireAll>
+	SSLRequireSSL
+	AuthName "Restricted Area"
+	AuthType Basic
+	AuthUserFile "$passwd_file"
+	AuthGroupFile "$groups_file"
+	Require valid-user
+	Require group admin cert-manager
+</RequireAll>
+
+EOS
+
+cat <<EOS > ./openvpn/.htaccess
+<RequireAll>
+	SSLRequireSSL
+	AuthName "Restricted Area"
+	AuthType Basic
+	AuthUserFile "$passwd_file"
+	AuthGroupFile "$groups_file"
+	Require valid-user
+	Require group admin cert-manager
+</RequireAll> 
+
+EOS
 fi
+
 echo
 echo "Writing permissions to PHPki web directory..."
 
@@ -213,9 +252,21 @@ echo
 list_files=`ls -lahR ${storage_dir}`
 #echo "$list_files"
 
-echo "Enabling Apache's authz_groupfile module..."
-a2enmod authz_groupfile
-echo "Restarting Apache..."
-service apache2 restart
+echo "Checking if the required Apache modules are loaded..."
+if [[ ! $(sudo apache2ctl -M | grep authz_core_module) ]]; then
+	echo "Error: Apache authz_core_module is not loaded."	
+fi
+if [[ ! $(sudo apache2ctl -M | grep authz_groupfile_module) ]]; then
+	echo "Error: Apache authz_groupfile_module is not loaded (required for user group validation)."	
+fi
+if [[ ! $(sudo apache2ctl -M | grep auth_basic_module) ]]; then
+	echo "Error: Apache auth_basic_module is not loaded (required for user authentication)."	
+fi
+if [[ ! $(sudo apache2ctl -M | grep authz_host_module) ]]; then
+	echo "Error: Apache authz_host_module is not loaded (required for IP validation)."	
+fi
+if [[ ! $(sudo apache2ctl -M | grep ssl_module) ]]; then
+	echo "Error: Apache ssl_module is not loaded, please enable it and set up SSL."	
+fi
 echo
-echo "All done."
+echo "Done."
