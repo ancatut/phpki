@@ -90,7 +90,7 @@ case 'validate':
 		printHeader();
 		?>
 		
-		<form action="<?php print $PHP_SELF ?>" method="post">
+		<form action="<?php print htvar($PHP_SELF)?>" method="post">
 		<input class="btn" type="submit" name="submit" value='Go Back'>
 		<font color=#ff0000><?php print $er ?></font>
 		<br><input class="btn" type="submit" name="submit" value='Go Back'>
@@ -156,7 +156,7 @@ case 'confirm':
   	</tr></table>
 
 	<h4>Are you sure?</h4>
-	<p><form action="<?php print $PHP_SELF?>" method="post">
+	<p><form action="<?php print htvar($PHP_SELF)?>" method="post">
 	<?php print $hidden_fields ?>
 	<input type="hidden" name="form_stage" value="final">
   	<input class="btn" type="submit" name="submit" value='Yes! Create and Download'>
@@ -191,7 +191,7 @@ case 'final':
 	            printHeader();
 
 				?>
-				<form action="<?php print $PHP_SELF?>" method="post">
+				<form action="<?php print htvar($PHP_SELF)?>" method="post">
                 		<h2 style="color:#ff0000">There was an error creating your certificate.</h2><br>
 	                	<blockquote>
 	                	<h3>Debug Info:</h3>
@@ -269,7 +269,7 @@ default:
 	
 	<body onLoad="self.focus();document.request.common_name.focus()">
 	
-	<form action="<?php print $PHP_SELF?>" method="post" name="request">
+	<form action="<?php print htvar($PHP_SELF)?>" method="post" name="request">
 	<div>
 	<table style="width: 100%">
 	<tr><th colspan="2"><h2>Certificate Request Form</h2></th></tr>
@@ -366,13 +366,13 @@ default:
 	
 	</form>
 	
-	<form action="<?php print $PHP_SELF?>" method="post" name="request2" style="display: inline-block" >
+	<form action="<?php print htvar($PHP_SELF)?>" method="post" name="request2" style="display: inline-block" >
 	<div>
 	<input class="btn" type="submit" name="submit2" value="Clear All">
 	<input type="hidden" name="form_stage" value="clear">
 	</div>
 	</form>
-	<form action="<?php print $PHP_SELF?>" method="post" name="request3" style="display: inline-block" >
+	<form action="<?php print htvar($PHP_SELF)?>" method="post" name="request3" style="display: inline-block" >
 	<div>
 	<input class="btn" type="submit" name="submit3" value="Go Back">
 	<input type="hidden" name="form_stage" value="back_to_menu">

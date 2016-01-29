@@ -50,7 +50,7 @@ case 'search':
 		?>
 		<div style="text-align:center">
 		<h2>Nothing Found</h2>
-		<form action="<?php print $PHP_SELF?>" method="post" name="form">
+		<form action="<?php print htvar($PHP_SELF)?>" method="post" name="form">
 		<input type="hidden" name="search" value="<?php print htvar($search)?>">
 		<input type="hidden" name="show_valid" value="<?php print htvar($show_valid)?>">
 		<input type="hidden" name="show_revoked" value="<?php print htvar($show_revoked)?>">
@@ -100,11 +100,11 @@ case 'search':
 		<td><?php print htvar($rec['unit'])?></td>
 		<td><?php print htvar($rec['locality'])?></td>
 		<td><?php print htvar($rec['province'])?></td>
-		<td><a href="<?php print $PHP_SELF?>?stage=display&serial=<?php print htvar($rec['serial'])?>" target="_certdisp"><img src="images/display.png" alt="Display" title="Display the certificate in excruciating detail"></a>
+		<td><a href="<?php print htvar($PHP_SELF)?>?stage=display&serial=<?php print htvar($rec['serial'])?>" target="_certdisp"><img src="images/display.png" alt="Display" title="Display the certificate in excruciating detail"></a>
 		<?php
 		if ($rec['status'] != 'Revoked') {
 			?>
-			<a href="<?php print $PHP_SELF ?>?stage=download&serial=<?php print htvar($rec['serial'])?>"><img src="images/download.png" alt="Download" title="Download the certificate so that you may send encrypted e-mail"></a>
+			<a href="<?php print htvar($PHP_SELF) ?>?stage=download&serial=<?php print htvar($rec['serial'])?>"><img src="images/download.png" alt="Download" title="Download the certificate so that you may send encrypted e-mail"></a>
 			<?php
 		}
 		print '</td></tr>';
@@ -113,7 +113,7 @@ case 'search':
 	?>
 	</table>
 
-	<form action="<?php print $PHP_SELF ?>" method="post" name="form">
+	<form action="<?php print htvar($PHP_SELF) ?>" method="post" name="form">
 	<input class="btn" type="submit" name="submit" value="Another Search">
 	<input type="hidden" name="search" value="<?php print htvar($search) ?>">
 	<input type="hidden" name="show_valid" value="<?php print htvar($show_valid) ?>">
@@ -132,7 +132,7 @@ default:
 	?>
 	<body onLoad="self.focus();document.search.search.focus()">
 	<div style="text-align:center"><h2>Certificate Search</h2>
-	<form action="<?php print $PHP_SELF?>" method="post" name="search">
+	<form action="<?php print htvar($PHP_SELF)?>" method="post" name="search">
 	<input class="inputbox" type="text" name="search" value="<?php print htvar($search)?>" maxlength="60" size="40">
 	<input class="btn" type="submit" name="submit" value="Find It!"><br>
 	<input type="checkbox" name="show_valid" value="V" <?php print ($show_valid?'checked':'')?>>Valid

@@ -51,6 +51,7 @@ $locality     = gpvar('locality');
 $province     = gpvar('province');
 $country      = gpvar('country');
 $common_name  = gpvar('common_name');
+$no_pwd		  = gpvar('no_pwd');
 $passwd       = gpvar('passwd');
 $passwdv      = gpvar('passwdv');
 $expiry       = gpvar('expiry');
@@ -105,8 +106,10 @@ case 'validate':
 	if (! $unit)         $er .= 'Missing Unit/Department<br>';
 	if (! $contact)      $er .= 'Missing Contact E-mail Address<br>';
 	if (! $common_name)  $er .= 'Missing Common Name<br>';
-	if (! $passwd)       $er .= 'Missing Certificate Password<br>';
-	if (! $passwdv)      $er .= 'Missing Certificate Password Verification "Again"<br>';
+	if (! $no_pwd) {
+		if (! $passwd)       $er .= 'Missing Certificate Password<br>';
+		if (! $passwdv)      $er .= 'Missing Certificate Password Verification "Again"<br>';
+	}	
 	if (! $header_title) $er .= 'Missing Header Title<br>';
 	if (! $passwd_file)  $er .= 'Missing User Password File Location<br>';
 	if (! $groups_file)  $er .= 'Missing User Groups File Location<br>';
@@ -149,7 +152,7 @@ case 'validate':
             printHeader('setup');
              ?>
 
-            <form action="<?php print $PHP_self ?>" method="post">
+            <form action="<?php print htvar($PHP_self) ?>" method="post">
             <input class="btn" type="submit" name="Submit" value="Go Back">
             <font color="#ff0000"><?php print "$er" ?></font>
             <br><input class="btn" type="submit" name="Submit2" value="Go Back">
@@ -595,11 +598,19 @@ EOS;
 	#
 	# Create a new self-signed CA certificate in PEM format.
 	#
+	if ($no_pwd == true)
+	{
+		print '<br><strong style="color: red">Please note: You have chosen to create the CA key without a passphrase. Make sure this is intended.</strong><br>';
+		exec(REQ . " -x509 -config $tmp_cnf -extensions root_ext -".$config['default_md']." -newkey rsa:$keysize -nodes -keyout ".$config['cakey']." -out ".$config['cacert_pem']." -days $days 2>&1");
+		
+	}
+	else if ($config['ca_pwd']) {
+		exec(REQ . " -x509 -config $tmp_cnf -extensions root_ext -".$config['default_md']." -newkey rsa:$keysize -keyout ".$config['cakey']." -out ".$config['cacert_pem']." -passout pass:".$config['ca_pwd']." -days $days 2>&1");
+	}
+		
 	print '<strong>Creating root certificate...</strong><br>';
 	flush();
-
-	exec(REQ . " -x509 -config $tmp_cnf -extensions root_ext -".$config['default_md']." -newkey rsa:$keysize -keyout ".$config['cakey']." -out ".$config['cacert_pem']." -passout pass:".$config['ca_pwd']." -days $days 2>&1");
-
+	
 	# **** DISABLED *****
 	# It appears that both IE and Netscape accept PEM formatted root certificates
 	#
@@ -798,10 +809,14 @@ comp-lzo no
 	<td style="width:40%"><strong>Password</strong> <font color=red>*</font><br>
 	This password will be used to protect your root certificate private
 	key. It should be <strong>at least 8 characters long</strong>.<br>
-	<strong><font color=red>Do not lose or forget this password.</font></strong>
+	<strong><font color="red">Do not lose or forget this password.</font></strong><br>
+	If you don't want to protect your key with a password, tick the checkbox instead.
 	</td>
-	<td><input class="inputbox" type="password" name="passwd" value="<?php print htvar($passwd) ?>" size="40">&nbsp;&nbsp; 
-	Again: <input class="inputbox" type="password" name="passwdv" value="<?php print htvar($passwdv) ?>" size="40"></td>
+	<td>	
+	<input class="inputbox" type="password" name="passwd" id="passwd" value="<?php print htvar($passwd) ?>" size="40">&nbsp;&nbsp; 
+	<br>Repeat password: <br><input class="inputbox" type="password" name="passwdv" id="passwdv" value="<?php print htvar($passwdv) ?>" size="40"><br>
+	<input type="checkbox" name="no_pwd" id="no_pwd"><font color="red">Don't use a password</font><br>
+	</td>
 	</tr>
 
 	<tr>
@@ -954,5 +969,18 @@ comp-lzo no
 	printFooter();
 	break;
 }
-
  ?>
+<script>
+$("#no_pwd").change(function() {
+	if(this.checked) {
+		$("#passwd").val('');
+		$("#passwd").prop('disabled', true);
+		$("#passwdv").val('');
+		$("#passwdv").prop('disabled', true);
+	}
+    else {
+    	$("#passwd").prop('disabled', false);
+    	$("#passwdv").prop('disabled', false);
+    }		    
+	});
+</script>

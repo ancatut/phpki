@@ -26,7 +26,7 @@ case 'list_users':
         print '</pre>';
 
 	?>
-	<form action="<?php echo $PHP_SELF?>" method="post">
+	<form action="<?php echo htvar($PHP_SELF)?>" method="post">
 	<input class="btn" type="submit" name="submit" value="Back to Menu">
 	</form>
 	<?php
@@ -37,7 +37,7 @@ case 'add_user_form':
 	printHeader('admin');
 	?>
 	<body onLoad="self.focus();document.form.user_id.focus()">
-	<form action="<?php echo $PHP_SELF?>" method="post" name="form">
+	<form action="<?php echo htvar($PHP_SELF)?>" method="post" name="form">
 	<table>
 	<tr><th colspan="2"><h3>Add User or Update Existing User's Password or User Group</h3></th></tr>
 	<tr><td>User ID</td><td><input class="inputbox" type="text" name="user_id" value="<?php echo htvar($user_id)?>" maxlength=15 size=15></td></tr>
@@ -72,7 +72,7 @@ case 'add_user':
 
 		?>
 		<p><div style="text-align: center">
-		<form action="<?php echo $PHP_SELF?>" method="post">
+		<form action="<?php echo htvar($PHP_SELF)?>" method="post">
 		<input type="hidden" name="stage" value="add_user_form">
 		<input type="hidden" name="user_id" value="<?php echo htvar($user_id)?>">
 		<input class="btn" type="submit" name="submit" value="Back">
@@ -103,7 +103,7 @@ case 'add_user':
 		print "</pre>";
 		?>
 		<p>
-		<form action="<?php echo $PHP_SELF?>" method="post">
+		<form action="<?php echo htvar($PHP_SELF)?>" method="post">
 		<input class="btn" type="submit" name="submit" value="Back to Menu">
 		</form>
 		<?php
@@ -117,7 +117,7 @@ case 'del_user_form':
 	?>
 	<br><br>
 	<body onLoad="self.focus();document.form.login.focus()">
-	<form action="<?php echo $PHP_SELF?>" method="post" name="form">
+	<form action="<?php echo htvar($PHP_SELF)?>" method="post" name="form">
 	<table class="menu" style="width:40%">	
 	<tr><th colspan="2"><h3>Remove User</h3></th></tr>
 	<tr><td colspan="2">
@@ -153,7 +153,7 @@ case 'del_user':
 		system("htpasswd -D $pwdfile $user_id 2>&1");
 		?>
 			<p>
-			<form action="<?php echo $PHP_SELF?>" method="post">
+			<form action="<?php echo htvar($PHP_SELF)?>" method="post">
 			<input class="btn" type="submit" name="submit" value="Back to Menu">
 			</form>
 		<?php 
@@ -162,7 +162,7 @@ case 'del_user':
 		print "Error: Please enter a username.";
 	?>
 		<p>
-		<form action="<?php echo $PHP_SELF?>?stage=del_user_form" method="post">
+		<form action="<?php echo htvar($PHP_SELF)?>?stage=del_user_form" method="post">
 		<input class="btn" type="submit" name="submit" value="Back">
 		</form>			 
 	<?php
@@ -225,7 +225,7 @@ case 'import_CA':
 							if ($CA_pkcs12_ext == 'p12' || $CA_pkcs12_ext == 'pfx') {
 	
 								?>
-			<form action="<?php echo $PHP_SELF?>?stage=import_CA_confirm" method="POST">
+			<form action="<?php echo htvar($PHP_SELF)?>?stage=import_CA_confirm" method="POST">
 			Please enter PKCS#12 password: <input type='password'>
 			<input type='submit' name='submit' value='Confirm'>
 			</form>
@@ -278,7 +278,7 @@ case 'renew_CA_confirm':
 	<h3>Renewing the CA Certificate</h3>
 	This process will backup the old CA certificate that is about to expire and create a new certificate with the same serial number and a new validity duration.<br><br>
 	Please select the lifetime of the renewed CA certificate:<br><br>
-	<form action="<?php print $PHP_SELF?>?stage=renew_CA" method="POST">
+	<form action="<?php print htvar($PHP_SELF)?>?stage=renew_CA" method="POST">
 	<input type="hidden" name="stage" value="renew_CA">
 		<select class="inputbox" name="expiry">
 		<?php
@@ -322,11 +322,11 @@ default:
 	<br>
 	<div style="text-align:center">
 	<table class="menu" style="width:50%"><tr><th style="font-size: 24px"><h2>SYSADMIN MENU</h2></th></tr>
-	<tr><td><a href="<?php echo $PHP_SELF?>?stage=add_user_form"><strong>Add User or Update Existing User's Password or Group</strong></a></td></tr>
-	<tr><td><a href="<?php echo $PHP_SELF?>?stage=del_user_form"><strong>Remove User</strong></a></td></tr>
-	<tr><td><a href="<?php echo $PHP_SELF?>?stage=list_users"><strong>List Password File and User Groups File Contents</strong></a></td></tr>
+	<tr><td><a href="<?php echo htvar($PHP_SELF)?>?stage=add_user_form"><strong>Add User or Update Existing User's Password or Group</strong></a></td></tr>
+	<tr><td><a href="<?php echo htvar($PHP_SELF)?>?stage=del_user_form"><strong>Remove User</strong></a></td></tr>
+	<tr><td><a href="<?php echo htvar($PHP_SELF)?>?stage=list_users"><strong>List Password File and User Groups File Contents</strong></a></td></tr>
 	<tr><td>
-	<a href="<?php echo $PHP_SELF?>?stage=renew_CA_confirm"><strong>Extend the CA Certificate Lifetime</strong></a><br>
+	<a href="<?php echo htvar($PHP_SELF)?>?stage=renew_CA_confirm"><strong>Extend the CA Certificate Lifetime</strong></a><br>
 	This process will backup the old CA certificate that is about to expire and create a new certificate with the same serial number and a new validity duration.
 	</td></tr>
 	<!-- 
@@ -334,7 +334,7 @@ default:
 	<tr><td>
 	<a href=""><strong>Import an existing CA and backup the old CA</strong></a><br>
 	<-- The data encoding type, enctype, MUST be specified as below --/>
-	<form enctype="multipart/form-data" action="<?php echo $PHP_SELF?>?stage=import_CA" method="POST">
+	<form enctype="multipart/form-data" action="<?php echo htvar($PHP_SELF)?>?stage=import_CA" method="POST">
     <-- MAX_FILE_SIZE must precede the file input field
     <input type="hidden" name="MAX_FILE_SIZE" value="30000" />  
     This process will backup the current CA storage folder and then reset it. The imported CA will be integrated into the application.<br> 

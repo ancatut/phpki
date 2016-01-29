@@ -26,7 +26,7 @@ case 'gen_crl':
                 ?>
                 <div style="text-align:center"><h2>Certificate Revocation List Updated</h2></div>
                 <p>
-                <form action="<?php echo $PHP_SELF?>" method="post">
+                <form action="<?php echo htvar($PHP_SELF)?>" method="post">
                 <input class="btn" type="submit" name="submit" value="Back to Menu">
                 </form>
                 <?php
@@ -39,7 +39,7 @@ case 'gen_crl':
                 <h3>Debug Info:</h3>
                 <pre><?php echo $errtxt?></pre>
                 </blockquote>
-                <form action="<?php echo $PHP_SELF?>" method="post">
+                <form action="<?php echo htvar($PHP_SELF)?>" method="post">
                 <p>
                 <input class="btn" type="submit" name="submit" value="Back to Menu">
                 <p>
@@ -69,20 +69,20 @@ default:
 	<strong><cite>Certificate Management Control Panel</cite></strong>.</td></tr>
 
 	<tr><td style="text-align: center; vertical-align: middle; font-weight: bold;">
-	<a href="<?php echo $PHP_SELF?>?stage=gen_crl">Update and View the Certificate Revocation List</a></td>
+	<a href="<?php echo htvar($PHP_SELF)?>?stage=gen_crl">Update and View the Certificate Revocation List</a></td>
 	<td>Some applications automagically reference the Certificate Revocation List to determine
 	certificate validity.  It is not necessary to perform this update function, as the CRL is 
 	updated when certificates are revoked.  However, doing so is harmless.
 	<a href="help.php" target="_help">Read the online help</a> to learn more about this.</td></tr>
 
 	<tr><td style="text-align: center; vertical-align: middle; font-weight: bold;">
-	<a href="<?php echo $PHP_SELF?>?stage=dl_root">Download the Root Certificate</a></td>
+	<a href="<?php echo htvar($PHP_SELF)?>?stage=dl_root">Download the Root Certificate</a></td>
 	<td>The "Root" certificate must be installed before using any of the 
 	certificates issued here. <a href="help.php" target="_help">Read the online help</a> 
 	to learn more about this.</td></tr>
 
 	<tr><td style="text-align: center; vertical-align: middle; font-weight: bold;">
-	<a href="<?php echo $PHP_SELF?>?stage=dl_crl">Download the Certificate Revocation List</a></td>
+	<a href="<?php echo htvar($PHP_SELF)?>?stage=dl_crl">Download the Certificate Revocation List</a></td>
 	<td>This is the official list of revoked certificates.  Using this list with your e-mail or
 	browser application is optional.  Some applications will automagically reference this list. </td></tr>
 

@@ -88,7 +88,7 @@ case 'dl-confirm':
 	?>
 	<h3>You are about to download the <font color="red">PRIVATE</font> certificate key for <?php echo htvar($rec['common_name']).' &lt;'.htvar($rec['email']).'&gt; '?></h3>
 	<h3 style="color:red">DO NOT DISTRIBUTE THIS FILE TO THE PUBLIC!</h3>
-	<form action="<?php echo $PHP_SELF.'?stage=download&serial='.$serial.'&'.$qstr_sort.'&'.$qstr_filter?>" method="post">
+	<form action="<?php echo htvar($PHP_SELF).'?stage=download&serial='.$serial.'&'.$qstr_sort.'&'.$qstr_filter?>" method="post">
 	<strong>File type: </strong>
 	<select class="inputbox" name="dl_type">
 	<option value="PKCS#12">PKCS#12 Bundle</option>
@@ -195,7 +195,7 @@ case 'revoke-form':
        	</td>
        	</tr></table>
 	<h4>Are you sure?</h4>
-       	<p><form action="'.$PHP_SELF.'?'.$qstr_sort.'&'.$qstr_filter.' method="post">
+       	<p><form action="'.htvar($PHP_SELF).'?'.$qstr_sort.'&'.$qstr_filter.' method="post">
 	<input type="hidden" name="stage" value="revoke" >
 	<input type="hidden" name="serial" value='.$serial.' >
        	<input class="btn" type="submit" name="submit" value="Yes" >&nbsp
@@ -212,7 +212,7 @@ case 'revoke':
 	if (! $ret) {
 		printHeader('ca');
 
-		print "<form action=$PHP_SELF?stage=revoke-form&serial=$serial&$qstr_sort&$qstr_filter method=post>";
+		print "<form action=".htvar($PHP_SELF)."?stage=revoke-form&serial=$serial&$qstr_sort&$qstr_filter method=post>";
 		?>
 		<h2 style="color:#ff0000">There was an error revoking your certificate.</h2>
 		<blockquote>
@@ -255,7 +255,7 @@ case 'renew-form':
 	
 	<body onLoad="self.focus();document.form.passwd.focus()">
 
-	<form action="<?php echo $PHP_SELF.'?'.$qstr_sort.'&'.$qstr_filter ?>" method="post" name="form">
+	<form action="<?php echo htvar($PHP_SELF).'?'.$qstr_sort.'&'.$qstr_filter ?>" method="post" name="form">
 	<table style="width:99%">	
 	<tr>
 	<th colspan="2">Certificate Renewal Form</th>
@@ -340,7 +340,7 @@ case 'renew':
 	if (! $ret) {
 		printHeader('ca');
 
-		print "<form action=$PHP_SELF?stage=renew-form&serial=$serial&$qstr_sort&$qstr_filter method=post>";
+		print "<form action=".htvar($PHP_SELF)."?stage=renew-form&serial=$serial&$qstr_sort&$qstr_filter method=post>";
 		?>
 		<h2 style="color:#ff0000">There was an error creating your certificate.</h2><br>
 		<blockquote>
@@ -354,7 +354,7 @@ case 'renew':
 		<?php
 	}
 	else {
-		header("Location: $PHP_SELF?$qstr_sort&$qstr_filter");
+		header("Location: ".htvar($PHP_SELF)."?$qstr_sort&$qstr_filter");
 	}
 
 	break;
@@ -418,7 +418,7 @@ case 'request-send-email':
     <br>
     <?php  
 	print 		
-		'<form action="'.$PHP_SELF.'?'.$qstr_sort.'&'.$qstr_filter.' method="post">'.
+		'<form action="'.htvar($PHP_SELF).'?'.$qstr_sort.'&'.$qstr_filter.' method="post">'.
 		'From:<br>
 		<input class="inputbox" type="text" name="sender_addr" value="'. $sender_addr .'" style="width:400px"><br>'.
 		'Sender name:<br>
@@ -488,7 +488,7 @@ default:
 	<table style="margin: 0 auto">
 	<tr><th colspan="9"><h2>Certificate Management Control Panel</h2></th></tr>
 	<tr><td colspan="9"><div style="text-align:center">
-	<form action="<?php echo "$PHP_SELF?$qstr_sort"?>" method="get" name="filter"> 
+	<form action="<?php echo htvar($PHP_SELF)."?$qstr_sort"?>" method="get" name="filter"> 
 	Search: 
 		<input class="inputbox" type="text" name="search" value="<?php echo htvar($search)?>" style="font-size: 11px;" maxlength="60" size="35">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <input type="checkbox" name="show_valid" value="V" <?php echo ($show_valid?'checked':'')?>>Valid &nbsp;&nbsp;
@@ -523,10 +523,10 @@ default:
 	);
 
 	foreach($headings as $field=>$head) {
-		print '<th><a href="'.$PHP_SELF.'?sortfield='.$field.'&ascdec=A&'.$qstr_filter.'" title="Click to sort by this column."><u>'.$head.'</u></a>';
+		print '<th><a href="'.htvar($PHP_SELF).'?sortfield='.$field.'&ascdec=A&'.$qstr_filter.'" title="Click to sort by this column."><u>'.$head.'</u></a>';
 
 		if ($sortfield == $field) {
-			print	'&nbsp<a href="'.$PHP_SELF.'?sortfield='.$field.'&ascdec='.$ht_ascdec.'&'.$qstr_filter.'" >'.
+			print	'&nbsp<a href="'.htvar($PHP_SELF).'?sortfield='.$field.'&ascdec='.$ht_ascdec.'&'.$qstr_filter.'" >'.
 				'<img src='.$arrow_gif.' height=12 alt=\'Change sort order.\' title=\'Click to reverse sort order.\'></a>';
 		}
 
@@ -560,21 +560,21 @@ default:
 			 <td>'.htvar($rec['organization']).'</td>
 			 <td>'.htvar($rec['unit']).'</td>
 			 <td>'.htvar($rec['locality']).'</td>
-			 <td><a href="'.$PHP_SELF.'?stage=display&serial='.$rec['serial'].'">'.
+			 <td><a href="'.htvar($PHP_SELF).'?stage=display&serial='.$rec['serial'].'">'.
 			 '<img src="../images/display.png" alt="Display" title="Display complete certificate details."></a>';
 
 		if ($rec['status'] == 'Valid') {
 			print '
-			<a href="'.$PHP_SELF.'?stage=dl-confirm&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
+			<a href="'.htvar($PHP_SELF).'?stage=dl-confirm&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
 			'<img src="../images/download.png" alt="Download" title="Download the PRIVATE certificate. DO NOT DISTRIBUTE THIS TO THE PUBLIC!"></a>'.
-			'<a href="'.$PHP_SELF.'?stage=request-send-email&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
+			'<a href="'.htvar($PHP_SELF).'?stage=request-send-email&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
 			'<img src="../images/email.png" alt="Email" title="Email the archive to the user."></a>'.
-			'<a href="'.$PHP_SELF.'?stage=revoke-form&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
+			'<a href="'.htvar($PHP_SELF).'?stage=revoke-form&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
 			'<img src="../images/revoke.png" alt="Revoke" title="Revoke the certificate when the e-mail address is no longer valid or the certificate password or private key has been compromised."></a>';
 		} 
 
 		print '
-		<a href="'.$PHP_SELF.'?stage=renew-form&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
+		<a href="'.htvar($PHP_SELF).'?stage=renew-form&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
 		'<img src="../images/view-refresh-th.png" alt="Renew" title="Renew the certificate by revoking it, if necessary, and creating a replacement with a new expiration date."></a></td></tr>';
 	}
 ?>

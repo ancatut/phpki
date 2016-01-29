@@ -251,19 +251,19 @@ list_files=`ls -lahR ${storage_dir}`
 #echo "$list_files"
 
 echo "Checking if the required Apache modules are loaded..."
-if [[ ! $(sudo apache2ctl -M | grep authz_core_module) ]]; then
+if [[ ! $(sudo apachectl -M | grep authz_core_module) ]]; then
 	echo "Error: Apache authz_core_module is not loaded."	
 fi
-if [[ ! $(sudo apache2ctl -M | grep authz_groupfile_module) ]]; then
+if [[ ! $(sudo apachectl -M | grep authz_groupfile_module) ]]; then
 	echo "Error: Apache authz_groupfile_module is not loaded (required for user group validation)."	
 fi
-if [[ ! $(sudo apache2ctl -M | grep auth_basic_module) ]]; then
+if [[ ! $(sudo apachectl -M | grep auth_basic_module) ]]; then
 	echo "Error: Apache auth_basic_module is not loaded (required for user authentication)."	
 fi
-if [[ ! $(sudo apache2ctl -M | grep authz_host_module) ]]; then
+if [[ ! $(sudo apachectl -M | grep authz_host_module) ]]; then
 	echo "Error: Apache authz_host_module is not loaded (required for IP validation)."	
 fi
-if [[ ! $(sudo apache2ctl -M | grep ssl_module) ]]; then
+if [[ ! $(sudo apachectl -M | grep ssl_module) ]]; then
 	echo "Error: Apache ssl_module is not loaded, please enable it and set up SSL."	
 fi
 echo
