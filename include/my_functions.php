@@ -228,11 +228,18 @@ function is_alnum($v) {
 }
 
 /**
+ * Returns TRUE if the argument contains only characters permitted for a username.
+ */
+function username_validchars($v) {
+	return (preg_match('/[^A-Z0-9_\.\-\']/i',$v) ? false : true) ;
+}
+
+/**
  * Returns TRUE if argument is in proper e-mail address format.
  */
 function is_email($v) {
 ##	return (eregi('^[^@ ]+\@[^@ ]+\.[A-Z]{2,4}$',$v) ? true : false);
-	return (preg_match('/^[^@ ]+\@[^@ ]+\.[A-Z]{2,4}$'.'/i',$v) ? true : false); # Replaced eregi() with preg_match()
+	return (preg_match('/^[A-Z0-9_\.\-]+\@[A-Z0-9_\.\-]+\.[A-Z]{2,4}$'.'/i',$v) ? true : false); # Replaced eregi() with preg_match()
 }
 
 /**

@@ -449,10 +449,10 @@ case 'request-send-email':
 
 case 'send-email':
 
-	if ($submit == 'Send email') {
-
+	if ($submit == 'Send email') {		
 		#print $sender_alias;
 		$rec = CAdb_get_entry($serial);
+		
 		if ($email_attachment == "ovpn_zip") {
 			$attachment = $config['openvpn_archives_dir']."/".$rec["common_name"] . " (" . $rec["email"] . ").zip";
 			if (! file_exists($attachment)) {
@@ -466,17 +466,18 @@ case 'send-email':
 			}
 		}
 		
-		if (! send_email($sender_addr, $sender_alias, $to_addr, $email_subject, $email_text, $attachment))
-		
-		# This method may make the page flicker because it refreshes it, might want to implement an ajax call instead
+		if(is_email($to_addr) && send_email($sender_addr, $sender_alias, $to_addr, $email_subject, $email_text, $attachment)) {
+			echo "<script type='text/javascript'>alert('Email sent.');
+			window.location.href = '${PHP_SELF}?$qstr_sort&$qstr_filter';
+			</script>";
+		}
+		else 
+			# This method may make the page flicker because it refreshes it, might want to implement an ajax call instead
 			echo "<script type='text/javascript'>
 			alert('Error: Email was not sent, check for missing or incorrect fields.');
 			window.location.href = '${PHP_SELF}?stage=request-send-email&serial=$serial';
 			</script>";
-		else 
-			echo "<script type='text/javascript'>alert('Email sent.');
-			window.location.href = '${PHP_SELF}?$qstr_sort&$qstr_filter';
-			</script>";	
+		
 	}
 
 default:
@@ -486,8 +487,8 @@ default:
 	<body onLoad="self.focus();document.filter.search.focus()">
 	<div style="text-align: center">
 	<table style="margin: 0 auto">
-	<tr><th colspan="9"><h2>Certificate Management Control Panel</h2></th></tr>
-	<tr><td colspan="9"><div style="text-align:center">
+	<tr><th colspan="10"><h2>Certificate Management Control Panel</h2></th></tr>
+	<tr><td colspan="10"><div style="text-align:center">
 	<form action="<?php echo htvar($PHP_SELF)."?$qstr_sort"?>" method="get" name="filter"> 
 	Search: 
 		<input class="inputbox" type="text" name="search" value="<?php echo htvar($search)?>" style="font-size: 11px;" maxlength="60" size="35">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -519,7 +520,7 @@ default:
 		'status'=>"Status", 'issued'=>"Issued", 'expires'=>"Expires",
 		'common_name'=>"User's Name", 'email'=>"E-mail", 
 		'organization'=>"Organization", 'unit'=>"Department", 
-		'locality'=>"Locality",
+		'locality'=>"Locality", 'matches_ca'=>"Matches CA",
 	);
 
 	foreach($headings as $field=>$head) {
@@ -560,6 +561,7 @@ default:
 			 <td>'.htvar($rec['organization']).'</td>
 			 <td>'.htvar($rec['unit']).'</td>
 			 <td>'.htvar($rec['locality']).'</td>
+    		 <td>'.CA_verify_match_cert($rec['serial']).'</td>
 			 <td><a href="'.htvar($PHP_SELF).'?stage=display&serial='.$rec['serial'].'">'.
 			 '<img src="../images/display.png" alt="Display" title="Display complete certificate details."></a>';
 
@@ -572,11 +574,13 @@ default:
 			'<a href="'.htvar($PHP_SELF).'?stage=revoke-form&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
 			'<img src="../images/revoke.png" alt="Revoke" title="Revoke the certificate when the e-mail address is no longer valid or the certificate password or private key has been compromised."></a>';
 		} 
-
+		
 		print '
 		<a href="'.htvar($PHP_SELF).'?stage=renew-form&serial='.$rec['serial'].'&'.$qstr_sort.'&'.$qstr_filter.'">'.
 		'<img src="../images/view-refresh-th.png" alt="Renew" title="Renew the certificate by revoking it, if necessary, and creating a replacement with a new expiration date."></a></td></tr>';
-	}
+		
+		
+    }
 ?>
 	</table>
 	</div>

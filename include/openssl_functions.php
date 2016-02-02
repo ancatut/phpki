@@ -30,7 +30,7 @@ preserve	 		= no
 default_md	 		= ${config['default_md']}
 
 [ req ]
-default_bits        	= 4096
+default_bits        	= 2048
 string_mask         	= nombstr
 prompt              	= no
 distinguished_name  	= req_name
@@ -261,7 +261,7 @@ function CA_generate_CAcert_cnf() {
 	nsCaPolicyUrl          	= ${config['base_url']}policy.html
 	
 	[ req ]
-	default_bits			= 4096
+	default_bits			= 2048
 	#default_keyfile		= privkey.pem
 	distinguished_name		= req_name
 	string_mask				= nombstr
@@ -297,7 +297,7 @@ EOS;
  * Search the certificate index and return resulting
  * records in array[cert_serial_number][field_name].
  * Fields: serial, country, province, locality, organization, 
- * -issuer, unit, common_name, email
+ * matches_ca, unit, common_name, email
 */
 function CAdb_to_array($search = '.*') {
 	global $config;
@@ -332,13 +332,12 @@ function CAdb_to_array($search = '.*') {
 	exec('egrep -i '.escshellarg($search).' '.$config['index'], $x);
 	foreach($x as $y) {
 		$i = CAdb_explode_entry($y);
+		$i['matches_ca'] = CA_verify_match_cert($i['serial']);
 		if (($i['status'] == "Valid" && $inclval) || ($i['status'] == "Revoked" && $inclrev) || ($i['status'] == "Expired" && $inclexp))
 			$db[$i['serial']] = $i;
 	}
-
 	return($db);
 }
-
 
 /**
  * Returns an array containing the index record for
@@ -354,7 +353,6 @@ function CAdb_get_entry($serial) {
 		return false;
 	}
 }
-
 
 /**
  * Returns the serial number of a VALID certificate matching 
@@ -1007,6 +1005,21 @@ function CA_renew_CAcert($new_expiry) {
 	echo "<br>".$cmd_string;
 	
 	return $ret;
+}
+/**
+ * Checks if the certificate was indeed signed by the currently installed CA 
+ * for verification purposes.
+ * Returns "OK" if the signature is verified, "NOT OK" if there is a mismatch
+ */
+function CA_verify_match_cert($serial) {
+	global $config;
+	exec(OPENSSL. "verify -verbose -CAfile ".$config['cacert_pem']." ".$config['new_certs_dir']."/".escshellarg($serial).".pem", $cmd_output);
+	if (preg_match_array("/.*: OK$/", $cmd_output)) {
+		return "OK";
+	}
+	else {
+		return "NOT OK";
+	}
 }
 
 #function import_CA() {

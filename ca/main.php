@@ -2,7 +2,7 @@
 include("../config.php");
 include(STORE_DIR.'/config/config.php');
 include("../include/my_functions.php");
-include("../include/common.php") ;
+include("../include/common.php");
 include("../include/openssl_functions.php");
 
 $stage = gpvar('stage');

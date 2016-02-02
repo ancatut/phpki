@@ -56,6 +56,8 @@ case 'validate':
 	if (! $common_name)  $er .= 'Missing User\'s Full Name<br>';
 	if (! $email)        $er .= 'Missing E-mail Address<br>';
 
+	if (! username_validchars($common_name))		$er .= "Username contains invalid characters<br>";
+	
 	if (($cert_type == 'email' || $cert_type == 'email_signing') && ! $passwd)       $er .= 'Missing Certificate Password<br>';
 	if (($cert_type == 'email' || $cert_type == 'email_signing') && ! $passwdv)      $er .= 'Missing Certificate Password Verification "Again"<br>';
 
@@ -64,15 +66,20 @@ case 'validate':
 
 	if ( $passwd and $passwd != $passwdv )
 		$er .= 'Password and password verification do not match.<br>';
-
-	//if ( ! is_alnum($passwd) or ! is_alnum($passwdv) )
-	//	$er .= 'Password contains invalid characters.<br>';
-
+	
 	if ( $email && ! is_email($email) )
 		$er .= 'E-mail address ('. htvar($email) . ') may be invalid.<br>';
 	
+	if ( $organization && (!username_validchars($organization)))
+		$er .= 'Organization name is invalid.<br>';
+	if ( $unit && (!username_validchars($unit)))
+		$er .= 'Department name is invalid.<br>';
+	if ( $locality && (!username_validchars($locality)))
+		$er .= 'Locality name is invalid.<br>';
+	if ( $province && (!username_validchars($province)))
+		$er .= 'Province name is invalid.<br>';
 	if ( $country && (!is_alpha($country))) # Check if country code only contains alphabetic characters
-		$er .= 'Country code is invalid.';
+		$er .= 'Country code is invalid.<br>';
 
 	if ( $er )
 		$er = '<h2>ERROR(S) IN FORM:</h2><h4><blockquote>' . $er . '</blockquote></h4>';
@@ -83,7 +90,6 @@ case 'validate':
 		$certtext = CA_cert_text($serial);
 		$er .= '<h2>A valid certificate already exists for ' . htvar("$common_name  <$email>") . '</h2>';
 		$er .= '</font><blockquote><pre> ' . htvar($certtext) . ' </pre></blockquote>';
-
 	}
 
 	if ($er)  { 
