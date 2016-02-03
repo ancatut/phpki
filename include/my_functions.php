@@ -124,11 +124,6 @@ function csort($array, $column, $ascdec=SORT_ASC){
 	
 	#Seems to work almost properly now
 	array_multisort($sortarr, $ascdec, SORT_NATURAL|SORT_FLAG_CASE|SORT_REGULAR, $array);  
-	#array_multisort($sortarr, $ascdec, SORT_REGULAR, $array);
-
-	#print "Time is: ".date('D, d M Y H:i:s ', $_SERVER['REQUEST_TIME']).'<br>';
-	#print implode(" . . . ", $sortarr).'<br>';
-	#print "Alphabetic: ". (int)is_alpha("Hi")." ";
 	
 	return $array;
 }
@@ -206,8 +201,6 @@ function undo_magic_quotes(&$a) {
  * Returns TRUE if argument contains only alphabetic characters.
  */
 function is_alpha($v) {
-##	return (eregi('[^A-Z]',$v) ? false : true) ;
-##	return (preg_match('/[^A-Z]'.'/i',$v,PCRE_CASELESS) ? false : true) ; # Replaced eregi() with preg_match()
 	return (preg_match('/[^A-Z]/i',$v) ? false : true) ;
 }
 
@@ -215,7 +208,6 @@ function is_alpha($v) {
  * Returns TRUE if argument contains only numeric characters.
  */
 function is_num($v) {
-	##return (eregi('[^0-9]',$v) ? false : true) ;
 	return (preg_match('/[^0-9]/',$v) ? false : true) ; # Replaced eregi() with preg_match()
 }
 
@@ -223,22 +215,36 @@ function is_num($v) {
  * Returns TRUE if argument contains only alphanumeric characters.
  */
 function is_alnum($v) {
-##	return (eregi('[^A-Z0-9]',$v) ? false : true) ;
 	return (preg_match('/[^A-Z0-9]/i',$v) ? false : true) ; # Replaced eregi() with preg_match()
 }
-
 /**
  * Returns TRUE if the argument contains only characters permitted for a username.
  */
 function username_validchars($v) {
-	return (preg_match('/[^A-Z0-9_\.\-\']/i',$v) ? false : true) ;
+	return (preg_match('/[^A-Z0-9_\.\-\@]/i',$v) ? false : true) ;
 }
-
+/**
+ * Returns TRUE if the argument contains only characters permitted for a general name.
+ */
+function name_validchars($v) {
+	return (preg_match('/[^A-Z0-9_\.\-\'\& ]/i',$v) ? false : true) ;
+}
+/**
+ * Returns TRUE if the argument contains only characters permitted for a directory name.
+ */
+function dir_validchars($v) {
+	return (preg_match('/[^A-Z0-9_\.\-\/]/i',$v) ? false : true) ;
+}
+/**
+ * Returns TRUE if the argument contains only characters permitted for a URL.
+ */
+function url_validchars($v) {
+	return (preg_match('/[^A-Z0-9_\.\-:\/\?\&]/i',$v) ? false : true) ;
+}
 /**
  * Returns TRUE if argument is in proper e-mail address format.
  */
 function is_email($v) {
-##	return (eregi('^[^@ ]+\@[^@ ]+\.[A-Z]{2,4}$',$v) ? true : false);
 	return (preg_match('/^[A-Z0-9_\.\-]+\@[A-Z0-9_\.\-]+\.[A-Z]{2,4}$'.'/i',$v) ? true : false); # Replaced eregi() with preg_match()
 }
 
@@ -249,7 +255,6 @@ function is_email($v) {
 function preg_match_array($regexp, $arr) {
 
 	foreach ($arr as $elem) {
-##		if (eregi($regexp,$elem))
 		if (! preg_match('/^\/.*\/$/', $regexp)) # if it doesn't begin and end with '/'
 			$regexp = '/'.$regexp.'/'; # pad the $regexp with '/' to prepare for preg_match()
 		if (preg_match($regexp.'i',$elem)) # Replaced eregi() with preg_match()

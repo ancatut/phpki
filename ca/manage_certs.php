@@ -293,7 +293,7 @@ case 'renew-form':
 	</tr>
 
 	<tr>
-	<td>Certificate Password </td>
+	<td>Certificate Password</td>
 	<td><input class="inputbox" type="password" name="passwd" value="<?php echo htvar($passwd) ?>" size=30></td>
 	</tr>
 

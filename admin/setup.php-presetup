@@ -100,20 +100,34 @@ case 'validate':
 	$er = '';
 
 	if (! $country)      $er .= 'Missing Country<br>';
+		else if ((! is_alpha($country))) 	        $er .= 'Country code contains invalid characters.<br>';
 	if (! $province)     $er .= 'Missing State/Province<br>';
+		else if (! name_validchars($province))      $er .= 'Province name contains invalid characters.<br>';
 	if (! $locality)     $er .= 'Missing Locality<br>';
+		else if (! name_validchars($locality))   	$er .= 'Locality name contains invalid characters.<br>';
 	if (! $organization) $er .= 'Missing Organization<br>';
+		else if (! name_validchars($organization)) 	$er .= 'Organization name contains invalid characters.<br>';
 	if (! $unit)         $er .= 'Missing Unit/Department<br>';
+		else if (! name_validchars($unit))	    	$er .= 'Department name contains invalid characters.<br>';
 	if (! $contact)      $er .= 'Missing Contact E-mail Address<br>';
+		else if (! is_email($contact)) 				$er .= 'E-mail address contains invalid characters.<br>';
 	if (! $common_name)  $er .= 'Missing Common Name<br>';
+		else if (! name_validchars($common_name))	$er .= 'Common Name contains invalid characters.';
 	if (! $no_pwd) {
-		if (! $passwd)       $er .= 'Missing Certificate Password<br>';
-		if (! $passwdv)      $er .= 'Missing Certificate Password Verification "Again"<br>';
+		if (! $passwd)   $er .= 'Missing Certificate Password<br>';
+		if (! $passwdv)  $er .= 'Missing Certificate Password Verification "Again"<br>';
 	}	
 	if (! $header_title) $er .= 'Missing Header Title<br>';
+		else if (! name_validchars($header_title))	$er .= 'Header Title contains invalid characters.<br>';
 	if (! $passwd_file)  $er .= 'Missing User Password File Location<br>';
+		else if (! dir_validchars($passwd_file))	$er .= 'HTTP Password File name contains invalid characters.<br>';
 	if (! $groups_file)  $er .= 'Missing User Groups File Location<br>';
+		else if (! dir_validchars($groups_file))	$er .= 'HTTP User Groups File name contains invalid characters.<br>';
 	if (! $store_dir)    $er .= 'Missing Storage Directory<br>';
+		else if (! dir_validchars($store_dir))    	$er .= 'Storage Directory contains invalid characters.<br>';
+	if (! url_validchars($base_url))				$er .= 'Base URL name contains invalid characters.<br>';
+	if (! dir_validchars($openssl_bin))				$er .= "OpenSSL Executable location contains invalid characters.<br>";
+	if (! name_validchars($ca_prefix))				$er .= "File Upload Prefix contains invalid characters.<br>";
 	
 	if ( $passwd && strlen($passwd) < 8 )
 		$er .= 'Certificate password is too short, it should be at least 8 characters long.<br>';
@@ -121,9 +135,6 @@ case 'validate':
 	if ( $passwd and $passwd != $passwdv )
 		$er .= 'Password and password verification do not match.<br>';
 
-    if ( $contact && ! is_email($contact) )
-        $er .= 'E-mail address ('. htvar($contact) . ') may be invalid.<br>';
-    
 	if (strpos($store_dir,$_SERVER['DOCUMENT_ROOT']) === 0)
 		$er .= 'Store directory must exist somewhere outside of DOCUMENT_ROOT ('.$_SERVER['DOCUMENT_ROOT'].').<br>';
 
@@ -132,16 +143,16 @@ case 'validate':
 
 	if (! $er) {
 		if (! file_exists($store_dir) ) {
-			if ( ! mkdir("$store_dir",$store_perms)) $er .= "Could not create the store directory \"$store_dir\"<br>";
+			if ( ! mkdir("$store_dir",$store_perms)) $er .= "Could not create the store directory".htvar($store_dir)."<br>";
 		}
 
 		if (file_exists($store_dir)) {
 			if (! chmod($store_dir, $store_perms)) $er .= "Could not change permissions on the store directory \"$store_dir\"<br>";
-			if (! is_readable($store_dir))  $er .= "The store directory \"$store_dir\" is not readable by the web server user \"$uname\"<br>";
-			if (! is_writeable($store_dir)) $er .= "The store directory \"$store_dir\: is not writeable by the web server user \"$uname\"<br>";
+			if (! is_readable($store_dir))  $er .= "The store directory ".htvar($store_dir)." is not readable by the web server user ".htvar($uname)."<br>";
+			if (! is_writeable($store_dir)) $er .= "The store directory ".htvar($store_dir)." is not writeable by the web server user ".htvar($uname)."<br>";
 		}
 		else {
-			$er .= "Store directory \"$store_dir\" does not exist. You will have to manually create it as desribed in the setup form.<br>";
+			$er .= "Store directory ".htvar($store_dir)." does not exist. You will have to manually create it as desribed in the setup form.<br>";
 		}
 	}
 

@@ -70,13 +70,13 @@ case 'validate':
 	if ( $email && ! is_email($email) )
 		$er .= 'E-mail address ('. htvar($email) . ') may be invalid.<br>';
 	
-	if ( $organization && (!username_validchars($organization)))
+	if ( $organization && (! name_validchars($organization)))
 		$er .= 'Organization name is invalid.<br>';
-	if ( $unit && (!username_validchars($unit)))
+	if ( $unit && (! name_validchars($unit)))
 		$er .= 'Department name is invalid.<br>';
-	if ( $locality && (!username_validchars($locality)))
+	if ( $locality && (! name_validchars($locality)))
 		$er .= 'Locality name is invalid.<br>';
-	if ( $province && (!username_validchars($province)))
+	if ( $province && (! name_validchars($province)))
 		$er .= 'Province name is invalid.<br>';
 	if ( $country && (!is_alpha($country))) # Check if country code only contains alphabetic characters
 		$er .= 'Country code is invalid.<br>';
@@ -313,7 +313,7 @@ default:
 	</tr>
 
 	<tr>
-	<td>Certificate Password </td>
+	<td>Certificate Password  (min. 8 characters long)</td>
 	<td><input class="inputbox" type="password" name="passwd" value="<?php print  htvar($passwd) ?>" size="30">&nbsp;&nbsp; Again: <input class="inputbox" type=password name=passwdv  value="<?php print  htvar($passwdv) ?>" size=30></td>
 	</tr>
 
