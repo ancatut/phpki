@@ -167,7 +167,7 @@ case 'confirm':
 	<input type="hidden" name="form_stage" value="final">
   	<input class="btn" type="submit" name="submit" value='Yes! Create and Download'>
   	<input class="btn" type="submit" name="submit" value='Edit Details'>
-  	<input class="btn" type="submit" name="submit" value='Cancel'>
+  	<input class="btn" type="submit" name="submit" value='Go Back'>
 	</form>
 
 	<?php

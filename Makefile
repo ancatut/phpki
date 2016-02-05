@@ -18,16 +18,19 @@ distclean: clean
 
 	find . -type d -follow -exec chmod 2777 {} \;
 
-	rm -f ca/index.php
-	echo '<?php\nheader("Location: ./../index.php");\n?>' > ca/index.php
+	#rm -f ca/index.php
+	#echo '<?php\nheader("Location: ./../index.php");\n?>' > ca/index.php
 
 	echo '<?php' > config.php
-	echo 'define(PHPKI_VERSION, "$(VERSION)");' >> config.php
+	echo 'define("PHPKI_VERSION", "$(VERSION)");' >> config.php
+	echo 'define("DEMO", FALSE);' >> config.php
+	echo 'define("STORE_DIR", "");' >> config.php
+	echo 'define("BASE_URL", "");' >> config.php
 	echo '?>' >> config.php
 
-	rm -f index.php setup.php
-	ln -sf readme.php index.php
-	ln -sf setup.php-presetup setup.php
+	rm -f index.php admin/setup.php
+	#ln -sf readme.php index.php
+	ln -sf setup.php-presetup admin/setup.php
 
 	find . ! -type d -follow -exec chown $(UID).$(GID) {} \;
 	find . ! -type d -follow -exec chmod 0666 {} \;

@@ -11,6 +11,11 @@ $command_whitelist = array();
 
 $PHP_SELF = $_SERVER['PHP_SELF'];
 
+function userLoggedIn() {
+	if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true)
+		return true;
+	else return false;
+}
 /**
  * Returns TRUE if browser is Internet Explorer.
  */

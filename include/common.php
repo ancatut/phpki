@@ -51,6 +51,7 @@ function printHeader($withmenu="default") {
 	<link rel="stylesheet" type="text/css" href="<?php echo $style_css ?>">
 	</head>
 	<body>
+	<div class="container">
 	<?php
 
 	if (isKonq()) { 
@@ -72,8 +73,7 @@ function printHeader($withmenu="default") {
 	<?php 
 	if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
  		print "<div class='logged-in'><i>Logged in as ". htvar($_SESSION['username']) . "</i></div>";
- 	}
- 	
+ 	} 	
 
 	switch ($withmenu) {
 	case false:
@@ -81,6 +81,7 @@ function printHeader($withmenu="default") {
 		print "<div class=".$menuclass.">";
 		print "<a href='index.php'><button class='btn'>Public Menu</button></a>";
 		print "<a href='ca/'><button class='btn'>Manage</button></a>";
+		print "<a href='admin/setup.php'><button class='btn'>CA Setup</button></a>";
 		print "<a href='help.php'><button class='btn'>Help</button></a>";
 		print "<a href='about.php'><button class='btn'>About</button></a>";
 		if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
@@ -88,27 +89,31 @@ function printHeader($withmenu="default") {
 			<form id="logout_btn" method="post" style="display:inline" action="">
 			<input class='btn' name="logout" type="submit" style="background: #FF8566" value="Logout">
 			</form>
-			<?php 
-			print "</div>";
+			<?php 			
 		}
+		print "</div>";
 		break;
 	case 'setup':
 		print "<div class=".$menuclass.">";
-		print "<a href='../readme.php'><button class='btn'>ReadMe</button></a>";
-		print "<a href='../admin/setup.php'><button class='btn'>Setup</button></a>";
-		print "<a href='../about.php'><button class='btn'>About</button></a></div>";
+		print "<a href='../readme.php'><button class='btn' style='background: #FF8566'>View ReadMe</button></a>";
+		print "<a href='../admin/setup.php'><button class='btn'>CA Setup</button></a>";
+		print "<a href='../ca/'><button class='btn'>Manage</button></a>";
+		print "<a href='../about.php'><button class='btn'>About</button></a>";
+		print "<a href='../ca/help.php'><button class='btn'>CA Help</button></a>";
+		if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+			?>
+			<form id="logout_btn" method="post" style="display:inline" action="">
+			<input class='btn' name="logout" type="submit" style="background: #FF8566" value="Logout">
+			</form>
+			<?php 			
+		}
+		print "</div>";
 		break;
 	case 'public':
 		print "<div class=".$menuclass.">";
 
-		if (DEMO)  {
-			print "<a href='index.php'><button class='btn'>Public</button></a>";
-			print "<a href='ca/'><button class='btn'>Manage</button></a>";
-		}
-		else {
-			print "<a href='index.php'><button class='btn'>Public Menu</button></a>";
-			print "<a href='ca/'><button class='btn'>Manage</button></a>";
-		}
+		print "<a href='index.php'><button class='btn'>Public Menu</button></a>";
+		print "<a href='ca/'><button class='btn'>Manage</button></a>";
 
 		if (file_exists('policy.html')) {
 			print "<a style='color: red' href='policy.html' target='help'><button class='btn'>Policy</button></a>";
@@ -122,22 +127,18 @@ function printHeader($withmenu="default") {
 			<form id="logout_btn" method="post" style="display:inline" action="">
 			<input class='btn' name="logout" type="submit" style="background: #FF8566" value="Logout">
 			</form>
-			<?php 
-			print "</div>";
+			<?php 			
 		}
+		print "</div>";
 		break;
 	
 	case 'admin':
 		print "<div class=".$menuclass.">";
 		
-		if (DEMO)  {
-			print "<a href='../index.php'><button class='btn'>Public</button></a>";
-			print "<a href='../ca/index.php'><button class='btn'>Manage CA</button></a>";
-		}
-		else {
-			print "<a href='../index.php'><button class='btn'>Public Menu</button></a>";
-			print "<a href='setup.php'><button class='btn'>Re-run CA Setup</button></a>";
-			print "<a href='../ca/index.php'><button class='btn'>Manage CA</button></a>";
+		print "<a href='../index.php'><button class='btn'>Public Menu</button></a>";
+		print "<a href='../ca/index.php'><button class='btn'>Manage CA</button></a>";
+		if (! DEMO)  {
+			print "<a href='setup.php'><button class='btn'>CA Setup</button></a>";
 		}
 			print "<a href='../openvpn/change_openvpn_settings.php'><button class='btn'>Edit OpenVPN Config</button></a>";
 			print "<a href='../admin/index.php'><button class='btn'>Admin Panel</button></a>";
@@ -148,31 +149,26 @@ function printHeader($withmenu="default") {
 	
 			print "<a href='../ca/help.php'><button class='btn'>CA Help</button></a>";
 			print "<a href='../about.php'><button class='btn'>About</button></a>";
+			if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
 			?>
-			<span style="display:inline">
 			<form id="logout_btn" method="post" style="display:inline" action="">
 			<input class='btn' name="logout" type="submit" style="background: #FF8566" value="Logout">
 			</form>
-			</span>
-		</div>
-	<?php 
-	break;
+			<?php 			
+		}
+		print "</div>";
+		break;
 	case 'ca':
 	default:
 		print "<div class=".$menuclass.">";
 
-		if (DEMO)  {
-			print "<a href='../index.php'><button class='btn'>Public</button></a>";
-			print "<a href='../ca/index.php'><button class='btn'>Manage CA</button></a>";
+		print "<a href='../index.php'><button class='btn'>Public Menu</button></a>";
+		print "<a href='../ca/index.php'><button class='btn'>Manage CA</button></a>";
+		if (! DEMO)  {
+			print "<a href='../admin/setup.php'><button class='btn'>CA Setup</button></a>";
 		}
-		else {
-			print "<a href='../index.php'><button class='btn'>Public Menu</button></a>";
-			print "<a href='../ca/index.php'><button class='btn'>Manage CA</button></a>";
-		}
-		
 		print '<a href="../openvpn/change_openvpn_settings.php"><button class="btn">Edit OpenVPN Config</button></a>';
 		print '<a href="../admin/index.php"><button class="btn">Admin Panel</button></a>';
-				
 		
 		if (file_exists('../policy.html')) {
 			print "<a style='color: red' href='../policy.html'><button class='btn'>Policy</button></a>";
@@ -180,29 +176,34 @@ function printHeader($withmenu="default") {
 		
 		print "<a href='../ca/help.php'><button class='btn'>CA Help</button></a>";
 		print "<a href='../about.php'><button class='btn'>About</button></a>";
-		?>
-
-		<span style="display:inline">
-		<form id="logout_btn" method="post" style="display:inline" action="">
-		<input class='btn' name="logout" type="submit" style="background: #FF8566" value="Logout">
-		<!--  <button class='btn' name="logout" type="submit" style="background: #FF8566" >Log Out</button>-->
-		</form>
-		</span>
 		
-		</div>
-	<?php
+		if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+			?>
+			<form id="logout_btn" method="post" style="display:inline" action="">
+			<input class='btn' name="logout" type="submit" style="background: #FF8566" value="Logout">
+			</form>
+			<?php 			
+		}
+		print "</div>";
 	}
 	?>
+	</div>
+	<div class="container content-wrapper">
 	<hr width="100%" align="left" color="#99caff">
 	<?php
 }
 
 function printFooter() {
 	?>
-	<br>
-	<hr width="100%" align="left" color="#99caff">
+	
+	</div>
+	<footer>
+	<div class="footer-contents">
+	<hr align="center" color="#99caff">
 	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Based on PHPki <a href="http://sourceforge.net/projects/phpki/">v<?=PHPKI_VERSION?></a> - Copyright 2003 - William E. Roadcap</p>
-	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.21.2">v0.21.2</a></p>
+	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.21.3">v0.21.3</a></p>
+	</div>
+	</footer>
 	</body>
 	</html>
 	<?php

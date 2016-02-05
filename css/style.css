@@ -21,16 +21,52 @@ h3 {
 	word-wrap:break-word;
     white-space:normal;
 }
-
+p {
+	text-align: left;
+}
+html {
+	height: 100%;
+}
 body {
-	margin: 10px;
 	padding: 0;
-	padding-right: 200px;
-	padding-left: 200px;
+	padding-top: 10px;
+	
+	margin: 0 auto;
 	background: #FAFAFA;	
 	font-family: Arial, Verdana, Helvetica, sans-serif;
 	font-size: 12px;
-	min-width: 500px;
+	width: 100%;
+	min-height: 100%;
+	/*'border-collapse:collapse;*/  
+	display: table;
+	margin: 0 auto -80px;  /* the bottom margin is the negative value of the footer's height */
+}
+.container
+{
+	margin: 0 auto;
+	text-align: left;
+}
+.content-wrapper {
+	min-height: 100%;	
+    height: auto !important;
+    height: 100%;    
+    margin: 0 auto;
+}
+footer {
+	clear: both;
+	text-align: center;	
+    display: table-row;
+    height: 80px;
+    margin: 0 auto;
+    
+}
+footer, footer hr, .container {
+	width: 70%;
+}
+.footer-contents {
+	display: table-cell;
+	padding-top: 10px;
+	margin: 0 auto;
 }
 
 img {

@@ -53,7 +53,6 @@ default:
 	?>
 	<br>
 	<br>
-	<div style="text-align:center">
 	<table class="menu" style="width:80%">
 
 	<tr><th class="menu" colspan="2"><h2>Certificate Management Menu</h2></th></tr>
@@ -87,7 +86,6 @@ default:
 	browser application is optional.  Some applications will automagically reference this list. </td></tr>
 
 	</table>
-	</div>
 	<br><br>
 	<?php
 	printFooter();

@@ -768,7 +768,7 @@ comp-lzo no
 	printHeader('setup');
 	 ?>
 	<form action="<?php print htvar($PHP_self) ?>" method="post">
-	<div style="text-align:center"><h2>Certificate Authority Initial Setup</h2></div>
+	<div style="text-align:center"><h2>Certificate Authority Setup</h2></div>
 	<table style = "width:99%">
 	<tr>
 	<th colspan="2"><h3>Root Certificate Data</h3></th>
