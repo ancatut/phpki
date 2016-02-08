@@ -291,7 +291,7 @@ else
         	"ssl_module:(please enable it and set up SSL)" )
 
 	if [[ $($showmods) ]]; then
-		for entry in "${ARRAY[@]}" ; do
+		for entry in "${mod_list[@]}" ; do
 		    KEY=${entry%%:*}
 		    VALUE=${entry#*:}
 		    if [[ ! $(${showmods} | grep $KEY ) ]]; then
@@ -301,7 +301,7 @@ else
 		done
 	else
 	    echo "Can't check for Apache modules. Please ensure the following modules are enabled:" 
-	    for entry in "${ARRAY[@]}" ; do
+	    for entry in "${mod_list[@]}" ; do
 		    KEY=${entry%%:*}
 		    VALUE=${entry#*:}
 		    if [[ ! $(${showmods} | grep $KEY ) ]]; then
