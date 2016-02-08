@@ -24,49 +24,35 @@ h3 {
 p {
 	text-align: left;
 }
-html {
-	height: 100%;
-}
+
+html,
 body {
-	padding: 0;
-	padding-top: 10px;
-	
-	margin: 0 auto;
-	background: #FAFAFA;	
+	margin:0 auto;
+	padding:0;
+	height:100%;
 	font-family: Arial, Verdana, Helvetica, sans-serif;
 	font-size: 12px;
-	width: 100%;
-	min-height: 100%;
-	/*'border-collapse:collapse;*/  
-	display: table;
-	margin: 0 auto -80px;  /* the bottom margin is the negative value of the footer's height */
+	background: #FAFAFA;
 }
-.container
-{
-	margin: 0 auto;
-	text-align: left;
-}
-.content-wrapper {
-	min-height: 100%;	
-    height: auto !important;
-    height: 100%;    
-    margin: 0 auto;
-}
-footer {
-	clear: both;
-	text-align: center;	
-    display: table-row;
-    height: 80px;
-    margin: 0 auto;
-    
-}
-footer, footer hr, .container {
+.wrapper {
+	min-height:100%;
+	position:relative;
 	width: 70%;
+	margin:0 auto;
 }
-.footer-contents {
-	display: table-cell;
-	padding-top: 10px;
-	margin: 0 auto;
+.header {
+	padding:10px;
+}
+.content {
+	padding-bottom: 80px; /* Height of the footer element + margin */
+}
+.footer {
+	width:100%;
+	height:70px;
+	position:absolute;
+	bottom:0;
+	left:0;
+	text-align: center;	
 }
 
 img {

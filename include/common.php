@@ -51,7 +51,7 @@ function printHeader($withmenu="default") {
 	<link rel="stylesheet" type="text/css" href="<?php echo $style_css ?>">
 	</head>
 	<body>
-	<div class="container">
+	<div class="wrapper">
 	<?php
 
 	if (isKonq()) { 
@@ -66,7 +66,7 @@ function printHeader($withmenu="default") {
 	}
 
 	?>
-	
+	<div class="header">
 	<div class="<?php echo $logoclass ?>">PHPki</div>
 	
 	<div class="<?php echo $titleclass ?>"><?php echo $title ?></div>
@@ -187,9 +187,9 @@ function printHeader($withmenu="default") {
 		print "</div>";
 	}
 	?>
-	</div>
-	<div class="container content-wrapper">
 	<hr width="100%" align="left" color="#99caff">
+	</div>
+	<div class="content">
 	<?php
 }
 
@@ -197,13 +197,14 @@ function printFooter() {
 	?>
 	
 	</div>
-	<footer>
-	<div class="footer-contents">
+	<div class="footer">
 	<hr align="center" color="#99caff">
 	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Based on PHPki <a href="http://sourceforge.net/projects/phpki/">v<?=PHPKI_VERSION?></a> - Copyright 2003 - William E. Roadcap</p>
-	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.21.3">v0.21.3</a></p>
+	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.21.4">v0.21.4</a></p>
+	
 	</div>
-	</footer>
+	</div>
+	
 	</body>
 	</html>
 	<?php
