@@ -39,12 +39,15 @@ if [[ ! -f "$passwd_file" ]]; then
     read -p "Enter a user id: " user_id
     read -p "Choose a group for $user_id:
     \"admin\" if you want to give the user full access,
-    \"cert-manager\" if the user can create and manage certs, but can't create/delete users under the admin panel and can't run PHPki setup,
-#   [\"regular-user\"] for users who can only manage the certificates they have created themselves and can't access the admin panel or edit OpenVPN settings. `echo $'\n> '`" user_group
-    user_group=${user_group:-"cert-manager"}
+    \"[cert-manager]\" if the user can create and manage certs, but can't create/delete users under the admin panel and can't run PHPki setup. `echo $'\n> '`" user_group
+    if [[ $user_group == "" || $user_group == "cert-manager" || $user_group == "admin" ]]; then
+    	user_group=${user_group:-"cert-manager"}
+    else
+    	user_group="cert-manager"
+    fi
     
-    echo "Creating the user account for $user_id..."
-    htpasswd -c -m "$passwd_file" "$user_id" || exit
+    echo "Creating the user account for $user_id as $user_group..."
+    htpasswd -c "$passwd_file" "$user_id" || exit
 
     echo "Checking if user is in $groups_file, otherwise adding them..."
     
@@ -63,16 +66,6 @@ if [[ ! -f "$passwd_file" ]]; then
 	            sed -i "/^${user_group}:/ s/$/ ${user_id}/" $groups_file
 	        fi
 	    fi
-   # elif [[ ${user_group} == "admin" ]]; then
-   #     temp=`cat $groups_file | grep cert-manager:`
-   #     if [[ ${temp} == "" ]]; then
-   #         echo "cert-manager: $user_id" >> $groups_file
-   #     else 
-   #         temp=`cat $groups_file | grep -E "cert-manager:.*${user_id}\s"`       
-   #        if [[ ${temp} == "" ]]; then
-   #             sed -i "/^cert-manager:/ s/$/ ${user_id}/" $groups_file
-   #         fi
-   #     fi
     else echo "Error: Wrong user group entered, skipping. Please add user to the appropriate group(s) manually or re-run this script."
     fi
 
@@ -94,7 +87,7 @@ if [[ ! -f "$passwd_file" ]]; then
         fi
     fi
 
-    htpasswd -m "$passwd_file" 'pkiadmin' || exit
+    htpasswd "$passwd_file" 'pkiadmin' || exit
 fi
 
 if [[ ! "${owner}_" = "root_" ]]; then
@@ -114,15 +107,15 @@ echo -n "Enter the user ID your web server runs as (apache, www-data etc.) [www-
 echo
 echo -n "Enter the group ID your web server runs as (apache, www-data etc.) [www-data]: " ; read -r z
 echo
-echo "Enter the IP(s) or subnet address required for users to be allowed access to folder ./admin. Your value will be appended to '127.0.0.1 ::1'."; 
+echo "Enter the IP(s) or subnet address required for users to be allowed access to folder ./admin. Your value will be appended to '127.0.0.1'."; 
 echo -n "Enter IP(s) (multiple values should be separated by space) [192.168.0.0/16]: "; read -r y
 echo
-echo -n "If you'd also like to restrict access to the ./ca and ./openvpn folders based on IP or subnet, please enter the permitted address(es) (your value will be appended to '127.0.0.1 ::1'.); otherwise leave empty: `echo $'\n'`" ; read -r w
+echo -n "If you'd also like to restrict access to the ./ca and ./openvpn folders based on IP or subnet, please enter the permitted address(es) (your value will be appended to '127.0.0.1'); otherwise leave empty: `echo $'\n'`" ; read -r w
 
 user=${x:-"www-data"}
 group=${z:-"www-data"}
 subnet_admin=${y:-'192.168.0.0/16'}
-subnet_admin="${subnet_admin} 127.0.0.1 ::1"
+subnet_admin="${subnet_admin} 127.0.0.1"
 subnet_general=${w:-''}
 
 echo
@@ -161,7 +154,7 @@ cat <<EOS > ./ca/.htaccess
 	AuthGroupFile "$groups_file"
 	Require valid-user
 	Require group admin cert-manager
-	Require ip $subnet_general 127.0.0.1 ::1
+	Require ip $subnet_general 127.0.0.1
 </RequireAll>
 
 EOS
@@ -175,7 +168,7 @@ cat <<EOS > ./openvpn/.htaccess
 	AuthGroupFile "$groups_file"
 	Require valid-user
 	Require group admin cert-manager
-	Require ip $subnet_general 127.0.0.1 ::1
+	Require ip $subnet_general 127.0.0.1
 </RequireAll>
 
 EOS
@@ -251,20 +244,75 @@ list_files=`ls -lahR ${storage_dir}`
 #echo "$list_files"
 
 echo "Checking if the required Apache modules are loaded..."
-if [[ ! $(sudo apachectl -M | grep authz_core_module) ]]; then
-	echo "Error: Apache authz_core_module is not loaded."	
+
+# Try to find apachectl
+apachectl_list=("apachectl" "apache2ctl" "httpd" "/usr/sbin/apachectl" "/usr/sbin/apache2ctl" "/usr/sbin/httpd")
+showmods=""
+for i in "${apachectl_list[@]}"; do
+	if [[ $(which ${apachectl_list[$i]} 2>/dev/null) ]]; then
+    	showmods="${apachectl_list[$i]} -M"
+    	break
+    fi
+done
+
+# Get Bash version
+bash_ver=$(echo $BASH_VERSION | head -c 1)
+
+if [[ "$bash_ver" == 4 ]]; then
+	# Associative array of Apache modules and comments
+	# This only works for Bash 4
+	declare -A mod_list
+	mod_list=(["authz_core_module"]=""
+			  ["auth_basic_module"]="(required for user validation)"
+			  ["authz_groupfile_module"]="(required for user group authentication)"
+			  ["authz_host_module"]="(required for user authentication)"
+			  ["ssl_module"]="(please enable it and set up SSL)"
+			 )
+	if [[ $($showmods) ]]; then
+		for i in "${!mod_list[@]}";	do
+			if [[ ! $(${showmods} | grep $i ) ]]; then
+				echo "Error: $i is not loaded ${mod_list[i]}"
+			else echo "$i is loaded"
+			fi
+		done	
+	else echo "Can't find apachectl or equivalent. Please ensure the following modules are enabled:" 
+		for i in "${!mod_list[@]}";	do
+			echo "- $i ${mod_list[$i]}"
+		done
+		exit $?
+	fi
+else
+	# Python hack to emulate an associative array of Apache modules and comments
+	# For Bash 3
+	mod_list=("authz_core_module:"
+        	"auth_basic_module:(required for user validation)"
+        	"authz_groupfile_module:(required for user group authentication)"
+        	"authz_host_module:(required for user authentication)"
+        	"ssl_module:(please enable it and set up SSL)" )
+
+	if [[ $($showmods) ]]; then
+		for entry in "${ARRAY[@]}" ; do
+		    KEY=${entry%%:*}
+		    VALUE=${entry#*:}
+		    if [[ ! $(${showmods} | grep $KEY ) ]]; then
+		    	printf "Error: %s is not loaded %s\n" "$KEY" "$VALUE"
+		    else printf "%s is loaded\n" $KEY
+		    fi
+		done
+	else
+	    echo "Can't check for Apache modules. Please ensure the following modules are enabled:" 
+	    for entry in "${ARRAY[@]}" ; do
+		    KEY=${entry%%:*}
+		    VALUE=${entry#*:}
+		    if [[ ! $(${showmods} | grep $KEY ) ]]; then
+		    	printf "- %s %s\n" "$KEY" "$VALUE"
+		    else printf "Apache module %s is loaded\n" $KEY
+		    fi
+		done
+		exit $?
+	fi
 fi
-if [[ ! $(sudo apachectl -M | grep authz_groupfile_module) ]]; then
-	echo "Error: Apache authz_groupfile_module is not loaded (required for user group validation)."	
-fi
-if [[ ! $(sudo apachectl -M | grep auth_basic_module) ]]; then
-	echo "Error: Apache auth_basic_module is not loaded (required for user authentication)."	
-fi
-if [[ ! $(sudo apachectl -M | grep authz_host_module) ]]; then
-	echo "Error: Apache authz_host_module is not loaded (required for IP validation)."	
-fi
-if [[ ! $(sudo apachectl -M | grep ssl_module) ]]; then
-	echo "Error: Apache ssl_module is not loaded, please enable it and set up SSL."	
-fi
+
+echo "Please manually enable any missing Apache modules."
 echo
 echo "Done."

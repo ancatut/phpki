@@ -29,15 +29,13 @@ License provided this page and all copyright notices remain completely intact.
 <p>
 <div style="text-align:center"><h4>Copyright: 2003, William E. Roadcap</h4>
 <form>
-<textarea name="gpl" cols="80" rows="15" readonly style="width: 70%">
+<textarea name="gpl" cols="80" rows="30" readonly style="width: 70%">
 <?php
 readfile("LICENSE.TXT");
 ?>
 </textarea>
 </form>
 </div>
-<p>
-
 <?php
 printFooter();
 ?>

@@ -79,7 +79,7 @@ case 'add_user':
 		</form></div>
 		<?php
 	}
-	else if (preg_match('/[^a-zA-Z0-9._]/', $user_id)) 
+	else if (! username_validchars($user_id)) 
 	{
 		print '<div style="text-align:center"><h2 style="font-color:red">Invalid characters in username.</h2></div>';
 	}
@@ -95,7 +95,7 @@ case 'add_user':
 		$passwd  = escapeshellarg($passwd);
 		
 		print 'Writing user password. Results of htpasswd command:<br>';
-		system("htpasswd -bm $pwdfile $user_id $passwd 2>&1");
+		system("htpasswd -b $pwdfile $user_id $passwd 2>&1");
 		print "<br><br>";
 		
 		print "Contents of groups file:<pre>";
@@ -142,7 +142,7 @@ case 'del_user_form':
 case 'del_user':
 	printHeader('admin');
 	 
-	if ($user_id != "") {
+	if ($user_id != "" && username_validchars($user_id)) {
 		update_groupfile($user_id, $user_group, "del_user");
 				
 		print "Removing user from groups file.<br><br>";
@@ -158,8 +158,8 @@ case 'del_user':
 			</form>
 		<?php 
 	}
-	else if ($user_id == "" && $submit == "Submit") { 
-		print "Error: Please enter a username.";
+	else if ($submit == "Submit") { 
+		print "Error: Please enter a valid username.";
 	?>
 		<p>
 		<form action="<?php echo htvar($PHP_SELF)?>?stage=del_user_form" method="post">

@@ -11,6 +11,7 @@ printHeader('ca');
 <p>
 <div style="text-align:center">
 <br>
+<br>
 
 <table class="menu" style="width:60%">
 <tr><th class="menu"><h2>PHPki HELP FILE<br>TABLE OF CONTENTS</h2></th><tr>

@@ -28,7 +28,7 @@ Then run
 	
 	sudo make distclean
 	
-if you want to clear out any files that may exist in the web folder from a previous installation (warning: this deletes any .htaccess files) and set read-write permissions to run setup.
+to clear out any files that may exist in the web folder from a previous installation (warning: this deletes any .htaccess files), set the root folder's .htaccess and set read-write permissions to run setup.
 
 Install Composer by running from the installation folder (this is required for project dependencies):
 	

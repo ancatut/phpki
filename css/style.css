@@ -41,7 +41,7 @@ body {
 	margin:0 auto;
 }
 .header {
-	padding:10px;
+	padding-top:10px;
 }
 .content {
 	padding-bottom: 80px; /* Height of the footer element + margin */
