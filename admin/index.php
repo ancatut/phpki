@@ -5,8 +5,10 @@ include(STORE_DIR.'/config/config.php');
 include('../include/my_functions.php');
 include('../include/common.php');
 include('../include/openssl_functions.php');
+include('../include/password_functions.php');
 
 function md5_for_config($val) { return "md5('".$val."')"; }
+
 $stage   = gpvar('stage');
 $user_id = gpvar('user_id');
 $passwd  = gpvar('passwd');
@@ -87,18 +89,21 @@ case 'add_user':
 	{	
 		$groups_file = $config['groups_file'];
 		echo "Checking if user is in $groups_file under $user_group, otherwise adding them...<br><br>";
-			
-		update_groupfile($user_id, $user_group, "add_user");
-		
-		$pwdfile = escapeshellarg($config['passwd_file']);
-		$user_id = escapeshellarg($user_id);
-		$passwd  = escapeshellarg($passwd);
-		
-		print 'Writing user password. Results of htpasswd command:<br>';
-		system("htpasswd -b $pwdfile $user_id $passwd 2>&1");
+		print 'Writing user to groupfile...<br>';
+		if (update_groupfile($user_id, $user_group, "add_user"))
+			print "Done.<br>";
+	#	$pwdfile = escapeshellarg($config['passwd_file']);
+	#	$user_id = escapeshellarg($user_id);
+	#	$passwd  = escapeshellarg($passwd);
+		print 'Writing user password...<br>';
+		if (update_htpasswd_file($user_id, $passwd, $config['passwd_file'], "add_user", "APR1_MD5"))
+			print "Done.<br>";
+		#system("htpasswd -b $pwdfile $user_id $passwd 2>&1");
 		print "<br><br>";
-		
-		print "Contents of groups file:<pre>";
+		print 'Updated contents of htpasswd file:<pre>';
+		readfile($config['passwd_file']);
+		print '</pre>';
+		print "Updated contents of groups file:<pre>";
 		print file_get_contents($groups_file);
 		print "</pre>";
 		?>
@@ -143,14 +148,18 @@ case 'del_user':
 	printHeader('admin');
 	 
 	if ($user_id != "" && username_validchars($user_id)) {
-		update_groupfile($user_id, $user_group, "del_user");
-				
-		print "Removing user from groups file.<br><br>";
-		$pwdfile = escapeshellarg($config['passwd_file']);
-		$user_id = escapeshellarg($user_id);
+		print "Removing user from groups file.<br>";
+		if (update_groupfile($user_id, $user_group, "del_user"))
+			print "Done.<br>";
+		print "<br>";	
+		print "Removing user from htpasswd file.<br>";
+		if (update_htpasswd_file($user_id, $passwd, $config['passwd_file'], "del_user"))
+			print "Done.<br>";
+		#$pwdfile = escapeshellarg($config['passwd_file']);
+		#$user_id = escapeshellarg($user_id);
 	
-		print 'Results of htpasswd command:<br>';
-		system("htpasswd -D $pwdfile $user_id 2>&1");
+		#print 'Results of htpasswd command:<br>';
+		#system("htpasswd -D $pwdfile $user_id 2>&1");
 		?>
 			<p>
 			<form action="<?php echo htvar($PHP_SELF)?>" method="post">

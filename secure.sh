@@ -107,15 +107,15 @@ echo -n "Enter the user ID your web server runs as (apache, www-data etc.) [www-
 echo
 echo -n "Enter the group ID your web server runs as (apache, www-data etc.) [www-data]: " ; read -r z
 echo
-echo "Enter the IP(s) or subnet address required for users to be allowed access to folder ./admin. Your value will be appended to '127.0.0.1'."; 
+echo "Enter the IP(s) or subnet address required for users to be allowed access to folder ./admin. Your value will be appended to '127.0.0.1 ::1' (localhost is always allowed)."; 
 echo -n "Enter IP(s) (multiple values should be separated by space) [192.168.0.0/16]: "; read -r y
 echo
-echo -n "If you'd also like to restrict access to the ./ca and ./openvpn folders based on IP or subnet, please enter the permitted address(es) (your value will be appended to '127.0.0.1'); otherwise leave empty: `echo $'\n'`" ; read -r w
+echo -n "If you'd also like to restrict access to the ./ca and ./openvpn folders based on IP or subnet, please enter the permitted address(es) (your value will be appended to '127.0.0.1 ::1'); otherwise leave empty: `echo $'\n'`" ; read -r w
 
 user=${x:-"www-data"}
 group=${z:-"www-data"}
 subnet_admin=${y:-'192.168.0.0/16'}
-subnet_admin="${subnet_admin} 127.0.0.1"
+subnet_admin="${subnet_admin} 127.0.0.1 ::1"
 subnet_general=${w:-''}
 
 echo
@@ -154,7 +154,7 @@ cat <<EOS > ./ca/.htaccess
 	AuthGroupFile "$groups_file"
 	Require valid-user
 	Require group admin cert-manager
-	Require ip $subnet_general 127.0.0.1
+	Require ip $subnet_general 127.0.0.1 ::1
 </RequireAll>
 
 EOS
@@ -168,7 +168,7 @@ cat <<EOS > ./openvpn/.htaccess
 	AuthGroupFile "$groups_file"
 	Require valid-user
 	Require group admin cert-manager
-	Require ip $subnet_general 127.0.0.1
+	Require ip $subnet_general 127.0.0.1 ::1
 </RequireAll>
 
 EOS
