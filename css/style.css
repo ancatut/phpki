@@ -307,11 +307,9 @@ pre {
 	-webkit-border-radius: 0px;
 	-moz-border-radius: 0px;
 	border-radius: 0px;
-	/*text-shadow: 1px 0px 1px #8a8a8f;*/
 	-webkit-box-shadow: 0px 1px 4px #666666;
 	-moz-box-shadow: 0px 1px 4px #666666;
 	box-shadow: 0px 1px 4px #666666;
-	/*font-family: Arial;*/
 	color: #212121;  
 	padding: 3px 10px 3px 10px;
 	border: solid #fff 0px;
@@ -355,4 +353,27 @@ hr {
 	margin-top: 8px;
 	margin-bottom: 15px;
 	box-shadow: 0px 1px 3px #666666;
+}
+
+.picker {
+	background: #ffffff;
+	background-image: -webkit-linear-gradient(top, #ffffff, #fefefe);
+	background-image: -moz-linear-gradient(top, #ffffff, #fefefe);
+	background-image: -ms-linear-gradient(top, #ffffff, #fefefe);
+	background-image: -o-linear-gradient(top, #ffffff, #fefefe);
+	background-image: linear-gradient(to bottom, #ffffff, #fefefe);
+	-webkit-border-radius: 0px;
+	-moz-border-radius: 0px;
+	border-radius: 0px;
+	-webkit-box-shadow: 0px 1px 4px #666666;
+	-moz-box-shadow: 0px 1px 4px #666666;
+	box-shadow: 0px 1px 4px #666666;
+	color: #212121;  
+	padding: 3px 10px 3px 10px;
+	border: solid #fff 0px;
+	outline: none;
+	text-decoration: none;
+	margin: 0.5em 0.25em 0.5em 0.25em;
+	font-size: 13px;
+	display: inline-block
 }

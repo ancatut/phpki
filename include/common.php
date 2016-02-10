@@ -29,12 +29,14 @@ function printHeader($withmenu="default") {
 	case 'public':
 	case 'about':	
 		$style_css = 'css/style.css';
+		$favicon   = 'images/favicon.ico';
 		break;
 	case 'ca':
 	case 'admin':
 	case 'setup':
 	default:
 		$style_css = '../css/style.css';
+		$favicon   = '../images/favicon.ico';
 		break;
 	}
 
@@ -49,6 +51,7 @@ function printHeader($withmenu="default") {
 	<head>
 	<title>PHPki: <?php echo $title ?> </title>
 	<link rel="stylesheet" type="text/css" href="<?php echo $style_css ?>">
+	<link rel="shortcut icon" href="<?php echo $favicon ?>">
 	</head>
 	<body>
 	<div class="wrapper">

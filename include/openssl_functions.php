@@ -567,7 +567,7 @@ function CA_revoke_cert($serial) {
  *
  * Returns an array containing the output of failed openssl commands.
  */
-function CA_create_cert($cert_type='email',$country,$province,$locality,$organization,$unit,$common_name,$email,$expiry,$passwd,$keysize=2048) {
+function CA_create_cert($cert_type='email',$country,$province,$locality,$organization,$unit,$common_name,$email,$expiry,$passwd,$pass_use="bothpass",$keysize=2048) {
 	global $config;
 
 	# Wait here if another user has the database locked.
@@ -596,11 +596,11 @@ function CA_create_cert($cert_type='email',$country,$province,$locality,$organiz
 	# Create the certificate request
 	unset($cmd_output);
 	$cmd_output[] = 'Creating certifcate request.';
-
-	if ($passwd) {
+	$ret = 0;
+	if ($passwd && $pass_use == "both_pwd") {
 		exec(REQ." -new -".$config['default_md']." -newkey rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' -passout pass:$_passwd  2>&1", $cmd_output, $ret);
 	}
-	else {
+	else if ($pass_use == "pkcs12_pwd") {
 		exec(REQ." -new -".$config['default_md']." -nodes -newkey rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' 2>&1", $cmd_output, $ret);
 	}
 	
@@ -762,11 +762,10 @@ function CA_renew_cert($old_serial,$expiry,$passwd) {
 		}
 		else {
 			$cmd_output[] = "infile: $usercert   keyfile: $userkey   outfile: $userpfx";
-			#exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile '$config[cacert_pem]' -caname '$config[organization]' -out '$userpfx' -name $friendly_name  -passout pass: 2>&1", $cmd_output, $ret);
 			exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name  -nodes 2>&1", $cmd_output, $ret);
 		}
 	};
-	
+
 	#Unlock the CA database
 	fclose($fd);
 
@@ -774,7 +773,15 @@ function CA_renew_cert($old_serial,$expiry,$passwd) {
 	if (file_exists($cnf_file)) unlink($cnf_file);
 
 	if ($ret == 0) {
-		return array(true, $serial);
+		# Check if the password is used to encrypt only the PKCS#12 file
+		# As a matter of fact, this check is a bit redundant
+		exec(OPENSSL ." rsa -in ". $userkey ." -noout -check", $output);
+		if ($output && $output[0] == "RSA key ok") {
+			echo $output[0];
+			$pwd_use = "pkcs12_pwd";
+		}
+		else $pwd_use = "both_pwd";
+		return array(true, $serial, $pwd_use);
 	}
 	else {
 		# Not successful, so clean up before exiting.
@@ -785,7 +792,7 @@ function CA_renew_cert($old_serial,$expiry,$passwd) {
 		else
 			$cmd_output[] = '<strong>Click on the "Help" link above for information on how to report this problem.</strong>';
 
-		return array(false, implode('<br>',$cmd_output));
+		return array(false, implode('<br>',$cmd_output), "");
 	}
 }
 

@@ -26,6 +26,10 @@ $expiry    = gpvar('expiry');
 $submit    = gpvar('submit');
 $dl_type   = gpvar('dl_type');
 
+$common_name  = gpvar('common_name');
+$email		  = gpvar('email');
+$passwd		  = gpvar('passwd');
+
 $search       = gpvar('search');
 $show_valid   = gpvar('show_valid');
 $show_revoked = gpvar('show_revoked');
@@ -76,9 +80,9 @@ case 'display':
 
 	if ($revoke_date = CAdb_is_revoked($serial))
 		print '<div style="text-align:center"><h2 style="color:red">REVOKED '.$revoke_date.'</h2></div>';
-	
-		
+			
     print '<pre>'.CA_cert_text($serial).'</pre>';
+    print "<br><div style='float:left; position: absolute'><a href='manage_certs.php'><button class='btn'>Go Back</button></a></div>";
 	break;
 
 case 'dl-confirm':
@@ -293,7 +297,7 @@ case 'renew-form':
 	</tr>
 
 	<tr>
-	<td>Certificate Password</td>
+	<td>Password <br>(for encrypting the PKCS#12 file and decrypting the private key if it is encrypted)</td>
 	<td><input class="inputbox" type="password" name="passwd" value="<?php echo htvar($passwd) ?>" size=30></td>
 	</tr>
 
@@ -334,29 +338,33 @@ case 'renew-form':
 
 case 'renew':
 	$ret = true;
-	if ($submit == "Submit Request")
-		list($ret, $errtxt) = CA_renew_cert($serial, $expiry, $passwd);
+	if ($submit == "Submit Request") {
+		$rec = CAdb_get_entry($serial);
+		list($ret, $errtxt, $pwd_use) = CA_renew_cert($serial, $expiry, $passwd);
 
-	if (! $ret) {
-		printHeader('ca');
-
-		print "<form action=".htvar($PHP_SELF)."?stage=renew-form&serial=$serial&$qstr_sort&$qstr_filter method=post>";
-		?>
-		<h2 style="color:#ff0000">There was an error creating your certificate.</h2><br>
-		<blockquote>
-		<h3>Debug Info:</h3>
-		<pre><?php echo $errtxt?></pre>
-		</blockquote>
-		<p>
-		<input class="btn" type="submit" name="submit" value="Back">
-		<p>
-		</form>
-		<?php
+		if (! $ret) {
+			printHeader('ca');
+	
+			print "<form action=".htvar($PHP_SELF)."?stage=renew-form&serial=$serial&$qstr_sort&$qstr_filter method=post>";
+			?>
+			<h2 style="color:#ff0000">There was an error creating your certificate.</h2><br>
+			<blockquote>
+			<h3>Debug Info:</h3>
+			<pre><?php echo $errtxt?></pre>
+			</blockquote>
+			<p>
+			<input class="btn" type="submit" name="submit" value="Back">
+			<p>
+			</form>
+			<?php
+		}
+		else {
+			log_password_entry($config['passwd_log'], $rec['common_name'], $rec['email'], $passwd, $pwd_use);
+			header("Location: ".htvar($PHP_SELF)."?$qstr_sort&$qstr_filter");
+		}
 	}
-	else {
+	else 
 		header("Location: ".htvar($PHP_SELF)."?$qstr_sort&$qstr_filter");
-	}
-
 	break;
 	
 case 'request-send-email':

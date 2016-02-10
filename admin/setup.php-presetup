@@ -65,6 +65,11 @@ $ca_prefix    = gpvar('ca_prefix');
 $header_title = gpvar('header_title');
 $store_dir    = gpvar('store_dir');
 
+$dh1024		  = gpvar('dh1024');
+$dh2048		  = gpvar('dh2048');
+$dh4096		  = gpvar('dh4096');
+
+$default_md   = gpvar('default_md');
 $openvpn_client_basecnf_text = gpvar('openvpn_client_basecnf_text');
 
 #$openvpn_archives_dir = gpvar('openvpn_archives_dir');
@@ -91,7 +96,10 @@ $hidden_fields = '
     <input class="btn" type="hidden" name="passwd_file" value="' . htvar($passwd_file) . '">
     <input class="btn" type="hidden" name="groups_file" value="' . htvar($groups_file) . '">
     <input class="btn" type="hidden" name="store_dir" value="' . htvar($store_dir) . '">
-    
+    <input class="btn" type="hidden" name="default_md" value="' . htvar($default_md) . '">
+    <input class="btn" type="hidden" name="dh1024" value="' . htvar($dh1024) . '">
+    <input class="btn" type="hidden" name="dh2048" value="' . htvar($dh2048) . '">
+    <input class="btn" type="hidden" name="dh4096" value="' . htvar($dh4096) . '">
     <input class="btn" type="hidden" name="openvpn_client_basecnf_text" value="' . htvar($openvpn_client_basecnf_text) . '">
 ';
  
@@ -282,8 +290,8 @@ case 'write':
 # Default OpenSSL Config File.
 \$config['openssl_cnf']		= \$config['home_dir'] . '/config/openssl.cnf';
 
-# Default signature algorithm.
-\$config['default_md']		= 'sha512';
+# Default hashing algorithm.
+\$config['default_md']		= '$default_md';
     		
 # Default password logfile location.
 \$config['passwd_log']		= \$config['private_dir'] . '/password_log.txt';
@@ -650,22 +658,32 @@ EOS;
 	#	
 	putenv("RANDFILE=".$config['random']);
 	
-	print '<br><strong>Creating 1024 bit Diffie-Hellman parameters used by OpenVPN.<br>';
-	print "Saving to $store_dir/dhparam1024.pem.</strong><br>";
-	$cmd = "openssl dhparam -rand ".$config['random']." -out ".$config['private_dir']."/dhparam1024.pem 1024";
-	#$cmd = "openssl genpkey -genparam -algorithm DH -rand ".$config['random']." -out ".$config['private_dir']."/dhparam1024.pem -pkeyopt dh_paramgen_prime_len:1024";
-	print $cmd.'<br>';
-	flush();
-	#echo getenv("RANDFILE");
-	flush_exec($cmd,100);
-	
-
-	print '<br><strong>Creating 2048 bit Diffie-Hellman parameters used by OpenVPN.<br>';
-	print "Saving to $store_dir/dhparam2048.pem.</strong><br>";
-	$cmd = "openssl dhparam -rand ".$config['random']." -out ".$config['private_dir']."/dhparam2048.pem 2048";
-	print $cmd.'<br>';
-	flush();
-	flush_exec($cmd,200);
+	if ($dh1024) {
+		print '<br><strong>Creating 1024 bit Diffie-Hellman parameters used by OpenVPN.<br>';
+		print "Saving to $store_dir/dhparam1024.pem.</strong><br>";
+		$cmd = "openssl dhparam -rand ".$config['random']." -out ".$config['private_dir']."/dhparam1024.pem 1024";
+		#$cmd = "openssl genpkey -genparam -algorithm DH -rand ".$config['random']." -out ".$config['private_dir']."/dhparam1024.pem -pkeyopt dh_paramgen_prime_len:1024";
+		print $cmd.'<br>';
+		flush();
+		#echo getenv("RANDFILE");
+		flush_exec($cmd,100);
+	}
+	if ($dh2048) {
+		print '<br><strong>Creating 2048 bit Diffie-Hellman parameters used by OpenVPN.<br>';
+		print "Saving to $store_dir/dhparam2048.pem.</strong><br>";
+		$cmd = "openssl dhparam -rand ".$config['random']." -out ".$config['private_dir']."/dhparam2048.pem 2048";
+		print $cmd.'<br>';
+		flush();
+		flush_exec($cmd,200);
+	}
+	if ($dh4096) {
+		print '<br><strong>Creating 4096 bit Diffie-Hellman parameters used by OpenVPN.<br>';
+		print "Saving to $store_dir/dhparam4096.pem.</strong><br>";
+		$cmd = "openssl dhparam -rand ".$config['random']." -out ".$config['private_dir']."/dhparam4096.pem 4096";
+		print $cmd.'<br>';
+		flush();
+		flush_exec($cmd,300);
+	}
 	
 	#
 	# Write out the general OpenVPN config file
@@ -861,6 +879,23 @@ comp-lzo no
 	</select>
 	</td>
 	</tr>
+	
+	<tr>
+	<td style="width:40%"><strong>Message Digest Algorithm</strong> <font color="red">*</font><br>
+	Select the desired hashing algorithm to be used for digital signatures.
+	</td>
+	<td><select class="inputbox" name="default_md">
+
+	<?php
+		$dgst_list = array("mdc2", "rmd160", "md4", "md5", "sha", "sha1", "sha224", "sha256", "sha384", "sha512");
+        foreach (array_reverse($dgst_list) as $dgst_type) {
+                print "<option value=$dgst_type " . (($default_md == $dgst_type || $dgst_type == "sha256") ? "selected='selected'" : "") . " >$dgst_type</option>\n" ;
+        }
+	 ?>
+
+	</select>
+	</td>
+	</tr>
 
 	<tr>
 	<td style="width:40%"><strong>Certificate Authority Base URL</strong><br>
@@ -921,6 +956,20 @@ comp-lzo no
 	</td>
 	<td>
 	<input class="inputbox" type="text" name="groups_file" value="<?php print htvar($groups_file) ?>" size="50">
+	</td>
+	</tr>
+	
+	<tr>
+	<td style="width:40%">
+	<strong>Diffie-Hellman parameters generation<font color="red">*</font></strong><br>
+	Select the parameters you want to generate. Note that the 4096-bit one may take a very long time to be produced.
+	</td>
+	<td>
+	<div class="picker">
+	<input type="checkbox" name="dh1024" value="true" checked> 1024-bit<br>
+    <input type="checkbox" name="dh2048" value="true" checked> 2048-bit<br>
+    <input type="checkbox" name="dh4096" value="true" checked> 4096-bit<br>
+    </div>
 	</td>
 	</tr>
 

@@ -165,7 +165,7 @@ function escshellcmd($v, $strip=false) {
 	if ($strip)
 		return escapeshellcmd(stripslashes($v));
 	else
-		return escapeshellarg($v);
+		return escapeshellcmd($v);
 }
 	
 /**
@@ -232,7 +232,7 @@ function username_validchars($v) {
  * Returns TRUE if the argument contains only characters permitted for a general name.
  */
 function name_validchars($v) {
-	return (preg_match('/[^A-Z0-9_\.\-\'\& ]/i',$v) ? false : true) ;
+	return (preg_match('/[^äöüßA-Z0-9_\.\-\'\& ]/i',$v) ? false : true) ;
 }
 /**
  * Returns TRUE if the argument contains only characters permitted for a directory name.
@@ -309,11 +309,21 @@ function clear_session() {
 }
 
 /**
- * Writes username, email and clear password into a given log file, using a specified separator.
+ * Writes username, email, clear password and password use into a given log file, 
+ * using the specified separator.
  */
-function log_password_entry($log_file, $username, $email, $passwd, $separator="\t") {
+function log_password_entry_sep($log_file, $username, $email, $passwd, $pwd_use, $separator="\t") {
 	$myfile = fopen($log_file, "ab");
-	fwrite($myfile, $username.$separator.$email.$separator.$passwd."\n");
+	fwrite($myfile, $username.$separator.$email.$separator.$passwd.$separator.$pwd_use."\n");
+	fclose($myfile);
+}
+/**
+ * Writes username, email, clear password and password use into a given log file, 
+ * using a fixed-width columns format.
+ */
+function log_password_entry($log_file, $username, $email, $passwd, $pwd_use) {
+	$myfile = fopen($log_file, "ab");
+	fprintf($myfile, "%-25s%-40s%-25s%-25s\n", $username, $email, $passwd, $pwd_use);
 	fclose($myfile);
 }
 ?>

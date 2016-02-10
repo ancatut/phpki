@@ -19,6 +19,7 @@ $common_name  = gpvar('common_name');
 $email		  = gpvar('email');
 $passwd		  = gpvar('passwd');
 $passwdv	  = gpvar('passwdv');
+$pwd_use	  = gpvar('pwd_use');
 $expiry		  = gpvar('expiry');
 $keysize	  = gpvar('keysize');	
 $cert_type	  = gpvar('cert_type');
@@ -34,6 +35,7 @@ $hidden_fields = '
     <input type="hidden" name="email" value="' . htvar($email) . '">
     <input type="hidden" name="passwd" value="' . htvar($passwd) . '">
     <input type="hidden" name="passwdv" value="' . htvar($passwdv) . '">
+    <input type="hidden" name="pwd_use" value="' . htvar($pwd_use) . '">
     <input type="hidden" name="expiry" value="' . htvar($expiry) . '">
     <input type="hidden" name="keysize" value="' . htvar($keysize) . '">
     <input type="hidden" name="cert_type" value="' . htvar($cert_type) . '">
@@ -126,6 +128,7 @@ case 'confirm':
 		State/Province<br>
     	Country<br>
 		Certificate Life<br>
+		Password use<br>
 		Key Size<br>
 		Certificate Use<br>
     	</td>
@@ -154,7 +157,7 @@ case 'confirm':
     			break;
     		default: print htvar($expiry). ' Years<br>';
     	}
-	
+		print ($pwd_use == "both_pwd" ? "Encrypt both PKCS#12 file and private key" : "Encrypt only PKCS#12 file"). "<br>";
 		print htvar($keysize). ' bits<br>';
 		print htvar($cert_type). '<br>';
 	?>
@@ -192,7 +195,7 @@ case 'confirm':
 case 'final':
 	if ($submit == "Yes! Create and Download") {
 		if (! $serial = CAdb_has_valid($email, $common_name)) {
-			list($ret,$errtxt) = CA_create_cert($cert_type, $country, $province, $locality, $organization, $unit, $common_name, $email, $expiry, $passwd, $keysize);
+			list($ret,$errtxt) = CA_create_cert($cert_type, $country, $province, $locality, $organization, $unit, $common_name, $email, $expiry, $passwd, $pwd_use, $keysize);
 			if (! $ret) {
 	            printHeader();
 
@@ -215,7 +218,7 @@ case 'final':
         		}
         		else {
 					$serial = $errtxt;
-					log_password_entry($config['passwd_log'], $common_name, $email, $passwd);					
+					log_password_entry($config['passwd_log'], $common_name, $email, $passwd, $pwd_use);					
         		}
 		}
 
@@ -314,7 +317,16 @@ default:
 
 	<tr>
 	<td>Certificate Password  (min. 8 characters long)</td>
-	<td><input class="inputbox" type="password" name="passwd" value="<?php print  htvar($passwd) ?>" size="30">&nbsp;&nbsp; Again: <input class="inputbox" type=password name=passwdv  value="<?php print  htvar($passwdv) ?>" size=30></td>
+	
+	<td>
+	<input class="inputbox" type="password" name="passwd" value="<?php print htvar($passwd) ?>" size="30">&nbsp;&nbsp; 
+	Re-type password: <input class="inputbox" type=password name=passwdv  value="<?php print  htvar($passwdv) ?>" size="30">
+	<div class="picker">Use this password for: <br>
+	<input type="radio" name="pwd_use" value="both_pwd" <?php ($pwd_use == "both_pwd" || !$pwd_use) ? print "checked" : ""?>> Both PKCS#12 file and private key encryption<br>
+	<input type="radio" name="pwd_use" value="pkcs12_pwd" <?php ($pwd_use == "pkcs12_pwd") ? print "checked" : ""?>> Only PKCS#12 file encryption<br>
+	</div>
+	</td>
+
 	</tr>
 
 	<tr>
@@ -362,10 +374,11 @@ default:
 	?>
 	</select></td>
 	</tr>
-
 	<tr>
+	
+	<td style="color: red">* All fields are required</td>
 	<td>
-	<div style="text-align:center">
+	<div style="text-align:left">
 	<input class="btn" type="submit" style="display: inline;" name="submit" value="Submit Request">
 	<input type="hidden" name="form_stage" value="validate">
 	
@@ -378,7 +391,7 @@ default:
 	<input type="hidden" name="form_stage" value="clear">
 	</div>
 	</form>
-	<form action="<?php print htvar($PHP_SELF)?>" method="post" name="request3" style="display: inline-block" >
+	<form action="index.php" method="post" name="request3" style="display: inline-block" >
 	<div>
 	<input class="btn" type="submit" name="submit3" value="Go Back">
 	<input type="hidden" name="form_stage" value="back_to_menu">
@@ -387,7 +400,6 @@ default:
 	</div>
 	</div>
 	</td>
-	<td style="color: red">* All fields are required</td>
 	</tr>
 	</table>
 	<?php
