@@ -139,9 +139,11 @@ function csort($array, $column, $ascdec=SORT_ASC){
  */
 function htvar($v, $strip=false) {
 	if ($strip) 
-		return  htmlentities(stripslashes($v));
+		return htmlspecialchars($v, ENT_QUOTES, "UTF-8");
+	#htmlentities(stripslashes($v));
 	else
-		return  htmlentities($v);	
+		#return  htmlentities($v);
+		return htmlspecialchars($v, ENT_QUOTES, "UTF-8");
 }
 
 /**
@@ -200,6 +202,19 @@ function undo_magic_quotes(&$a) {
 			stripslashes_array($$k);
 		}
 	}
+}
+
+/**
+ * Converts UTF-8 literals like \x into the appropriate UTF-8 character.
+ */
+function fix_utf8_literals($string) {
+	return preg_replace_callback(
+		"#(\\\\x[0-9A-F]{2})#i",
+		function ($matches) {
+			return chr(hexdec($matches[0]));
+		},
+		$string
+		);
 }
 
 /**

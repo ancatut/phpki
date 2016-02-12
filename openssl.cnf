@@ -1,23 +1,26 @@
-HOME			= /var/www/phpki-store
-RANDFILE		= /var/www/phpki-store/CA/.rnd
-dir				= /var/www/phpki-store/CA
-certs			= /var/www/phpki-store/CA/certs
-crl_dir			= /var/www/phpki-store/CA/crl
-database		= /var/www/phpki-store/CA/index.txt
+HOME				= /var/www/phpki-store
+RANDFILE			= /var/www/phpki-store/CA/.rnd
+dir					= /var/www/phpki-store/CA
+certs				= /var/www/phpki-store/CA/certs
+crl_dir				= /var/www/phpki-store/CA/crl
+database			= /var/www/phpki-store/CA/index.txt
 new_certs_dir		= /var/www/phpki-store/CA/newcerts
-private_dir		= /var/www/phpki-store/CA/private
-serial			= /var/www/phpki-store/CA/serial
-certificate		= /var/www/phpki-store/CA/certs/cacert.pem
-crl				= /var/www/phpki-store/CA/crl/cacrl.pem
-private_key		= /var/www/phpki-store/CA/private/cakey.pem
+private_dir			= /var/www/phpki-store/CA/private
+serial				= /var/www/phpki-store/CA/serial
+certificate			= /var/www/phpki-store/CA/certs/cacert.pem
+crl					= /var/www/phpki-store/CA/crl/cacrl.pem
+private_key			= /var/www/phpki-store/CA/private/cakey.pem
 crl_extensions		= crl_ext
 default_days		= 365
 default_crl_days	= 30
 preserve	 		= no
 default_md	 		= sha512
-
+utf8            	= yes
+string_mask			= utf8only
+name_opt            = multiline,-esc_msb,utf8
+	
 [ ca ]
-default_ca		= email_cert
+default_ca			= email_cert
 
 [ root_cert ]
 x509_extensions        = root_ext
@@ -147,14 +150,16 @@ issuerAltName=issuer:copy
 authorityKeyIdentifier=keyid:always,issuer:always
 
 [ req ]
-default_bits		= 1024
-default_keyfile		= privkey.pem
-distinguished_name	= req_name
-string_mask		= nombstr
-req_extensions		= req_ext
+default_bits			= 2048
+default_keyfile			= privkey.pem
+distinguished_name		= req_name
+utf8            		= yes
+string_mask				= utf8only
+name_opt           	 	= multiline,-esc_msb,utf8
+req_extensions			= req_ext
 
 [ req_name]
-countryName			= Country Name (2 letter code)
+countryName				= Country Name (2 letter code)
 countryName_default		= US
 countryName_min			= 2
 countryName_max			= 2

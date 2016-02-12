@@ -232,7 +232,7 @@ case 'final':
                 case 'vpn_client_server':
                 case 'vpn_client':
                 case 'vpn_server':
-                        upload($config['pfx_dir']."/$serial.pfx", $common_name." ($email).p12", 'application/x-pkcs12');
+                        upload($config['pfx_dir']."/$serial.pfx", $common_name."_($email).p12", 'application/x-pkcs12');
                         break;
                 }
 
@@ -316,7 +316,8 @@ default:
 	</tr>
 
 	<tr>
-	<td>Certificate Password  (min. 8 characters long)</td>
+	<td>Certificate Password<br>
+	(it should be min. 8 characters long and it cannot contain any single quotes)</td>
 	
 	<td>
 	<input class="inputbox" type="password" name="passwd" value="<?php print htvar($passwd) ?>" size="30">&nbsp;&nbsp; 

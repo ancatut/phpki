@@ -117,48 +117,50 @@ case 'download':
 
 	switch ($dl_type) {
 	case 'PKCS#12':
-		upload("$config[pfx_dir]/$serial.pfx", "$rec[common_name] ($rec[email]).p12", 'application/x-pkcs12');
+		upload("$config[pfx_dir]/$serial.pfx", "$rec[common_name]_($rec[email]).p12", 'application/x-pkcs12');
 		break;
 	case 'PKCS#12-OPENVPN-ZIP':
 		CA_create_openvpn_archive($serial, $rec['common_name'], $rec['email']);
-		upload("$config[openvpn_archives_dir]/$rec[common_name] ($rec[email]).zip", "$rec[common_name] ($rec[email]).zip", 'application/zip');
+		upload("$config[openvpn_archives_dir]/$rec[common_name]_($rec[email]).zip", "$rec[common_name]_($rec[email]).zip", 'application/zip');
 		break;
 	case 'PKCS#12-OPENVPN-TBLK':		
-		$attachment = $config['openvpn_archives_dir']."/".$rec["common_name"] . " (" . $rec["email"] . ").tblk.zip";
+		$attachment = $config['openvpn_archives_dir']."/".$rec["common_name"] . "_(" . $rec["email"] . ").tblk.zip";
 		if (! file_exists($attachment)) {
 			CA_create_Tunnelblick_zip($serial, $rec['common_name'], $rec['email']);
 		}		
-	if (headers_sent()) {
-    	echo 'HTTP header already sent';
-	} else {
-	    if (!is_file($attachment)) {
-	        header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
-	        echo 'File not found';
-	    } else if (!is_readable($attachment)) {
-	        header($_SERVER['SERVER_PROTOCOL'].' 403 Forbidden');
-	        echo 'File not readable';
-	    } else {
-	        header($_SERVER['SERVER_PROTOCOL'].' 200 OK');
-	        header("Content-Type: application/zip");
-	        header("Content-Transfer-Encoding: Binary");
-	        header("Content-Length: ".filesize($attachment));
-	        header("Content-Disposition: attachment; filename=\"".basename($attachment)."\"");
-	        readfile($attachment);
-	        exit;
-	    }
-	}
-	break;
+		/* I was using this before but I noticed it was messing up the archive
+		if (headers_sent()) {
+	    	echo 'HTTP header already sent';
+		} else {
+		    if (!is_file($attachment)) {
+		        header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
+		        echo 'File not found';
+		    } else if (!is_readable($attachment)) {
+		        header($_SERVER['SERVER_PROTOCOL'].' 403 Forbidden');
+		        echo 'File not readable';
+		    } else {
+		        header($_SERVER['SERVER_PROTOCOL'].' 200 OK');
+		        header("Content-Type: application/zip");
+		        header("Content-Transfer-Encoding: Binary");
+		        header("Content-Length: ".filesize($attachment));
+		        header("Content-Disposition: attachment; filename=\"".basename($attachment)."\"");
+		        readfile($attachment);
+		        exit;
+		    }
+		} */
+		upload("$config[openvpn_archives_dir]/$rec[common_name]_($rec[email]).tblk.zip", "$rec[common_name]_($rec[email]).tblk.zip", 'application/zip');
+		break;
 	case 'PEMCERT':
-		upload("$config[new_certs_dir]/$serial.pem", "$rec[common_name] ($rec[email]).pem",'application/pkix-cert');
+		upload("$config[new_certs_dir]/$serial.pem", "$rec[common_name]_($rec[email]).pem",'application/pkix-cert');
 		break;
 	case 'PEMKEY':
-		upload("$config[private_dir]/$serial-key.pem", "$rec[common_name] ($rec[email])-key.pem",'application/octet-stream');
+		upload("$config[private_dir]/$serial-key.pem", "$rec[common_name]_($rec[email])-key.pem",'application/octet-stream');
 		break;
 	case 'PEMBUNDLE':
-		upload(array("$config[private_dir]/$serial-key.pem","$config[new_certs_dir]/$serial.pem"), "$rec[common_name] ($rec[email]).pem",'application/octet-stream');
+		upload(array("$config[private_dir]/$serial-key.pem","$config[new_certs_dir]/$serial.pem"), "$rec[common_name]_($rec[email]).pem",'application/octet-stream');
 		break;
 	case 'PEMCABUNDLE':
-		upload(array("$config[private_dir]/$serial-key.pem","$config[new_certs_dir]/$serial.pem",$config['cacert_pem']), "$rec[common_name] ($rec[email]).pem",'application/octet-stream');
+		upload(array("$config[private_dir]/$serial-key.pem","$config[new_certs_dir]/$serial.pem",$config['cacert_pem']), "$rec[common_name]_($rec[email]).pem",'application/octet-stream');
 		break;
 	default:
 		header("Location: ${PHP_SELF}?$qstr_sort&$qstr_filter");
@@ -556,8 +558,9 @@ default:
     $db = csort(CAdb_to_array($x), $sortfield, ($ascdec=='A'?SORT_ASC:SORT_DESC));
  
 	$stcolor = array('Valid'=>'green', 'Revoked'=>'red', 'Expired'=>'orange');
-
+	
     foreach($db as $rec) {
+    	 
 		print '<tr style="font-size: 11px;">
 			 <td><font color='.$stcolor[$rec['status']].'><b>' .$rec['status'].'</b></font></td>
 			 <td style="white-space: nowrap">'.$rec['issued'].'</td>

@@ -12,6 +12,8 @@ else {
 
 $PHP_self = $_SERVER['PHP_SELF'];
 
+setlocale(LC_CTYPE, "en_US.UTF-8", "en_US.UTF8", "en_GB.UTF-8", "en_GB.UTF8");
+
 // Save & show username if a user is logged in 
 if (isset($_SERVER['PHP_AUTH_USER'])) {
 	$_SESSION['loggedin'] = true;
@@ -45,6 +47,7 @@ function printHeader($withmenu="default") {
 	header("Cache-Control: no-store, no-cache, must-revalidate");
 	header("Cache-Control: post-check=0, pre-check=0", false);
 	header("Pragma: no-cache");
+	header('Content-type: text/html; charset=utf-8');
 
 ?>
 	<html>
@@ -55,6 +58,7 @@ function printHeader($withmenu="default") {
 	</head>
 	<body>
 	<div class="wrapper">
+	
 	<?php
 
 	if (isKonq()) { 
@@ -203,7 +207,7 @@ function printFooter() {
 	<div class="footer">
 	<hr align="center" color="#99caff">
 	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Based on PHPki <a href="http://sourceforge.net/projects/phpki/">v<?=PHPKI_VERSION?></a> - Copyright 2003 - William E. Roadcap</p>
-	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.23">v0.23</a></p>
+	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.25">v0.25</a></p>
 	
 	</div>
 	</div>

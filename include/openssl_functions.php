@@ -28,13 +28,18 @@ default_days		= 365
 default_crl_days	= 30
 preserve	 		= no
 default_md	 		= ${config['default_md']}
+utf8            	    = yes
+string_mask				= utf8only
+name_opt                = multiline,-esc_msb,utf8
 
 [ req ]
 default_bits        	= 2048
-string_mask         	= nombstr
 prompt              	= no
 distinguished_name  	= req_name
 req_extensions      	= req_ext
+utf8            	    = yes
+string_mask				= utf8only
+name_opt                = multiline,-esc_msb,utf8
 
 [ req_name ]
 C						= $country
@@ -230,6 +235,9 @@ function CA_generate_CAcert_cnf() {
 	default_crl_days		= 30
 	preserve	 			= no
 	default_md	 			= ${config['default_md']}
+	utf8            	    = yes
+	string_mask				= utf8only
+	name_opt                = multiline,-esc_msb,utf8 
 	
 	[ ca ]
 	default_ca				= root_cert
@@ -264,9 +272,10 @@ function CA_generate_CAcert_cnf() {
 	default_bits			= 2048
 	#default_keyfile		= privkey.pem
 	distinguished_name		= req_name
-	string_mask				= nombstr
-	req_extensions			= req_ext
 	prompt					= no
+	utf8            	    = yes
+	string_mask				= utf8only
+	name_opt                = multiline,-esc_msb,utf8
 		
 	[ req_name ]
 	C						= ${config['country']}
@@ -598,24 +607,24 @@ function CA_create_cert($cert_type='email',$country,$province,$locality,$organiz
 	$cmd_output[] = 'Creating certifcate request.';
 	$ret = 0;
 	if ($passwd && $pass_use == "both_pwd") {
-		exec(REQ." -new -".$config['default_md']." -newkey rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' -passout pass:$_passwd  2>&1", $cmd_output, $ret);
+		exec(REQ." -new -".$config['default_md']." -nameopt multiline,utf8 -newkey rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' -passout pass:$_passwd -utf8 2>&1", $cmd_output, $ret);
 	}
 	else if ($pass_use == "pkcs12_pwd") {
-		exec(REQ." -new -".$config['default_md']." -nodes -newkey rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' 2>&1", $cmd_output, $ret);
+		exec(REQ." -new -".$config['default_md']." -nodes -newkey -nameopt multiline,utf8  rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' -utf8 2>&1", $cmd_output, $ret);
 	}
 	
 	# Sign the certificate request and create the certificate
 	if ($ret == 0) {
 		unset($cmd_output);
 		$cmd_output[] = "Signing $cert_type certifcate request.";
-		exec(CA." -config '$cnf_file' -in '$userreq' -out /dev/null -notext -days '$expiry_days' -passin pass:".$config['ca_pwd']." -batch -extensions $extensions 2>&1", $cmd_output, $ret);
+		exec(CA." -config '$cnf_file' -in '$userreq' -out /dev/null -notext -days '$expiry_days' -passin pass:".$config['ca_pwd']." -batch -extensions $extensions -utf8 2>&1", $cmd_output, $ret);
 	};
 
 	# Create DER format certificate
 	if ($ret == 0) {
 		unset($cmd_output);
 		$cmd_output[] = "Creating DER format certifcate.";
-		exec(X509." -in '$usercert' -out '$userder' -inform PEM -outform DER 2>&1", $cmd_output, $ret);
+		exec(X509." -in '$usercert' -nameopt multiline,utf8  -out '$userder' -inform PEM -outform DER 2>&1", $cmd_output, $ret);
 	};
 
 	# Create a PKCS12 certificate file for download to Windows
@@ -638,7 +647,7 @@ function CA_create_cert($cert_type='email',$country,$province,$locality,$organiz
 	fclose($fd);
 
 	# Remove temporary openssl config file.
-	if (file_exists($cnf_file)) unlink($cnf_file);
+	#if (file_exists($cnf_file)) unlink($cnf_file);
 
 	if ($ret == 0) {
 		# Successful!
@@ -742,7 +751,7 @@ function CA_renew_cert($old_serial,$expiry,$passwd) {
 	if ($ret == 0) {
 		unset($cmd_output);
 		$cmd_output[] = "Signing the $cert_type certificate request.";
-		exec(CA." -config '$cnf_file' -in '$userreq' -out /dev/null -notext -days '$expiry_days' -passin pass:".$config['ca_pwd']." -batch -extensions $extensions 2>&1", $cmd_output, $ret);
+		exec(CA." -config '$cnf_file' -in '$userreq' -out /dev/null -notext -days '$expiry_days' -utf8 -passin pass:".$config['ca_pwd']." -batch -extensions $extensions 2>&1", $cmd_output, $ret);
 	};
 
 	# Create DER format certificate
@@ -921,21 +930,21 @@ function CA_create_openvpn_archive($serial, $username, $email) {
 	
 	$base_cnf_file = $config["openvpn_client_cnf_dir"]."/client_basecnf.conf";
 	
-	$user_conf = $config['openvpn_client_cnf_dir'] . "/'" . $username . " (". $email . ").conf'";
-	$user_ovpn = $config['openvpn_client_cnf_dir'] . "/'" . $username . " (". $email . ").ovpn'";		
+	$user_conf = $config['openvpn_client_cnf_dir'] . "/'" . $username . "_(". $email . ").conf'";
+	$user_ovpn = $config['openvpn_client_cnf_dir'] . "/'" . $username . "_(". $email . ").ovpn'";		
 	
 	if (file_exists($base_cnf_file)) 
 	{
 		$contents = file_get_contents($base_cnf_file);
-		$added_cnf_line = "pkcs12 " . $username . " (" . $email . ").p12";
+		$added_cnf_line = "pkcs12 " . $username . "_(" . $email . ").p12";
 		exec("echo '" . $contents . "' > " . $user_conf);
 		exec("echo '" . $added_cnf_line . "' >> " . $user_conf);
 		exec("cp " . $user_conf . " " . $user_ovpn);
 		
 		$pkcs12 = $config["pfx_dir"]."/" . $serial . ".pfx";
-		exec("cp " . $pkcs12 . " " . $config["private_dir"]."/tmp/'".$username . " (" . $email . ").p12'");
-		$pkcs12 = $config["private_dir"]."/tmp/'" . $username . " (" . $email . ").p12'";
-		$archive_target = $config["private_dir"]."/openvpn-archives/'" . $username . " (" . $email . ").zip'";
+		exec("cp " . $pkcs12 . " " . $config["private_dir"]."/tmp/'".$username . "_(" . $email . ").p12'");
+		$pkcs12 = $config["private_dir"]."/tmp/'" . $username . "_(" . $email . ").p12'";
+		$archive_target = $config["private_dir"]."/openvpn-archives/'" . $username . "_(" . $email . ").zip'";
 		exec("zip -j ". $archive_target . " " . $user_conf . " " . $user_ovpn . " " . $pkcs12);		
 	}
 	else echo "Missing base OpenVPN config file.";
@@ -950,21 +959,21 @@ function CA_create_Tunnelblick_zip($serial, $username, $email) {
 
 	$base_cnf_file = $config["openvpn_client_cnf_dir"]."/client_basecnf.conf";
 
-	$user_conf = $config['openvpn_client_cnf_dir'] . "/'" . $username . " (". $email . ").conf'";
-	$user_ovpn = $config['openvpn_client_cnf_dir'] . "/'" . $username . " (". $email . ").ovpn'";
+	$user_conf = $config['openvpn_client_cnf_dir'] . "/'" . $username . "_(". $email . ").conf'";
+	$user_ovpn = $config['openvpn_client_cnf_dir'] . "/'" . $username . "_(". $email . ").ovpn'";
 
 	if (file_exists($base_cnf_file))
 	{
 		$contents = file_get_contents($base_cnf_file);
-		$added_cnf_line = "pkcs12 " . $username . " (" . $email . ").p12";
+		$added_cnf_line = "pkcs12 " . $username . "_(" . $email . ").p12";
 		exec("echo '" . $contents . "' > " . $user_conf);
 		exec("echo '" . $added_cnf_line . "' >> " . $user_conf);
 		exec("cp " . $user_conf . " " . $user_ovpn);
 
 		$pkcs12 = $config["pfx_dir"]."/" . $serial . ".pfx";
-		exec("cp " . $pkcs12 . " " . $config["private_dir"]."/tmp/'".$username . " (" . $email . ").p12'");
-		$pkcs12 = $config["private_dir"]."/tmp/'" . $username . " (" . $email . ").p12'";
-		$archive_target = $config["private_dir"]."/openvpn-archives/'" . $username . " (" . $email . ").tblk.zip'";
+		exec("cp " . $pkcs12 . " " . $config["private_dir"]."/tmp/'".$username . "_(" . $email . ").p12'");
+		$pkcs12 = $config["private_dir"]."/tmp/'" . $username . "_(" . $email . ").p12'";
+		$archive_target = $config["private_dir"]."/openvpn-archives/'" . $username . "_(" . $email . ").tblk.zip'";
 		exec("zip -j ". $archive_target . " " . $user_conf . " " . $user_ovpn . " " . $pkcs12);
 	}
 	else echo "Missing base OpenVPN config file.";
