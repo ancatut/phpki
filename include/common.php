@@ -52,6 +52,7 @@ function printHeader($withmenu="default") {
 ?>
 	<html>
 	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>PHPki: <?php echo $title ?> </title>
 	<link rel="stylesheet" type="text/css" href="<?php echo $style_css ?>">
 	<link rel="shortcut icon" href="<?php echo $favicon ?>">
@@ -207,7 +208,7 @@ function printFooter() {
 	<div class="footer">
 	<hr align="center" color="#99caff">
 	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Based on PHPki <a href="http://sourceforge.net/projects/phpki/">v<?=PHPKI_VERSION?></a> - Copyright 2003 - William E. Roadcap</p>
-	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.25">v0.25</a></p>
+	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.25.1">v0.25.1</a></p>
 	
 	</div>
 	</div>

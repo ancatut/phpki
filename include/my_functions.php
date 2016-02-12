@@ -205,7 +205,7 @@ function undo_magic_quotes(&$a) {
 }
 
 /**
- * Converts UTF-8 literals like \x into the appropriate UTF-8 character.
+ * Converts UTF-8 literals (including multibyte like \xE2\x80\x98) into the appropriate UTF-8 character.
  */
 function fix_utf8_literals($string) {
 	return preg_replace_callback(

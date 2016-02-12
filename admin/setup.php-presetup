@@ -669,17 +669,16 @@ EOS;
 	if ($dh1024) {
 		print '<br><strong>Creating 1024 bit Diffie-Hellman parameters used by OpenVPN.<br>';
 		print "Saving to $store_dir/dhparam1024.pem.</strong><br>";
-		$cmd = "openssl dhparam -rand ".$config['random']." -out ".$config['private_dir']."/dhparam1024.pem 1024";
+		$cmd = OPENSSL." dhparam -rand ".$config['random']." -out ".$config['private_dir']."/dhparam1024.pem 1024";
 		#$cmd = "openssl genpkey -genparam -algorithm DH -rand ".$config['random']." -out ".$config['private_dir']."/dhparam1024.pem -pkeyopt dh_paramgen_prime_len:1024";
 		print $cmd.'<br>';
 		flush();
-		#echo getenv("RANDFILE");
 		flush_exec($cmd,100);
 	}
 	if ($dh2048) {
 		print '<br><strong>Creating 2048 bit Diffie-Hellman parameters used by OpenVPN.<br>';
 		print "Saving to $store_dir/dhparam2048.pem.</strong><br>";
-		$cmd = "openssl dhparam -rand ".$config['random']." -out ".$config['private_dir']."/dhparam2048.pem 2048";
+		$cmd = OPENSSL." dhparam -rand ".$config['random']." -out ".$config['private_dir']."/dhparam2048.pem 2048";
 		print $cmd.'<br>';
 		flush();
 		flush_exec($cmd,200);
@@ -687,7 +686,7 @@ EOS;
 	if ($dh4096) {
 		print '<br><strong>Creating 4096 bit Diffie-Hellman parameters used by OpenVPN.<br>';
 		print "Saving to $store_dir/dhparam4096.pem.</strong><br>";
-		$cmd = "openssl dhparam -rand ".$config['random']." -out ".$config['private_dir']."/dhparam4096.pem 4096";
+		$cmd = OPENSSL." dhparam -rand ".$config['random']." -out ".$config['private_dir']."/dhparam4096.pem 4096";
 		print $cmd.'<br>';
 		flush();
 		flush_exec($cmd,300);
@@ -697,8 +696,7 @@ EOS;
 	# Write out the general OpenVPN config file
 	# This is the base config file and later extra client info is appended 
 	# The final config file is used by the client in order to connect to an OpenVPN server
-		file_put_contents($config['openvpn_cnf_dir']."/clients/client_basecnf.conf", 
-			$openvpn_client_basecnf_text);
+		file_put_contents($config['openvpn_cnf_dir']."/clients/client_basecnf.conf", $openvpn_client_basecnf_text);
 
 	#
 	# Step aside and let the users in (create index.php files).  
