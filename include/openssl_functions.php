@@ -30,7 +30,7 @@ preserve	 		= no
 default_md	 		= ${config['default_md']}
 utf8            	    = yes
 string_mask				= utf8only
-name_opt                = multiline,-esc_msb,utf8
+name_opt                = oneline,-esc_msb,utf8
 
 [ req ]
 default_bits        	= 2048
@@ -39,7 +39,7 @@ distinguished_name  	= req_name
 req_extensions      	= req_ext
 utf8            	    = yes
 string_mask				= utf8only
-name_opt                = multiline,-esc_msb,utf8
+name_opt                = oneline,-esc_msb,utf8
 
 [ req_name ]
 C						= $country
@@ -237,7 +237,7 @@ function CA_generate_CAcert_cnf() {
 	default_md	 			= ${config['default_md']}
 	utf8            	    = yes
 	string_mask				= utf8only
-	name_opt                = multiline,-esc_msb,utf8 
+	name_opt                = oneline,-esc_msb,utf8 
 	
 	[ ca ]
 	default_ca				= root_cert
@@ -275,7 +275,7 @@ function CA_generate_CAcert_cnf() {
 	prompt					= no
 	utf8            	    = yes
 	string_mask				= utf8only
-	name_opt                = multiline,-esc_msb,utf8
+	name_opt                = oneline,-esc_msb,utf8
 		
 	[ req_name ]
 	C						= ${config['country']}
@@ -607,10 +607,10 @@ function CA_create_cert($cert_type='email',$country,$province,$locality,$organiz
 	$cmd_output[] = 'Creating certifcate request.';
 	$ret = 0;
 	if ($passwd && $pass_use == "both_pwd") {
-		exec(REQ." -new -".$config['default_md']." -nameopt multiline,utf8 -newkey rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' -passout pass:$_passwd -utf8 2>&1", $cmd_output, $ret);
+		exec(REQ." -new -".$config['default_md']." -nameopt oneline,-esc_msb,utf8 -newkey rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' -passout pass:$_passwd -utf8 2>&1", $cmd_output, $ret);
 	}
 	else if ($pass_use == "pkcs12_pwd") {
-		exec(REQ." -new -".$config['default_md']." -nodes -newkey -nameopt multiline,utf8  rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' -utf8 2>&1", $cmd_output, $ret);
+		exec(REQ." -new -".$config['default_md']." -nodes -newkey -nameopt oneline,-esc_msb,utf8  rsa:$keysize -keyout '$userkey' -out '$userreq' -config '$cnf_file' -days '$expiry_days' -utf8 2>&1", $cmd_output, $ret);
 	}
 	
 	# Sign the certificate request and create the certificate
@@ -624,7 +624,7 @@ function CA_create_cert($cert_type='email',$country,$province,$locality,$organiz
 	if ($ret == 0) {
 		unset($cmd_output);
 		$cmd_output[] = "Creating DER format certifcate.";
-		exec(X509." -in '$usercert' -nameopt multiline,utf8  -out '$userder' -inform PEM -outform DER 2>&1", $cmd_output, $ret);
+		exec(X509." -in '$usercert' -nameopt oneline,-esc_msb,utf8 -out '$userder' -inform PEM -outform DER 2>&1", $cmd_output, $ret);
 	};
 
 	# Create a PKCS12 certificate file for download to Windows
@@ -633,7 +633,7 @@ function CA_create_cert($cert_type='email',$country,$province,$locality,$organiz
 		$cmd_output[] = "Creating PKCS12 format certifcate.";
 		if ($passwd) {
 			$cmd_output[] = "infile: $usercert   keyfile: $userkey   outfile: $userpfx  pass: $_passwd";
-			exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name -rand ".$config['random']." -passin pass:$_passwd -passout pass:$_passwd  2>&1", $cmd_output, $ret);
+			exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name -rand ".$config['random']." -passin pass:$_passwd -passout pass:$_passwd 2>&1", $cmd_output, $ret);
 			//exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name -passin pass:$_passwd -passout pass:$_passwd  2>&1", $cmd_output, $ret);
 			
 		}
@@ -751,7 +751,7 @@ function CA_renew_cert($old_serial,$expiry,$passwd) {
 	if ($ret == 0) {
 		unset($cmd_output);
 		$cmd_output[] = "Signing the $cert_type certificate request.";
-		exec(CA." -config '$cnf_file' -in '$userreq' -out /dev/null -notext -days '$expiry_days' -utf8 -passin pass:".$config['ca_pwd']." -batch -extensions $extensions 2>&1", $cmd_output, $ret);
+		exec(CA." -config '$cnf_file' -in '$userreq' -out /dev/null -notext -days '$expiry_days' -utf8 -passin pass:'".$config['ca_pwd']."' -batch -extensions $extensions 2>&1", $cmd_output, $ret);
 	};
 
 	# Create DER format certificate

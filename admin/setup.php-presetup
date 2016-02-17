@@ -370,7 +370,7 @@ preserve	 			= no
 default_md	 			= ${config['default_md']}
 utf8            	    = yes
 string_mask				= utf8only
-name_opt                = multiline,-esc_msb,utf8
+name_opt                = oneline,-esc_msb,utf8
 	
 [ ca ]
 default_ca				= email_cert
@@ -384,7 +384,7 @@ policy                 	= policy_supplied
 x509_extensions        	= email_ext
 default_days           	= 365
 policy                 	= policy_supplied
-name_opt                = multiline,utf8 # Display UTF-8 characters
+name_opt                = oneline,-esc_msb,utf8 # Display UTF-8 characters
 
 [ email_signing_cert ]
 x509_extensions        	= email_signing_ext
@@ -531,7 +531,7 @@ default_keyfile			= privkey.pem
 distinguished_name		= req_name
 utf8            	    = yes
 string_mask				= utf8only
-name_opt                = multiline,-esc_msb,utf8
+name_opt                = oneline,-esc_msb,utf8
 req_extensions			= req_ext
 		
 [ req_name ]
@@ -574,7 +574,7 @@ req_extensions			= req_ext
 prompt					= no
 utf8            	    = yes
 string_mask				= utf8only
-name_opt                = multiline,-esc_msb,utf8
+name_opt                = oneline,-esc_msb,utf8
 
 [ req_name ]
 C						= ${config['country']}
@@ -628,11 +628,11 @@ EOS;
 	if ($no_pwd == true)
 	{
 		print '<br><strong style="color: red">Please note: You have chosen to create the CA key without a passphrase. Make sure this is intended.</strong><br>';
-		exec(REQ . " -x509 -config $tmp_cnf -extensions root_ext -".$config['default_md']." -newkey rsa:$keysize -nodes -keyout ".$config['cakey']." -out ".$config['cacert_pem']." -days $days -utf8 -nameopt multiline,utf8 2>&1");
+		exec(REQ . " -x509 -config $tmp_cnf -extensions root_ext -".$config['default_md']." -newkey rsa:$keysize -nodes -keyout ".$config['cakey']." -out ".$config['cacert_pem']." -days $days -utf8 -nameopt oneline,-esc_msb,utf8 2>&1");
 		
 	}
 	else if ($config['ca_pwd']) {
-		exec(REQ . " -x509 -config $tmp_cnf -extensions root_ext -".$config['default_md']." -newkey rsa:$keysize -keyout ".$config['cakey']." -out ".$config['cacert_pem']." -passout pass:".$config['ca_pwd']." -days $days -utf8 -nameopt multiline,utf8 2>&1");
+		exec(REQ . " -x509 -config $tmp_cnf -extensions root_ext -".$config['default_md']." -newkey rsa:$keysize -keyout ".$config['cakey']." -out ".$config['cacert_pem']." -passout pass:'".$config['ca_pwd']."' -days $days -utf8 -nameopt oneline,-esc_msb,utf8 2>&1");
 	}
 		
 	print '<strong>Creating root certificate...</strong><br>';
@@ -650,7 +650,7 @@ EOS;
 	#
 	print '<strong>Generating certificate revocation list...</strong><br>';
 	flush();
-	exec(CA . " -gencrl -config ".$config['openssl_cnf']." -out ".$config['cacrl_pem']." -utf8 -nameopt multiline,utf8 -passin pass:".$config['ca_pwd']);
+	exec(CA . " -gencrl -config ".$config['openssl_cnf']." -out ".$config['cacrl_pem']." -utf8 -nameopt oneline,-esc_msb,utf8 -passin pass:'".$config['ca_pwd']."'");
 
 	# Make a copy of the CRL in DER format.
 	#
