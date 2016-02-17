@@ -557,7 +557,7 @@ function CA_revoke_cert($serial) {
 	$certfile = $config['new_certs_dir']."/$serial.pem";
 	
 	$cmd_output[] = 'Revoking the certificate.';
-	exec(CA." -config ".$config['openssl_cnf']." -revoke ".escshellarg($certfile)." -passin pass:".$config['ca_pwd']." 2>&1", $cmd_output, $ret);
+	exec(CA." -config ".$config['openssl_cnf']." -revoke ".escshellarg($certfile)." -passin pass:".escapeshellarg($config['ca_pwd'])." 2>&1", $cmd_output, $ret);
 
 	if ($ret == 0) {
 		unset($cmd_output);
@@ -617,7 +617,7 @@ function CA_create_cert($cert_type='email',$country,$province,$locality,$organiz
 	if ($ret == 0) {
 		unset($cmd_output);
 		$cmd_output[] = "Signing $cert_type certifcate request.";
-		exec(CA." -config '$cnf_file' -in '$userreq' -out /dev/null -notext -days '$expiry_days' -passin pass:".$config['ca_pwd']." -batch -extensions $extensions -utf8 2>&1", $cmd_output, $ret);
+		exec(CA." -config '$cnf_file' -in '$userreq' -out /dev/null -notext -days '$expiry_days' -passin pass:".escapeshellarg($config['ca_pwd'])." -batch -extensions $extensions -utf8 2>&1", $cmd_output, $ret);
 	};
 
 	# Create DER format certificate
@@ -751,7 +751,7 @@ function CA_renew_cert($old_serial,$expiry,$passwd) {
 	if ($ret == 0) {
 		unset($cmd_output);
 		$cmd_output[] = "Signing the $cert_type certificate request.";
-		exec(CA." -config '$cnf_file' -in '$userreq' -out /dev/null -notext -days '$expiry_days' -utf8 -passin pass:'".$config['ca_pwd']."' -batch -extensions $extensions 2>&1", $cmd_output, $ret);
+		exec(CA." -config '$cnf_file' -in '$userreq' -out /dev/null -notext -days '$expiry_days' -utf8 -passin pass:".escapeshellarg($config['ca_pwd'])." -batch -extensions $extensions 2>&1", $cmd_output, $ret);
 	};
 
 	# Create DER format certificate
@@ -815,7 +815,7 @@ function CA_generate_crl() {
 	$ret = 0;
 
 	$cmd_output[] = "Generating Certificate Revocation List.";
-	exec(CA. " -gencrl -config ".$config['openssl_cnf']." -out ".$config['cacrl_pem']." -passin pass:".$config['ca_pwd']." 2>&1", $cmd_output, $ret);
+	exec(CA. " -gencrl -config ".$config['openssl_cnf']." -out ".$config['cacrl_pem']." -passin pass:".escapeshellarg($config['ca_pwd'])." 2>&1", $cmd_output, $ret);
 
 	if ($ret == 0) {
 		unset($cmd_output);
@@ -1002,7 +1002,7 @@ function CA_renew_CAcert($new_expiry) {
 	$serial_cmd = exec(X509." -in ".$cacert."-old -noout -serial");
 	$serial = str_replace("serial=", "", $serial_cmd);
 	//echo $serial."<br>";
-	exec(REQ . " -config ".$CA_cnf_file." -extensions root_ext -key ".$cakey." -passin pass:".$config['ca_pwd']." -new -x509 -set_serial 0x".$serial." -days ".$expiry_days." -out ".$cacert." 2>&1", $cmd_output, $ret);
+	exec(REQ . " -config ".$CA_cnf_file." -extensions root_ext -key ".$cakey." -passin pass:".escapeshellarg($config['ca_pwd'])." -new -x509 -set_serial 0x".$serial." -days ".$expiry_days." -out ".$cacert." 2>&1", $cmd_output, $ret);
 	$cmd_string = implode("<br>", $cmd_output);
 	echo $cmd_string;
 	# Remove temporary CA OpenSSL config file
