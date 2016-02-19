@@ -877,7 +877,7 @@ function CA_cert_type($serial) {
 	#if (ereg('OpenSSL.* (E.?mail|Personal) .*Certificate', $certtext)) {
 	#	$cert_type = 'email';
 	#}
-	if (preg_match('/OpenSSL.* (E.?mail|Personal) .*Certificate/', $certtext)) {
+	elseif (preg_match('/OpenSSL.* (E.?mail|Personal) .*Certificate/', $certtext)) {
 		$cert_type = 'email';
 	}
 	#elseif (ereg('OpenSSL.* Server .*Certificate', $certtext)) {
