@@ -317,24 +317,19 @@ function CAdb_to_array($search = '.*') {
 	$inclexp = false;
 
 	# Prepend a default status to search string if missing.
-	#if (! ereg('^\^\[.*\]', $search)) $search = '^[VRE].*'.$search;
 	if (! preg_match("/^\^\[.*\]/", $search)) $search = '^[VRE].*'.$search;
 	
 	# Include valid certs?
-	#if (ereg('^\^\[.*V.*\]',$search)) $inclval = true;
 	if (preg_match('/^\^\[.*V.*\]/',$search)) $inclval = true;
 	
 	# Include revoked certs?
-	#if (ereg('^\^\[.*R.*\]',$search)) $inclrev = true;
 	if (preg_match('/^\^\[.*R.*\]/',$search)) $inclrev = true;
 	
 	# Include expired certs?
-	#if (ereg('^\^\[.*E.*\]',$search)) $inclexp = true;
 	if (preg_match('/^\^\[.*E.*\]/',$search)) $inclexp = true;
 
 	# There isn't really a status of 'E' in the openssl index.
 	# Change (E)xpired to (V)alid within the search string.
-	#$search = ereg_replace('^(\^\[.*)E(.*\])','\\1V\\2',$search);
 	$search = preg_replace('/^(\^\[.*)E(.*\])/','${1}V${2}',$search);
 
 	$db = array();
@@ -354,13 +349,15 @@ function CAdb_to_array($search = '.*') {
  */ 
 function CAdb_get_entry($serial) {
 	global $config;
-	$regexp = "^[VR]\t.*\t.*\t$serial\t.*\t.*$";
-        $x = exec('egrep '.escshellarg($regexp).' '.$config['index']);
-	if ($x)
-		return CAdb_explode_entry($x);
-	else {
-		return false;
-	}
+	if (is_alnum($serial)) {
+		$regexp = "^[VR]\t.*\t.*\t$serial\t.*\t.*$";
+	        $x = exec('egrep '.escshellarg($regexp).' '.$config['index']);
+		if ($x)
+			return CAdb_explode_entry($x);
+		else {
+			return false;
+		}
+	}	else exit("Not a valid serial number.");
 }
 
 /**
@@ -369,15 +366,17 @@ function CAdb_get_entry($serial) {
  */
 function CAdb_has_valid($email="", $name="") {
 	global $config;
-	$regexp = "^[V].*CN=$name/(Email|emailAddress)=$email";
-        $x = exec('egrep '.escshellarg($regexp).' '.$config['index']);
-
-        if ($x) {
-		list($j,$j,$j,$serial,$j,$j) = explode("\t", $x);
-		return "$serial";
-	}
-	else
-		return false;
+	if (is_email($email) && username_validchars($username)) {
+		$regexp = "^[V].*CN=$name/(Email|emailAddress)=$email";
+	        $x = exec('egrep '.escshellarg($regexp).' '.$config['index']);
+	
+	        if ($x) {
+			list($j,$j,$j,$serial,$j,$j) = explode("\t", $x);
+			return "$serial";
+		}
+		else
+			return false;
+	}	else exit("Not a valid serial number.");
 }
 
 /**
@@ -453,15 +452,17 @@ function CAdb_explode_entry($dbentry) {
  */
 function CAdb_is_revoked($serial) {
 	global $config;
-	$regexp = "^R\t.*\t.*\t$serial\t.*\t.*$";
-	$x = exec('egrep '.escshellarg($regexp).' '.$config['index']);	
-	if  ($x) {
-		list($j,$j,$revoke_date,$j,$j,$j) = explode("\t", $x);
-		sscanf($revoke_date, "%2s%2s%2s",$yy,$mm,$dd);
-		return strftime("%Y-%m-%d", strtotime("$mm/$dd/$yy"));
-	}
-	else
-		return false;
+	if (is_alnum($serial)) {
+		$regexp = "^R\t.*\t.*\t$serial\t.*\t.*$";
+		$x = exec('egrep '.escshellarg($regexp).' '.$config['index']);	
+		if  ($x) {
+			list($j,$j,$revoke_date,$j,$j,$j) = explode("\t", $x);
+			sscanf($revoke_date, "%2s%2s%2s",$yy,$mm,$dd);
+			return strftime("%Y-%m-%d", strtotime("$mm/$dd/$yy"));
+		}
+		else
+			return false;
+	}	else exit("Not a valid serial number.");
 }
 
 /**
@@ -469,11 +470,13 @@ function CAdb_is_revoked($serial) {
  */
 function CAdb_is_valid($serial) {
 	global $config;
-	$regexp = "^V\t.*\t.*\t$serial\t.*\t.*$";
-	if  (exec('egrep '.escshellarg($regexp).' '.$config['index']))
-		return true;
-	else
-		return false;
+	if (is_alnum($serial)) {
+		$regexp = "^V\t.*\t.*\t$serial\t.*\t.*$";
+		if  (exec('egrep '.escshellarg($regexp).' '.$config['index']))
+			return true;
+		else
+			return false;
+	}	else exit("Not a valid serial number.");
 }
 
 /**
@@ -482,8 +485,10 @@ function CAdb_is_valid($serial) {
  */
 function CA_cert_text($serial) {
 	global $config;
+	if (is_alnum($serial)) {
 	$certfile = $config['new_certs_dir'] . '/' . $serial . '.pem';
 	return(shell_exec(X509.' -in '.escshellarg($certfile).' -text -purpose 2>&1'));
+	}	else exit("Not a valid serial number.");
 }
 
 /**
@@ -501,9 +506,11 @@ function CA_crl_text() {
  */
 function CA_cert_subject($serial) {
 	global $config;
-	$certfile = $config['new_certs_dir'] . '/' . $serial . '.pem';
-	$x = exec(X509.' -in '.escshellarg($certfile).' -noout -subject 2>&1');
-	return(str_replace('subject=', '', $x));
+	if (is_alnum($serial)) {
+		$certfile = $config['new_certs_dir'] . '/' . $serial . '.pem';
+		$x = exec(X509.' -in '.escshellarg($certfile).' -noout -subject 2>&1');
+		return(str_replace('subject=', '', $x));
+	}	else exit("Not a valid serial number.");
 }
 
 /**
@@ -511,8 +518,10 @@ function CA_cert_subject($serial) {
  */
 function CA_cert_cname($serial) {
 	global $config;
-	#return(ereg_replace('^.*/CN=(.*)/.*','\\1',CA_cert_subject($serial)));
-	return(preg_replace('/^.*\/CN=(.*)\/.*/','${1}',CA_cert_subject($serial)));
+	if (is_alnum($serial)) {
+		#return(ereg_replace('^.*/CN=(.*)/.*','\\1',CA_cert_subject($serial)));
+		return(preg_replace('/^.*\/CN=(.*)\/.*/','${1}',CA_cert_subject($serial)));
+	}	else exit("Not a valid serial number.");
 }
 
 /**
@@ -520,9 +529,11 @@ function CA_cert_cname($serial) {
  */
 function CA_cert_email($serial) {
 	global $config;
-	$certfile = $config['new_certs_dir'] . '/' . $serial . '.pem';
-	$x = exec(X509.' -in '.escshellarg($certfile).' -noout -email 2>&1');
-	return($x);
+	if (is_alnum($serial)) {
+		$certfile = $config['new_certs_dir'] . '/' . $serial . '.pem';
+		$x = exec(X509.' -in '.escshellarg($certfile).' -noout -email 2>&1');
+		return($x);
+	}	else exit("Not a valid serial number.");
 }
 
 /**
@@ -530,9 +541,11 @@ function CA_cert_email($serial) {
  */
 function CA_cert_startdate($serial) {
 	global $config;
-	$certfile = $config['new_certs_dir'] . '/' . $serial . '.pem';
-	$x = exec(X509.' -in '.escshellarg($certfile).' -noout -startdate 2>&1');
-	return(str_replace('notBefore=','',$x));
+	if (!isset($serial) || $serial == "" || is_alnum($serial)) {
+		$certfile = $config['new_certs_dir'] . '/' . $serial . '.pem';
+		$x = exec(X509.' -in '.escshellarg($certfile).' -noout -startdate 2>&1');
+		return(str_replace('notBefore=','',$x));
+	}	else exit("Not a valid serial number.");
 }
 
 /**
@@ -540,9 +553,11 @@ function CA_cert_startdate($serial) {
  */
 function CA_cert_enddate($serial) {
 	global $config;
-	$certfile = $config['new_certs_dir'] . '/' . $serial . '.pem';
-	$x = exec(X509.' -in '.escshellarg($certfile).' -noout -enddate  2>&1');
-	return(str_replace('notAfter=','',$x));
+	if (is_alnum($serial)) {
+		$certfile = $config['new_certs_dir'] . '/' . $serial . '.pem';
+		$x = exec(X509.' -in '.escshellarg($certfile).' -noout -enddate  2>&1');
+		return(str_replace('notAfter=','',$x));
+	}	else exit("Not a valid serial number.");
 }
 
 /**
@@ -550,23 +565,24 @@ function CA_cert_enddate($serial) {
  */
 function CA_revoke_cert($serial) {
 	global $config;
-
-	$fd = fopen($config['index'],'a');
-	flock($fd, LOCK_EX);
-
-	$certfile = $config['new_certs_dir']."/$serial.pem";
+	if (is_alnum($serial)) {
+		$fd = fopen($config['index'],'a');
+		flock($fd, LOCK_EX);
 	
-	$cmd_output[] = 'Revoking the certificate.';
-	exec(CA." -config ".$config['openssl_cnf']." -revoke ".escshellarg($certfile)." -passin pass:".escapeshellarg($config['ca_pwd'])." 2>&1", $cmd_output, $ret);
-
-	if ($ret == 0) {
-		unset($cmd_output);
-		list($ret, $cmd_output[]) = CA_generate_crl();
-	}
+		$certfile = $config['new_certs_dir']."/$serial.pem";
+		
+		$cmd_output[] = 'Revoking the certificate.';
+		exec(CA." -config ".$config['openssl_cnf']." -revoke ".escshellarg($certfile)." -passin pass:".escapeshellarg($config['ca_pwd'])." 2>&1", $cmd_output, $ret);
 	
-	fclose($fd);
-
-	return array(($ret == true || $ret == 0 ? true : false), implode('<br>',$cmd_output));
+		if ($ret == 0) {
+			unset($cmd_output);
+			list($ret, $cmd_output[]) = CA_generate_crl();
+		}
+		
+		fclose($fd);
+	
+		return array(($ret == true || $ret == 0 ? true : false), implode('<br>',$cmd_output));
+	}	else exit("Not a valid serial number.");
 }
 
 /**
@@ -679,130 +695,131 @@ function CA_create_cert($cert_type='email',$country,$province,$locality,$organiz
  */
 function CA_renew_cert($old_serial,$expiry,$passwd) {
 	global $config;
-
-	# Don't renew a revoked certificate if a valid one exists for this
-	# URL.  Find and renew the valid certificate instead.
-	if (CAdb_is_revoked($old_serial)) {
-		$ret = CAdb_has_valid(CA_cert_email($old_serial),CA_cert_cname($old_serial));
-		if ($ret && $old_serial != $ret) $old_serial = $ret;
-	}
-
-	# Valid certificates must be revoked prior to renewal.
-	if (CAdb_is_valid($old_serial)) {
-		$ret = CA_revoke_cert($old_serial);
-		if (! $ret[0]) return $ret;
-	}
-
-	$cert_type  = CA_cert_type($old_serial);
-	$extensions = $cert_type.'_ext'; 
-
-	# Get common_name from old certificate for use as the
-	# "friendly name" of PKCS12 certificate.
-	$rec = CAdb_get_entry($old_serial);
-	$country      = $rec['country'];
-	$province     = $rec['province'];
-	$locality     = $rec['locality'];
-	$organization = $rec['organization'];
-	$unit         = $rec['unit'];
-	$common_name  = $rec['common_name'];
-	$email        = $rec['email'];
-
-	# Wait here if another user has the database locked.
-	$fd = fopen($config['index'],"a");
-	flock($fd, LOCK_EX);
-
-	# Get the next available serial number
-	$serial = trim(implode('',file($config['serial'])));
-
-	$old_userkey = $config['private_dir'].'/'.$old_serial.'-key.pem';
-	$old_userreq = $config['req_dir'].'/'.$old_serial.'-req.pem';
-	$userkey     = $config['private_dir'].'/'.$serial.'-key.pem';
-	$userreq     = $config['req_dir'].'/'.$serial.'-req.pem';
-	$usercert    = $config['new_certs_dir'].'/'.$serial.'.pem';
-	$userder     = $config['cert_dir'].'/'.$serial.'.der';
-	$userpfx     = $config['pfx_dir'].'/'.$serial.'.pfx';
-
-	$expiry_days = round($expiry * 365.25, 0);
-
-	$cmd_output = array();
-	$ret = 0;
-
-	# Create a new certificate request by copying the old request.
-	if (! file_exists($old_userreq) || ! copy($old_userreq,$userreq)) {
-		$cmd_output[] = 'Could not create new certificate request file.';
-		$ret = 1;
-	}
-
-	# Copy private key to new file.
-	if ($ret == 0 && (! file_exists($old_userkey) || ! copy($old_userkey,$userkey))) {
-		$cmd_output[] = "Could not update private key file.";
-		$ret = 1;
-	}
+	if (is_alnum($old_serial) && is_alnum($expiry)) {
+		# Don't renew a revoked certificate if a valid one exists for this
+		# URL.  Find and renew the valid certificate instead.
+		if (CAdb_is_revoked($old_serial)) {
+			$ret = CAdb_has_valid(CA_cert_email($old_serial),CA_cert_cname($old_serial));
+			if ($ret && $old_serial != $ret) $old_serial = $ret;
+		}
 	
-	$cnf_file = CA_create_cnf($country,$province,$locality,$organization,$unit,$common_name,$email);
-
-	# "friendly name" of PKCS12 certificate.
-	$friendly_name = escshellarg($rec['common_name']);
-
-	# Escape dangerous characters in user input.
-	$_passwd    = escshellarg($passwd);
-
-	# Sign the certificate request and create the certificate.
-	if ($ret == 0) {
-		unset($cmd_output);
-		$cmd_output[] = "Signing the $cert_type certificate request.";
-		exec(CA." -config '$cnf_file' -in '$userreq' -out /dev/null -notext -days '$expiry_days' -utf8 -passin pass:".escapeshellarg($config['ca_pwd'])." -batch -extensions $extensions 2>&1", $cmd_output, $ret);
-	};
-
-	# Create DER format certificate
-	if ($ret == 0) {
-		unset($cmd_output);
-		$cmd_output[] = "Creating DER format certificate.";
-		exec(X509." -in '$usercert' -out '$userder' -inform PEM -outform DER 2>&1", $cmd_output, $ret);
-	};
-
-	# Create a PKCS12 certificate file for download to Windows
-	if ($ret == 0) {
-		unset($cmd_output);
-		$cmd_output[] = "Creating PKCS12 format certificate.";
-		if ($passwd) {
-			$cmd_output[] = "infile: $usercert   keyfile: $userkey   outfile: $userpfx  pass: $_passwd";
-			exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name -rand ".$config['random']." -passin pass:$_passwd -passout pass:$_passwd  2>&1", $cmd_output, $ret);
+		# Valid certificates must be revoked prior to renewal.
+		if (CAdb_is_valid($old_serial)) {
+			$ret = CA_revoke_cert($old_serial);
+			if (! $ret[0]) return $ret;
+		}
+	
+		$cert_type  = CA_cert_type($old_serial);
+		$extensions = $cert_type.'_ext'; 
+	
+		# Get common_name from old certificate for use as the
+		# "friendly name" of PKCS12 certificate.
+		$rec = CAdb_get_entry($old_serial);
+		$country      = $rec['country'];
+		$province     = $rec['province'];
+		$locality     = $rec['locality'];
+		$organization = $rec['organization'];
+		$unit         = $rec['unit'];
+		$common_name  = $rec['common_name'];
+		$email        = $rec['email'];
+	
+		# Wait here if another user has the database locked.
+		$fd = fopen($config['index'],"a");
+		flock($fd, LOCK_EX);
+	
+		# Get the next available serial number
+		$serial = trim(implode('',file($config['serial'])));
+	
+		$old_userkey = $config['private_dir'].'/'.$old_serial.'-key.pem';
+		$old_userreq = $config['req_dir'].'/'.$old_serial.'-req.pem';
+		$userkey     = $config['private_dir'].'/'.$serial.'-key.pem';
+		$userreq     = $config['req_dir'].'/'.$serial.'-req.pem';
+		$usercert    = $config['new_certs_dir'].'/'.$serial.'.pem';
+		$userder     = $config['cert_dir'].'/'.$serial.'.der';
+		$userpfx     = $config['pfx_dir'].'/'.$serial.'.pfx';
+	
+		$expiry_days = round($expiry * 365.25, 0);
+	
+		$cmd_output = array();
+		$ret = 0;
+	
+		# Create a new certificate request by copying the old request.
+		if (! file_exists($old_userreq) || ! copy($old_userreq,$userreq)) {
+			$cmd_output[] = 'Could not create new certificate request file.';
+			$ret = 1;
+		}
+	
+		# Copy private key to new file.
+		if ($ret == 0 && (! file_exists($old_userkey) || ! copy($old_userkey,$userkey))) {
+			$cmd_output[] = "Could not update private key file.";
+			$ret = 1;
+		}
+		
+		$cnf_file = CA_create_cnf($country,$province,$locality,$organization,$unit,$common_name,$email);
+	
+		# "friendly name" of PKCS12 certificate.
+		$friendly_name = escshellarg($rec['common_name']);
+	
+		# Escape dangerous characters in user input.
+		$_passwd    = escshellarg($passwd);
+	
+		# Sign the certificate request and create the certificate.
+		if ($ret == 0) {
+			unset($cmd_output);
+			$cmd_output[] = "Signing the $cert_type certificate request.";
+			exec(CA." -config '$cnf_file' -in '$userreq' -out /dev/null -notext -days '$expiry_days' -utf8 -passin pass:".escapeshellarg($config['ca_pwd'])." -batch -extensions $extensions 2>&1", $cmd_output, $ret);
+		};
+	
+		# Create DER format certificate
+		if ($ret == 0) {
+			unset($cmd_output);
+			$cmd_output[] = "Creating DER format certificate.";
+			exec(X509." -in '$usercert' -out '$userder' -inform PEM -outform DER 2>&1", $cmd_output, $ret);
+		};
+	
+		# Create a PKCS12 certificate file for download to Windows
+		if ($ret == 0) {
+			unset($cmd_output);
+			$cmd_output[] = "Creating PKCS12 format certificate.";
+			if ($passwd) {
+				$cmd_output[] = "infile: $usercert   keyfile: $userkey   outfile: $userpfx  pass: $_passwd";
+				exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name -rand ".$config['random']." -passin pass:$_passwd -passout pass:$_passwd  2>&1", $cmd_output, $ret);
+			}
+			else {
+				$cmd_output[] = "infile: $usercert   keyfile: $userkey   outfile: $userpfx";
+				exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name  -nodes 2>&1", $cmd_output, $ret);
+			}
+		};
+	
+		#Unlock the CA database
+		fclose($fd);
+	
+		#Remove temporary openssl config file.
+		if (file_exists($cnf_file)) unlink($cnf_file);
+	
+		if ($ret == 0) {
+			# Check if the password is used to encrypt only the PKCS#12 file
+			# As a matter of fact, this check is a bit redundant
+			exec(OPENSSL ." rsa -in ". $userkey ." -noout -check", $output);
+			if ($output && $output[0] == "RSA key ok") {
+				echo $output[0];
+				$pwd_use = "pkcs12_pwd";
+			}
+			else $pwd_use = "both_pwd";
+			return array(true, $serial, $pwd_use);
 		}
 		else {
-			$cmd_output[] = "infile: $usercert   keyfile: $userkey   outfile: $userpfx";
-			exec(PKCS12." -export -in '$usercert' -inkey '$userkey' -certfile ".$config['cacert_pem']." -caname '".$config['organization']."' -out '$userpfx' -name $friendly_name  -nodes 2>&1", $cmd_output, $ret);
+			# Not successful, so clean up before exiting.
+			CA_remove_cert($serial);
+	
+			if (preg_match_array('/.*private key.*/', $cmd_output))
+				$cmd_output[] = '<strong>This was likely caused by entering the wrong certificate password.</strong>';
+			else
+				$cmd_output[] = '<strong>Click on the "Help" link above for information on how to report this problem.</strong>';
+	
+			return array(false, implode('<br>',$cmd_output), "");
 		}
-	};
-
-	#Unlock the CA database
-	fclose($fd);
-
-	#Remove temporary openssl config file.
-	if (file_exists($cnf_file)) unlink($cnf_file);
-
-	if ($ret == 0) {
-		# Check if the password is used to encrypt only the PKCS#12 file
-		# As a matter of fact, this check is a bit redundant
-		exec(OPENSSL ." rsa -in ". $userkey ." -noout -check", $output);
-		if ($output && $output[0] == "RSA key ok") {
-			echo $output[0];
-			$pwd_use = "pkcs12_pwd";
-		}
-		else $pwd_use = "both_pwd";
-		return array(true, $serial, $pwd_use);
-	}
-	else {
-		# Not successful, so clean up before exiting.
-		CA_remove_cert($serial);
-
-		if (preg_match_array('/.*private key.*/', $cmd_output))
-			$cmd_output[] = '<strong>This was likely caused by entering the wrong certificate password.</strong>';
-		else
-			$cmd_output[] = '<strong>Click on the "Help" link above for information on how to report this problem.</strong>';
-
-		return array(false, implode('<br>',$cmd_output), "");
-	}
+	}	else exit("Not a valid serial or expiry.");
 }
 
 /**
@@ -832,32 +849,32 @@ function CA_generate_crl() {
  */
 function CA_remove_cert($serial) {
 	global $config;
-
-	$userreq  = $config['req_dir'].'/'.$serial.'-req.pem';
-	$userkey  = $config['private_dir'].'/'.$serial.'-key.pem';
-	$usercert = $config['new_certs_dir'].'/'.$serial.'.pem';
-	$userder  = $config['cert_dir'].'/'.$serial.'.der';
-	$userpfx  = $config['pfx_dir'].'/'.$serial.'.pfx';
-
-	# Wait here if another user has the database locked.
-	$fd = fopen($config['index'],'a');
-	flock($fd, LOCK_EX);
-
-	if( file_exists($userreq))  unlink($userreq);
-	if( file_exists($userkey))  unlink($userkey);
-	if( file_exists($usercert)) unlink($usercert);
-	if( file_exists($userder))  unlink($userder);
-	if( file_exists($userpfx))  unlink($userpfx);
-
-	$tmpfile = $config['index'].'.tmp';
-	copy($config['index'], $tmpfile);
-
-	$regexp = "^[VR]\t.*\t.*\t".$serial."\t.*\t.*$";
-	exec('egrep -v '.escshellarg($regexp)." $tmpfile > ".$config['index']." 2>/dev/null");
-
-	unlink($tmpfile);
-	fclose($fd);
+	if (is_alnum($serial)) {
+		$userreq  = $config['req_dir'].'/'.$serial.'-req.pem';
+		$userkey  = $config['private_dir'].'/'.$serial.'-key.pem';
+		$usercert = $config['new_certs_dir'].'/'.$serial.'.pem';
+		$userder  = $config['cert_dir'].'/'.$serial.'.der';
+		$userpfx  = $config['pfx_dir'].'/'.$serial.'.pfx';
 	
+		# Wait here if another user has the database locked.
+		$fd = fopen($config['index'],'a');
+		flock($fd, LOCK_EX);
+	
+		if( file_exists($userreq))  unlink($userreq);
+		if( file_exists($userkey))  unlink($userkey);
+		if( file_exists($usercert)) unlink($usercert);
+		if( file_exists($userder))  unlink($userder);
+		if( file_exists($userpfx))  unlink($userpfx);
+	
+		$tmpfile = $config['index'].'.tmp';
+		copy($config['index'], $tmpfile);
+	
+		$regexp = "^[VR]\t.*\t.*\t".$serial."\t.*\t.*$";
+		exec('egrep -v '.escshellarg($regexp)." $tmpfile > ".$config['index']." 2>/dev/null");
+	
+		unlink($tmpfile);
+		fclose($fd);
+	}	else exit("Not a valid serial number.");
 }
 
 /**
@@ -865,56 +882,34 @@ function CA_remove_cert($serial) {
  * (email, server, vpn).
  */
 function CA_cert_type($serial) {
-
-	$certtext = CA_cert_text($serial);
-
-	#if (ereg('OpenSSL.* (E.?mail|Personal) .*Certificate', $certtext) && ereg('Code Signing', $certtest)) {
-	#	$cert_type = 'email_signing';
-	#}
-	if (preg_match('/OpenSSL.* (E.?mail|Personal) .*Certificate/', $certtext) && preg_match('/Code Signing/', $certtext)) {
-		$cert_type = 'email_signing';
-	}
-	#if (ereg('OpenSSL.* (E.?mail|Personal) .*Certificate', $certtext)) {
-	#	$cert_type = 'email';
-	#}
-	elseif (preg_match('/OpenSSL.* (E.?mail|Personal) .*Certificate/', $certtext)) {
-		$cert_type = 'email';
-	}
-	#elseif (ereg('OpenSSL.* Server .*Certificate', $certtext)) {
-	#	$cert_type = 'server';
-	#}
-	elseif (preg_match('/OpenSSL.* Server .*Certificate/', $certtext)) {
-		$cert_type = 'server';
-	}
-	#elseif (ereg('timeStamping|Time Stamping', $certtext)) {
-	#	$cert_type = 'time_stamping';
-	#}
-	elseif (preg_match('/timeStamping|Time Stamping/', $certtext)) {
-		$cert_type = 'time_stamping';
-	}
-	#elseif (ereg('TLS Web Client Authentication', $certtext) && ereg('TLS Web Server Authentication', $certtext)) {
-	#	$cert_type = 'vpn_client_server';
-	#}
-	elseif (preg_match('/TLS Web Client Authentication/', $certtext) && preg_match('/TLS Web Server Authentication/', $certtext)) {
-		$cert_type = 'vpn_client_server';
-	}
-	#elseif (ereg('TLS Web Client Authentication', $certtext)) {
-	#	$cert_type = 'vpn_client';
-	#}
-	elseif (preg_match('/TLS Web Client Authentication/', $certtext)) {
-		$cert_type = 'vpn_client';
-	}
-	#elseif (ereg('TLS Web Server Authentication', $certtext)) {
-	#	$cert_type = 'vpn_server';
-	#}
-	elseif (preg_match('/TLS Web Server Authentication/', $certtext)) {
-		$cert_type = 'vpn_server';
-	}
-	else {
-		$cert_type = 'vpn_client_server';
-	}
-
-	return $cert_type;
+	if (is_alnum($serial)) {
+		$certtext = CA_cert_text($serial);
+		if (preg_match('/OpenSSL.* (E.?mail|Personal) .*Certificate/', $certtext) && preg_match('/Code Signing/', $certtext)) {
+			$cert_type = 'email_signing';
+		}
+		elseif (preg_match('/OpenSSL.* (E.?mail|Personal) .*Certificate/', $certtext)) {
+			$cert_type = 'email';
+		}
+		elseif (preg_match('/OpenSSL.* Server .*Certificate/', $certtext)) {
+			$cert_type = 'server';
+		}
+		elseif (preg_match('/timeStamping|Time Stamping/', $certtext)) {
+			$cert_type = 'time_stamping';
+		}
+		elseif (preg_match('/TLS Web Client Authentication/', $certtext) && preg_match('/TLS Web Server Authentication/', $certtext)) {
+			$cert_type = 'vpn_client_server';
+		}
+		elseif (preg_match('/TLS Web Client Authentication/', $certtext)) {
+			$cert_type = 'vpn_client';
+		}
+		elseif (preg_match('/TLS Web Server Authentication/', $certtext)) {
+			$cert_type = 'vpn_server';
+		}
+		else {
+			$cert_type = 'vpn_client_server';
+		}
+		return $cert_type;
+	}	else exit("Not a valid serial number.");
 }
 
 function CA_get_root_pem() {
@@ -927,27 +922,28 @@ function CA_get_root_pem() {
  */
 function CA_create_openvpn_archive($serial, $username, $email) {
 	global $config;	
-	
-	$base_cnf_file = $config["openvpn_client_cnf_dir"]."/client_basecnf.conf";
-	
-	$user_conf = $config['openvpn_client_cnf_dir'] . "/'" . $username . "_(". $email . ").conf'";
-	$user_ovpn = $config['openvpn_client_cnf_dir'] . "/'" . $username . "_(". $email . ").ovpn'";		
-	
-	if (file_exists($base_cnf_file)) 
-	{
-		$contents = file_get_contents($base_cnf_file);
-		$added_cnf_line = "pkcs12 " . $username . "_(" . $email . ").p12";
-		exec("echo '" . $contents . "' > " . $user_conf);
-		exec("echo '" . $added_cnf_line . "' >> " . $user_conf);
-		exec("cp " . $user_conf . " " . $user_ovpn);
+	if (is_alnum($serial) && username_validchars($username) && is_email($email)) {
+		$base_cnf_file = $config["openvpn_client_cnf_dir"]."/client_basecnf.conf";
 		
-		$pkcs12 = $config["pfx_dir"]."/" . $serial . ".pfx";
-		exec("cp " . $pkcs12 . " " . $config["private_dir"]."/tmp/'".$username . "_(" . $email . ").p12'");
-		$pkcs12 = $config["private_dir"]."/tmp/'" . $username . "_(" . $email . ").p12'";
-		$archive_target = $config["private_dir"]."/openvpn-archives/'" . $username . "_(" . $email . ").zip'";
-		exec("zip -j ". $archive_target . " " . $user_conf . " " . $user_ovpn . " " . $pkcs12);		
-	}
-	else echo "Missing base OpenVPN config file.";
+		$user_conf = $config['openvpn_client_cnf_dir'] . "/'" . $username . "_(". $email . ").conf'";
+		$user_ovpn = $config['openvpn_client_cnf_dir'] . "/'" . $username . "_(". $email . ").ovpn'";		
+		
+		if (file_exists($base_cnf_file)) 
+		{
+			$contents = file_get_contents($base_cnf_file);
+			$added_cnf_line = "pkcs12 " . $username . "_(" . $email . ").p12";
+			exec("echo '" . $contents . "' > " . $user_conf);
+			exec("echo '" . $added_cnf_line . "' >> " . $user_conf);
+			exec("cp " . $user_conf . " " . $user_ovpn);
+			
+			$pkcs12 = $config["pfx_dir"]."/" . $serial . ".pfx";
+			exec("cp " . $pkcs12 . " " . $config["private_dir"]."/tmp/'".$username . "_(" . $email . ").p12'");
+			$pkcs12 = $config["private_dir"]."/tmp/'" . $username . "_(" . $email . ").p12'";
+			$archive_target = $config["private_dir"]."/openvpn-archives/'" . $username . "_(" . $email . ").zip'";
+			exec("zip -j ". $archive_target . " " . $user_conf . " " . $user_ovpn . " " . $pkcs12);		
+		}
+		else echo "Missing base OpenVPN config file.";
+	}	else exit("Invalid input.");
 }
 /**
  * Adds the user-specific pkcs12 name at the end of the openvpn config files
@@ -956,71 +952,71 @@ function CA_create_openvpn_archive($serial, $username, $email) {
  */
 function CA_create_Tunnelblick_zip($serial, $username, $email) {
 	global $config;
-
-	$base_cnf_file = $config["openvpn_client_cnf_dir"]."/client_basecnf.conf";
-
-	$user_conf = $config['openvpn_client_cnf_dir'] . "/'" . $username . "_(". $email . ").conf'";
-	$user_ovpn = $config['openvpn_client_cnf_dir'] . "/'" . $username . "_(". $email . ").ovpn'";
-
-	if (file_exists($base_cnf_file))
-	{
-		$contents = file_get_contents($base_cnf_file);
-		$added_cnf_line = "pkcs12 " . $username . "_(" . $email . ").p12";
-		exec("echo '" . $contents . "' > " . $user_conf);
-		exec("echo '" . $added_cnf_line . "' >> " . $user_conf);
-		exec("cp " . $user_conf . " " . $user_ovpn);
-
-		$pkcs12 = $config["pfx_dir"]."/" . $serial . ".pfx";
-		exec("cp " . $pkcs12 . " " . $config["private_dir"]."/tmp/'".$username . "_(" . $email . ").p12'");
-		$pkcs12 = $config["private_dir"]."/tmp/'" . $username . "_(" . $email . ").p12'";
-		$archive_target = $config["private_dir"]."/openvpn-archives/'" . $username . "_(" . $email . ").tblk.zip'";
-		exec("zip -j ". $archive_target . " " . $user_conf . " " . $user_ovpn . " " . $pkcs12);
-	}
-	else echo "Missing base OpenVPN config file.";
+	if (is_alnum($serial) && username_validchars($username) && is_email($email)) {
+		$base_cnf_file = $config["openvpn_client_cnf_dir"]."/client_basecnf.conf";
+	
+		$user_conf = $config['openvpn_client_cnf_dir'] . "/'" . $username . "_(". $email . ").conf'";
+		$user_ovpn = $config['openvpn_client_cnf_dir'] . "/'" . $username . "_(". $email . ").ovpn'";
+	
+		if (file_exists($base_cnf_file))
+		{
+			$contents = file_get_contents($base_cnf_file);
+			$added_cnf_line = "pkcs12 " . $username . "_(" . $email . ").p12";
+			exec("echo '" . $contents . "' > " . $user_conf);
+			exec("echo '" . $added_cnf_line . "' >> " . $user_conf);
+			exec("cp " . $user_conf . " " . $user_ovpn);
+	
+			$pkcs12 = $config["pfx_dir"]."/" . $serial . ".pfx";
+			exec("cp " . $pkcs12 . " " . $config["private_dir"]."/tmp/'".$username . "_(" . $email . ").p12'");
+			$pkcs12 = $config["private_dir"]."/tmp/'" . $username . "_(" . $email . ").p12'";
+			$archive_target = $config["private_dir"]."/openvpn-archives/'" . $username . "_(" . $email . ").tblk.zip'";
+			exec("zip -j ". $archive_target . " " . $user_conf . " " . $user_ovpn . " " . $pkcs12);
+		}
+		else echo "Missing base OpenVPN config file.";
+	}	else exit("Invalid input.");
 }
 
 function CA_renew_CAcert($new_expiry) {
 	global $config;
-	
-	$cakey   	= $config['cakey'];
-	$careq   	= $config['req_dir'].'/ca-newreq.pem';
-	$cacert		= $config['cacert_pem'];
+	if (is_alnum($new_expiry)) {
+		$cakey   	= $config['cakey'];
+		$careq   	= $config['req_dir'].'/ca-newreq.pem';
+		$cacert		= $config['cacert_pem'];
+			
+		$CA_cnf_file = CA_generate_CAcert_cnf();
+		putenv("RANDFILE=".$config['random']);
 		
-	$CA_cnf_file = CA_generate_CAcert_cnf();
-	putenv("RANDFILE=".$config['random']);
-	
-	unset($cmd_output);
-	$ret = 0;
-	
-	$cmd_output[] = 'Backing up the old CA certificate as <i>./cacert.pem-old</i>...<br>';
-	exec("cp ".$cacert." ".$cacert."-old");
-	$expiry_days = round($new_expiry * 365.25, 0);
-	$cmd_output[] = "Generating a temporary CA OpenSSL configuration file with identical information as the old CA...<br>";
-	$cmd_output[] = 'Signing cert request and generating the new CA cert... <br>';
-	# Extract serial number from old cert and use it with the new one. This ensures that the new CA cert can still validate user certs
-	# signed with the old CA cert, otherwise incompatibilities will arise.
-	$serial_cmd = exec(X509." -in ".$cacert."-old -noout -serial");
-	$serial = str_replace("serial=", "", $serial_cmd);
-	//echo $serial."<br>";
-	exec(REQ . " -config ".$CA_cnf_file." -extensions root_ext -key ".$cakey." -passin pass:".escapeshellarg($config['ca_pwd'])." -new -x509 -set_serial 0x".$serial." -days ".$expiry_days." -out ".$cacert." 2>&1", $cmd_output, $ret);
-	$cmd_string = implode("<br>", $cmd_output);
-	echo $cmd_string;
-	# Remove temporary CA OpenSSL config file
-	unlink($CA_cnf_file);
-	
-	if ($ret == 0) {
-		echo "<br>Completed with no errors.<br>";
-		exec("chmod 660 ".$cacert);
 		unset($cmd_output);
-		list($ret, $cmd_output[]) = CA_generate_crl();
-		#exec(X509." -outform der -in ". $cacert ." -out ". $cacert_crt);
-		$cmd_output[] = "<br>All done.";
-	}		
-	
-	$cmd_string = implode("<br>", $cmd_output);
-	echo "<br>".$cmd_string;
-	
-	return $ret;
+		$ret = 0;
+		
+		$cmd_output[] = 'Backing up the old CA certificate as <i>./cacert.pem-old</i>...<br>';
+		exec("cp ".$cacert." ".$cacert."-old");
+		$expiry_days = round($new_expiry * 365.25, 0);
+		$cmd_output[] = "Generating a temporary CA OpenSSL configuration file with identical information as the old CA...<br>";
+		$cmd_output[] = 'Signing cert request and generating the new CA cert... <br>';
+		# Extract serial number from old cert and use it with the new one. This ensures that the new CA cert can still validate user certs
+		# signed with the old CA cert, otherwise incompatibilities will arise.
+		$serial_cmd = exec(X509." -in ".$cacert."-old -noout -serial");
+		$serial = str_replace("serial=", "", $serial_cmd);
+		exec(REQ . " -config ".$CA_cnf_file." -extensions root_ext -key ".$cakey." -passin pass:".escapeshellarg($config['ca_pwd'])." -new -x509 -set_serial 0x".$serial." -days ".$expiry_days." -out ".$cacert." 2>&1", $cmd_output, $ret);
+		$cmd_string = implode("<br>", $cmd_output);
+		echo $cmd_string;
+		# Remove temporary CA OpenSSL config file
+		unlink($CA_cnf_file);
+		
+		if ($ret == 0) {
+			echo "<br>Completed with no errors.<br>";
+			exec("chmod 660 ".$cacert);
+			unset($cmd_output);
+			list($ret, $cmd_output[]) = CA_generate_crl();
+			$cmd_output[] = "<br>All done.";
+		}		
+		
+		$cmd_string = implode("<br>", $cmd_output);
+		echo "<br>".$cmd_string;
+		
+		return $ret;
+		}	else exit("Invalid expiry string.");
 }
 /**
  * Checks if the certificate was indeed signed by the currently installed CA 
@@ -1029,13 +1025,15 @@ function CA_renew_CAcert($new_expiry) {
  */
 function CA_verify_match_cert($serial) {
 	global $config;
-	exec(OPENSSL. "verify -verbose -CAfile ".$config['cacert_pem']." ".$config['new_certs_dir']."/".escshellarg($serial).".pem", $cmd_output);
-	if (preg_match_array("/.*: OK$/", $cmd_output)) {
-		return "OK";
-	}
-	else {
-		return "NOT OK";
-	}
+	if (is_alnum($serial)) {
+		exec(OPENSSL. "verify -verbose -CAfile ".$config['cacert_pem']." ".$config['new_certs_dir']."/".escshellarg($serial).".pem", $cmd_output);
+		if (preg_match_array("/.*: OK$/", $cmd_output)) {
+			return "OK";
+		}
+		else {
+			return "NOT OK";
+		}
+	}	else exit("Invalid serial number.");
 }
 
 #function import_CA() {
