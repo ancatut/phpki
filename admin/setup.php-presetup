@@ -219,7 +219,15 @@ case 'write':
 	#
 	print '<strong>Writing configuration files...</strong><br>';
 	flush();
-
+/**
+ * Allows to use functions inside heredoc by passing the function name as string
+ * @param unknown $data
+ */
+	function fn($data) {
+  	return $data;
+	}
+	$fn = 'fn';
+	
 	$config_txt = <<<EOS
 <?php
 # PHPki CONFIGURATION FILE
@@ -243,7 +251,7 @@ case 'write':
 \$config['groups_file']		= '$groups_file';
 
 # Password for CA root certificate.
-\$config['ca_pwd'] 			= '$passwd';
+\$config['ca_pwd'] 			= '{$fn(addslashes($passwd))}';
 
 # Number of years the root certificate is good.
 \$config['expiry'] 			= '$expiry';
