@@ -364,10 +364,10 @@ function CAdb_get_entry($serial) {
  * Returns the serial number of a VALID certificate matching 
  * $email and/or $name. Returns FALSE if no match is found.
  */
-function CAdb_has_valid($email="", $name="") {
+function CAdb_has_valid($email="", $common_name="") {
 	global $config;
-	if (is_email($email) && username_validchars($username)) {
-		$regexp = "^[V].*CN=$name/(Email|emailAddress)=$email";
+	if (is_email($email) && username_validchars($common_name)) {
+		$regexp = "^[V].*CN=$common_name/(Email|emailAddress)=$email";
 	        $x = exec('egrep '.escshellarg($regexp).' '.$config['index']);
 	
 	        if ($x) {
