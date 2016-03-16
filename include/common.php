@@ -32,6 +32,7 @@ function printHeader($withmenu="default") {
 	case 'about':	
 		$style_css = 'css/style.css';
 		$favicon   = 'images/favicon.ico';
+		$jquery_path = 'javascript/jquery-1.12.1.min.js';
 		break;
 	case 'ca':
 	case 'admin':
@@ -39,6 +40,7 @@ function printHeader($withmenu="default") {
 	default:
 		$style_css = '../css/style.css';
 		$favicon   = '../images/favicon.ico';
+		$jquery_path = '../javascript/jquery-1.12.1.min.js';
 		break;
 	}
 
@@ -53,6 +55,7 @@ function printHeader($withmenu="default") {
 	<html>
 	<head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<script type="text/javascript" src="<?php echo $jquery_path?>"></script>
 	<title>PHPki: <?php echo $title ?> </title>
 	<link rel="stylesheet" type="text/css" href="<?php echo $style_css ?>">
 	<link rel="shortcut icon" href="<?php echo $favicon ?>">
@@ -208,26 +211,17 @@ function printFooter() {
 	<div class="footer">
 	<hr align="center" color="#99caff">
 	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Based on PHPki <a href="http://sourceforge.net/projects/phpki/">v<?=PHPKI_VERSION?></a> - Copyright 2003 - William E. Roadcap</p>
-	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.25.5">v0.25.5</a></p>
+	<p style='margin-top: -5px; font-size: 8pt; text-align: center'>Current version of update branch on GitHub: <a href="https://github.com/interiorcodealligator/phpki/releases/tag/v0.25.6">v0.25.6</a></p>
 	
 	</div>
 	</div>
 	
-	</body>
-	</html>
-	<?php
-}
-
-?>
-<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-
-<script>
-
-/**
- * Implementation of logout for HTTP Basic Auth
- *
- */
- $(document).ready(function() {
+	<script>
+	/**
+	 * Implementation of logout for HTTP Basic Auth
+	 *
+	 */
+	 $(document).ready(function() {
 		$('#logout_btn').submit(function() { // catch the form's submit event
 		    var request = $.ajax({ // create an AJAX call...
 			    // This creates a POST Basic Auth call to a PHP file.
@@ -235,7 +229,7 @@ function printFooter() {
 			    // and when that fails the previous user is logged out.
 			    // Therefore, this acts like logging out a user previously logged in with Basic Auth.
 		        type: "POST", // GET or POST
-	            async: false,
+	            async: true,
 	            beforeSend: function(xhr) {
 	                xhr.setRequestHeader('WWW-Authenticate', 'Restricted Access');
 	            },
@@ -280,3 +274,11 @@ function printFooter() {
 		});
 	});
 	</script>
+	
+	</body>
+	</html>
+	<?php
+}
+
+?>
+
